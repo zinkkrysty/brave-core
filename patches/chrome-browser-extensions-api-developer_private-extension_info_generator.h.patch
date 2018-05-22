@@ -1,0 +1,12 @@
+diff --git a/chrome/browser/extensions/api/developer_private/extension_info_generator.h b/chrome/browser/extensions/api/developer_private/extension_info_generator.h
+index 8fb11cc4305e47eb4dfef87002c453008a2e6c8c..a51182dc2f8fe284fcf1f50b6ed10243e98fcda3 100644
+--- a/chrome/browser/extensions/api/developer_private/extension_info_generator.h
++++ b/chrome/browser/extensions/api/developer_private/extension_info_generator.h
+@@ -53,6 +53,7 @@ class ExtensionInfoGenerator {
+   // optionally including disabled and terminated.
+   void CreateExtensionsInfo(bool include_disabled,
+                             bool include_terminated,
++                            bool include_recommended,
+                             const ExtensionInfosCallback& callback);
+ 
+  private:

@@ -1,0 +1,34 @@
+diff --git a/chrome/browser/extensions/api/developer_private/developer_private_api.cc b/chrome/browser/extensions/api/developer_private/developer_private_api.cc
+index 5070bed814f4ab54b7bafa3ffb71fc6e80d4341a..8b5e42324bbb719326c4d0c00b1f7e3db3afcaff 100644
+--- a/chrome/browser/extensions/api/developer_private/developer_private_api.cc
++++ b/chrome/browser/extensions/api/developer_private/developer_private_api.cc
+@@ -615,17 +615,21 @@ DeveloperPrivateGetExtensionsInfoFunction::Run() {
+ 
+   bool include_disabled = true;
+   bool include_terminated = true;
++  bool include_recommended = true;
+   if (params->options) {
+     if (params->options->include_disabled)
+       include_disabled = *params->options->include_disabled;
+     if (params->options->include_terminated)
+       include_terminated = *params->options->include_terminated;
++    if (params->options->include_recommended)
++      include_recommended = *params->options->include_recommended;
+   }
+ 
+   info_generator_.reset(new ExtensionInfoGenerator(browser_context()));
+   info_generator_->CreateExtensionsInfo(
+       include_disabled,
+       include_terminated,
++      include_recommended,
+       base::Bind(&DeveloperPrivateGetExtensionsInfoFunction::OnInfosGenerated,
+                  this /* refcounted */));
+ 
+@@ -709,6 +713,7 @@ ExtensionFunction::ResponseAction DeveloperPrivateGetItemsInfoFunction::Run() {
+   info_generator_->CreateExtensionsInfo(
+       params->include_disabled,
+       params->include_terminated,
++      params->include_recommended,
+       base::Bind(&DeveloperPrivateGetItemsInfoFunction::OnInfosGenerated,
+                  this /* refcounted */));
+ 

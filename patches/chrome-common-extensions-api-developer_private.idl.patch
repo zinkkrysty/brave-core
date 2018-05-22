@@ -1,0 +1,35 @@
+diff --git a/chrome/common/extensions/api/developer_private.idl b/chrome/common/extensions/api/developer_private.idl
+index 173c434828f8353e81917de4dabd507c1a515394..9636aa6f11734a0610a3f4eb9933056a58754478 100644
+--- a/chrome/common/extensions/api/developer_private.idl
++++ b/chrome/common/extensions/api/developer_private.idl
+@@ -86,7 +86,8 @@ namespace developerPrivate {
+     ENABLED,
+     DISABLED,
+     TERMINATED,
+-    BLACKLISTED
++    BLACKLISTED,
++    RECOMMENDED
+   };
+ 
+   enum CommandScope {
+@@ -276,6 +277,7 @@ namespace developerPrivate {
+   dictionary GetExtensionsInfoOptions {
+     boolean? includeDisabled;
+     boolean? includeTerminated;
++    boolean? includeRecommended;
+   };
+ 
+   dictionary ExtensionConfigurationUpdate {
+@@ -523,10 +525,12 @@ namespace developerPrivate {
+     // Returns information of all the extensions and apps installed.
+     // |includeDisabled| : include disabled items.
+     // |includeTerminated| : include terminated items.
++    // |includeRecommended| : include recommended items.
+     // |callback| : Called with items info.
+     [deprecated="Use getExtensionsInfo"] static void getItemsInfo(
+         boolean includeDisabled,
+         boolean includeTerminated,
++        boolean includeRecommended,
+         ItemsInfoCallback callback);
+ 
+     // Returns the current profile's configuration.

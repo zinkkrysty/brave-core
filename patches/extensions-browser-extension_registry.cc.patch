@@ -1,0 +1,37 @@
+diff --git a/extensions/browser/extension_registry.cc b/extensions/browser/extension_registry.cc
+index a7f9e0dae3ab6e90b464d5373535d68f14004b8a..e2c2efcca3d1baa51576b2172830f02206288dc1 100644
+--- a/extensions/browser/extension_registry.cc
++++ b/extensions/browser/extension_registry.cc
+@@ -37,6 +37,8 @@ std::unique_ptr<ExtensionSet> ExtensionRegistry::GenerateInstalledExtensionsSet(
+     installed_extensions->InsertAll(blacklisted_extensions_);
+   if (include_mask & IncludeFlag::BLOCKED)
+     installed_extensions->InsertAll(blocked_extensions_);
++  if (include_mask & IncludeFlag::RECOMMENDED)
++    installed_extensions->InsertAll(recommended_extensions_);
+   return installed_extensions;
+ }
+ 
+@@ -192,6 +194,15 @@ bool ExtensionRegistry::RemoveBlocked(const std::string& id) {
+   return blocked_extensions_.Remove(id);
+ }
+ 
++bool ExtensionRegistry::AddRecommended(
++    const scoped_refptr<const Extension>& extension) {
++  return recommended_extensions_.Insert(extension);
++}
++
++bool ExtensionRegistry::RemoveRecommended(const std::string& id) {
++  return recommended_extensions_.Remove(id);
++}
++
+ bool ExtensionRegistry::AddReady(
+     const scoped_refptr<const Extension>& extension) {
+   return ready_extensions_.Insert(extension);
+@@ -207,6 +218,7 @@ void ExtensionRegistry::ClearAll() {
+   terminated_extensions_.Clear();
+   blacklisted_extensions_.Clear();
+   blocked_extensions_.Clear();
++  recommended_extensions_.Clear();
+   ready_extensions_.Clear();
+ }
+ 

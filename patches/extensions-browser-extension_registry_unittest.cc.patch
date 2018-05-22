@@ -1,0 +1,40 @@
+diff --git a/extensions/browser/extension_registry_unittest.cc b/extensions/browser/extension_registry_unittest.cc
+index 05c930b7b3a11442a7c3302afcdcf26a5bd41c28..20f861b73c5b07742f7673447a2ec02c12ac0001 100644
+--- a/extensions/browser/extension_registry_unittest.cc
++++ b/extensions/browser/extension_registry_unittest.cc
+@@ -92,23 +92,27 @@ TEST_F(ExtensionRegistryTest, FillAndClearRegistry) {
+   scoped_refptr<Extension> extension2 = ExtensionBuilder("two").Build();
+   scoped_refptr<Extension> extension3 = ExtensionBuilder("three").Build();
+   scoped_refptr<Extension> extension4 = ExtensionBuilder("four").Build();
++  scoped_refptr<Extension> extension5 = ExtensionBuilder("five").Build();
+ 
+   // All the sets start empty.
+   EXPECT_EQ(0u, registry.enabled_extensions().size());
+   EXPECT_EQ(0u, registry.disabled_extensions().size());
+   EXPECT_EQ(0u, registry.terminated_extensions().size());
+   EXPECT_EQ(0u, registry.blacklisted_extensions().size());
++  EXPECT_EQ(0u, registry.recommended_extensions().size());
+ 
+   // Extensions can be added to each set.
+   registry.AddEnabled(extension1);
+   registry.AddDisabled(extension2);
+   registry.AddTerminated(extension3);
+   registry.AddBlacklisted(extension4);
++  registry.AddRecommended(extension5);
+ 
+   EXPECT_EQ(1u, registry.enabled_extensions().size());
+   EXPECT_EQ(1u, registry.disabled_extensions().size());
+   EXPECT_EQ(1u, registry.terminated_extensions().size());
+   EXPECT_EQ(1u, registry.blacklisted_extensions().size());
++  EXPECT_EQ(1u, registry.recommended_extensions().size());
+ 
+   // Clearing the registry clears all sets.
+   registry.ClearAll();
+@@ -117,6 +121,7 @@ TEST_F(ExtensionRegistryTest, FillAndClearRegistry) {
+   EXPECT_EQ(0u, registry.disabled_extensions().size());
+   EXPECT_EQ(0u, registry.terminated_extensions().size());
+   EXPECT_EQ(0u, registry.blacklisted_extensions().size());
++  EXPECT_EQ(0u, registry.recommended_extensions().size());
+ }
+ 
+ // A simple test of adding and removing things from sets.

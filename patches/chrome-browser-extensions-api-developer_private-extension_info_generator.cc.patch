@@ -1,0 +1,35 @@
+diff --git a/chrome/browser/extensions/api/developer_private/extension_info_generator.cc b/chrome/browser/extensions/api/developer_private/extension_info_generator.cc
+index 15b031d88d64a1b5ecb2e80fec0dc969f19798ab..ecb09ddbc26f99e371a5fbc13a5e7540e58ac840 100644
+--- a/chrome/browser/extensions/api/developer_private/extension_info_generator.cc
++++ b/chrome/browser/extensions/api/developer_private/extension_info_generator.cc
+@@ -272,6 +272,7 @@ void ExtensionInfoGenerator::CreateExtensionInfo(
+ void ExtensionInfoGenerator::CreateExtensionsInfo(
+     bool include_disabled,
+     bool include_terminated,
++    bool include_recommended,
+     const ExtensionInfosCallback& callback) {
+   auto add_to_list = [this](const ExtensionSet& extensions,
+                             developer::ExtensionState state) {
+@@ -284,6 +285,7 @@ void ExtensionInfoGenerator::CreateExtensionsInfo(
+   };
+ 
+   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
++
+   add_to_list(registry->enabled_extensions(),
+               developer::EXTENSION_STATE_ENABLED);
+   if (include_disabled) {
+@@ -296,6 +298,14 @@ void ExtensionInfoGenerator::CreateExtensionsInfo(
+     add_to_list(registry->terminated_extensions(),
+                 developer::EXTENSION_STATE_TERMINATED);
+   }
++  if (include_recommended) {
++    // TODO: stub 1Password, etc
++    // registry->AddRecommended(/**/);
++    // registry->AddRecommended(/**/);
++
++    add_to_list(registry->recommended_extensions(),
++                developer::EXTENSION_STATE_RECOMMENDED);
++  }
+ 
+   if (pending_image_loads_ == 0) {
+     // Don't call the callback re-entrantly.
