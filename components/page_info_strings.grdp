@@ -2,22 +2,22 @@
 <grit-part>
   <!-- Security summary strings -->
   <message name="IDS_PAGE_INFO_SECURE_SUMMARY" desc="A short summary phrase at the top of the Page Info bubble (which shows when you click the lock icon) that indicates that the connection to the current website is secure.">
-    Connection is secure
+    Your connection to this site is secure
   </message>
   <message name="IDS_PAGE_INFO_MIXED_CONTENT_SUMMARY" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if the connection to the current website is using mainly using a secure connection but has some insecure parts (like insecurely loaded images).">
-    Your connection to this site is not fully secure
+    Your connection to this site is not secure
   </message>
   <message name="IDS_PAGE_INFO_NOT_SECURE_SUMMARY" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if the connection to the current website is not secure.">
     Your connection to this site is not secure
   </message>
   <message name="IDS_PAGE_INFO_MALWARE_SUMMARY" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if the current website has been flagged as containing malware.">
-    This site contains malware
+    This site is dangerous and contains malware
   </message>
   <message name="IDS_PAGE_INFO_SOCIAL_ENGINEERING_SUMMARY" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if the current website has been flagged as social engineering.">
-    This site is deceptive
+    This site is deceptive and dangerous
   </message>
   <message name="IDS_PAGE_INFO_UNWANTED_SOFTWARE_SUMMARY" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if the current website has been flagged as containing unwanted software.">
-    This site contains harmful programs
+    This site is dangeous and contains harmful programs
   </message>
 
   <!-- Internal page summary strings -->
@@ -36,22 +36,22 @@
 
   <!-- Detail strings -->
   <message name="IDS_PAGE_INFO_SECURE_DETAILS" desc="A short paragraph explaining a secure site to the user.">
-    Your information (for example, passwords or credit card numbers) is private when it is sent to this site.
+    Your information, including passwords and credit card numbers are private when sent to this site.
   </message>
   <message name="IDS_PAGE_INFO_MIXED_CONTENT_DETAILS" desc="A short paragraph explaining a partially insecure site to the user.">
     Attackers might be able to see the images you’re looking at on this site and trick you by modifying them.
   </message>
   <message name="IDS_PAGE_INFO_NOT_SECURE_DETAILS" desc="A short paragraph explaining a non-secure site to the user.">
-    You should not enter any sensitive information on this site (for example, passwords or credit cards), because it could be stolen by attackers.
+    You should not enter any sensitive information on this site including passwords or credit card information because it could be stolen by attackers.
   </message>
   <message name="IDS_PAGE_INFO_MALWARE_DETAILS" desc="A short paragraph explaining to the user that the current website has been flagged as containing malware.">
-    Attackers on this site might attempt to install dangerous programs on your computer that steal or delete your information (for example, photos, passwords, messages, and credit cards).
+    Attackers on this site might attempt to install dangerous programs on your computer that steal or delete your information. This can include photos, passwords, messages, and credit card information.
   </message>
   <message name="IDS_PAGE_INFO_SOCIAL_ENGINEERING_DETAILS" desc="A short paragraph explaining to the user that the current website has been flagged as social engineering.">
-    Attackers on this site may trick you into doing something dangerous like installing software or revealing your personal information (for example, passwords, phone numbers, or credit cards).
+    Attackers on this site may trick you into doing something dangerous like installing software or revealing your personal information. This can include photos, passwords, messages, and credit card information.
   </message>
   <message name="IDS_PAGE_INFO_UNWANTED_SOFTWARE_DETAILS" desc="A short paragraph explaining to the user that the current website has been flagged as containing unwanted software.">
-    Attackers on this site might try to trick you into installing programs that harm your browsing experience (for example, by changing your homepage or showing extra ads on sites you visit).
+    Attackers on this site might try to trick you into installing programs that harm your browsing experience. For example, by changing your homepage or showing extra ads on sites you visit.
   </message>
 
   <!-- Identity detail strings shared with iOS -->
@@ -397,10 +397,10 @@
           You could lose access to your Google Account or experience identity theft. Chromium recommends changing your password now.
         </message>
         <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_ENTERPRISE" desc="A short paragraph explaining to the user that they have reused their password on the current website.">
-          You could lose access to your organization's account or experience identity theft. Chromium recommends changing your password now.
+          You could lose access to your organization's account or experience identity theft. Brave recommends changing your password now.
         </message>
         <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_ENTERPRISE_WITH_ORG_NAME" desc="A short paragraph explaining to the user that they have reused their password on the current website.">
-          You could lose access to your <ph name="ORG_NAME">$1<ex>Google</ex></ph> account or experience identity theft. Chromium recommends changing your password now.
+          You could lose access to your <ph name="ORG_NAME">$1<ex>Google</ex></ph> account or experience identity theft. Brave recommends changing your password now.
         </message>
       </if>
 

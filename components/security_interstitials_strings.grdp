@@ -69,13 +69,13 @@
     Clock error
   </message>
   <message name="IDS_CLOCK_ERROR_AHEAD_HEADING" desc="Large heading. Context: the error page that's shown when the device clock is too far in the past.">
-    Your clock is ahead
+    The time on your device is ahead
   </message>
   <message name="IDS_CLOCK_ERROR_BEHIND_HEADING" desc="Large heading. Context: the error page that's shown when the device clock is too far in the past.">
-    Your clock is behind
+    The time on your device is behind
   </message>
   <message name="IDS_CLOCK_ERROR_UPDATE_DATE_AND_TIME" desc="Button text. Context: error shown when the device clock is wrong. The button takes the user to the operating system date and time settings.">
-    Update date and time
+    Update the date and time on your device
   </message>
   <if expr="not is_android and not is_ios">
     <message name="IDS_CLOCK_ERROR_PRIMARY_PARAGRAPH" desc="Main paragraph of an error message. Context: error shown when the browser can't load a page because the computer's clock is wrong.">
