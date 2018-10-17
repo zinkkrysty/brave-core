@@ -12,3 +12,8 @@ IN_PROC_BROWSER_TEST_F(BraveFeaturesBrowserTest, AutoFillPasswordDefault) {
   EXPECT_TRUE(
     base::FeatureList::IsEnabled(password_manager::features::kFillOnAccountSelect));
 }
+
+IN_PROC_BROWSER_TEST_F(BraveFeaturesBrowserTest, AutoFillServerCommunication) {
+  EXPECT_TRUE(
+    base::FeatureList::IsDisabled(password_manager::features::kAutofillServerCommunication));
+}
