@@ -25,7 +25,14 @@
 #include "bat/ledger/publisher_info.h"
 #include "bat/ledger/wallet_info.h"
 #include "brave/common/brave_switches.h"
+#if !defined(OS_ANDROID)
 #include "brave/common/extensions/api/brave_rewards.h"
+#include "brave/components/brave_rewards/resources/grit/brave_rewards_resources.h"
+#include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_api_frame_id_map.h"
+#else
+#include "components/grit/components_resources.h"
+#endif
 #include "brave/components/brave_rewards/browser/balance_report.h"
 #include "brave/components/brave_rewards/browser/publisher_info_database.h"
 #include "brave/components/brave_rewards/browser/rewards_fetcher_service_observer.h"
@@ -33,7 +40,6 @@
 #include "brave/components/brave_rewards/browser/rewards_notifications_service_factory.h"
 #include "brave/components/brave_rewards/browser/rewards_service_observer.h"
 #include "brave/components/brave_rewards/browser/wallet_properties.h"
-#include "brave/components/brave_rewards/resources/grit/brave_rewards_resources.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service_factory.h"
 #include "chrome/browser/browser_process_impl.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -41,8 +47,6 @@
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_types.h"
 #include "content_site.h"
-#include "extensions/browser/event_router.h"
-#include "extensions/browser/extension_api_frame_id_map.h"
 #include "net/base/escape.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
@@ -52,8 +56,10 @@
 #include "url/gurl.h"
 #include "url/url_canon_stdstring.h"
 
+#if !defined(OS_ANDROID)
 using extensions::Event;
 using extensions::EventRouter;
+#endif
 
 using namespace net::registry_controlled_domains;
 using namespace std::placeholders;
@@ -892,6 +898,7 @@ void RewardsServiceImpl::TriggerOnWalletInitialized(int error_code) {
   for (auto& observer : observers_)
     observer.OnWalletInitialized(this, error_code);
 
+#if !defined(OS_ANDROID)
   // extension
   EventRouter* event_router = EventRouter::Get(profile_);
   if (event_router) {
@@ -902,6 +909,7 @@ void RewardsServiceImpl::TriggerOnWalletInitialized(int error_code) {
           std::move(args)));
     event_router->BroadcastEvent(std::move(event));
   }
+#endif
 }
 
 void RewardsServiceImpl::TriggerOnWalletProperties(int error_code,
@@ -931,6 +939,8 @@ void RewardsServiceImpl::TriggerOnWalletProperties(int error_code,
     // webui
     observer.OnWalletProperties(this, error_code, std::move(wallet_properties));
   }
+
+#if !defined(OS_ANDROID)
   // extension
   EventRouter* event_router = EventRouter::Get(profile_);
   if (event_router && wallet_info) {
@@ -962,6 +972,7 @@ void RewardsServiceImpl::TriggerOnWalletProperties(int error_code,
                   std::move(args)));
     event_router->BroadcastEvent(std::move(event));
   }
+#endif
 }
 
 void RewardsServiceImpl::GetWalletProperties() {
@@ -1190,6 +1201,7 @@ void RewardsServiceImpl::GetCurrentBalanceReport() {
       &report);
 
   if (success) {
+#if !defined(OS_ANDROID)
     EventRouter* event_router = EventRouter::Get(profile_);
     if (event_router) {
       extensions::api::brave_rewards::OnCurrentReport::Properties properties;
@@ -1213,6 +1225,7 @@ void RewardsServiceImpl::GetCurrentBalanceReport() {
                     std::move(args)));
       event_router->BroadcastEvent(std::move(event));
     }
+#endif
   }
 }
 
@@ -1261,6 +1274,7 @@ void RewardsServiceImpl::OnPublisherActivity(ledger::Result result,
                                              std::unique_ptr<ledger::PublisherInfo> info,
                                              uint64_t windowId) {
   if (result == ledger::Result::LEDGER_OK || result == ledger::Result::NOT_FOUND) {
+#if !defined(OS_ANDROID)
     EventRouter* event_router = EventRouter::Get(profile_);
     if (!event_router) {
       return;
@@ -1290,6 +1304,7 @@ void RewardsServiceImpl::OnPublisherActivity(ledger::Result result,
           extensions::api::brave_rewards::OnPublisherData::kEventName,
           std::move(args)));
     event_router->BroadcastEvent(std::move(event));
+#endif
   }
 }
 

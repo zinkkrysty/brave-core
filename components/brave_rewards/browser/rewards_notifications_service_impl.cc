@@ -9,12 +9,14 @@
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#if !defined(OS_ANDROID)
 #include "brave/common/extensions/api/rewards_notifications.h"
+#include "extensions/browser/event_router.h"
+#endif
 #include "brave/common/pref_names.h"
 #include "brave/components/brave_rewards/browser/rewards_notifications_service_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
-#include "extensions/browser/event_router.h"
 
 namespace brave_rewards {
 
@@ -150,6 +152,7 @@ void RewardsNotificationsServiceImpl::TriggerOnNotificationAdded(
   for (auto& observer : observers_)
     observer.OnNotificationAdded(this, rewards_notification);
 
+#if !defined(OS_ANDROID)
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(profile_);
   if (event_router) {
@@ -164,6 +167,7 @@ void RewardsNotificationsServiceImpl::TriggerOnNotificationAdded(
         std::move(args)));
     event_router->BroadcastEvent(std::move(event));
   }
+#endif
 }
 
 void RewardsNotificationsServiceImpl::TriggerOnNotificationDeleted(
@@ -171,6 +175,7 @@ void RewardsNotificationsServiceImpl::TriggerOnNotificationDeleted(
   for (auto& observer : observers_)
     observer.OnNotificationDeleted(this, rewards_notification);
 
+#if !defined(OS_ANDROID)
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(profile_);
   if (event_router) {
@@ -185,12 +190,14 @@ void RewardsNotificationsServiceImpl::TriggerOnNotificationDeleted(
         std::move(args)));
     event_router->BroadcastEvent(std::move(event));
   }
+#endif
 }
 
 void RewardsNotificationsServiceImpl::TriggerOnAllNotificationsDeleted() {
   for (auto& observer : observers_)
     observer.OnAllNotificationsDeleted(this);
 
+#if !defined(OS_ANDROID)
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(profile_);
   if (event_router) {
@@ -204,6 +211,7 @@ void RewardsNotificationsServiceImpl::TriggerOnAllNotificationsDeleted() {
         std::move(args)));
     event_router->BroadcastEvent(std::move(event));
   }
+#endif
 }
 
 void RewardsNotificationsServiceImpl::TriggerOnGetNotification(
@@ -211,6 +219,7 @@ void RewardsNotificationsServiceImpl::TriggerOnGetNotification(
   for (auto& observer : observers_)
     observer.OnGetNotification(this, rewards_notification);
 
+#if !defined(OS_ANDROID)
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(profile_);
   if (event_router) {
@@ -225,6 +234,7 @@ void RewardsNotificationsServiceImpl::TriggerOnGetNotification(
         std::move(args)));
     event_router->BroadcastEvent(std::move(event));
   }
+#endif
 }
 
 void RewardsNotificationsServiceImpl::TriggerOnGetAllNotifications(
@@ -232,6 +242,7 @@ void RewardsNotificationsServiceImpl::TriggerOnGetAllNotifications(
   for (auto& observer : observers_)
     observer.OnGetAllNotifications(this, rewards_notifications_list);
 
+#if !defined(OS_ANDROID)
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(profile_);
   if (event_router) {
@@ -258,6 +269,7 @@ void RewardsNotificationsServiceImpl::TriggerOnGetAllNotifications(
         std::move(args)));
     event_router->BroadcastEvent(std::move(event));
   }
+#endif
 }
 
 void RewardsNotificationsServiceImpl::OnNotificationAdded(
