@@ -354,6 +354,7 @@
       <message name="IDS_BRAVE_UI_WHY_BRAVE_REWARDS_DESC_2" desc="">Today, Brave welcomes you to the new Internet. One where your time is valued, your personal data is kept private, and you actually get paid for your attention.</message>
       <message name="IDS_BRAVE_UI_YOUR_WALLET" desc="">Your wallet</message>
       <message name="IDS_BRAVE_UI_VIEW_DETAILS" desc="">View Details</message>
+      <message name="IDS_BRAVE_UI_REWARDS_CREATING_TEXT" desc="">Creating wallet</message>
     </messages>
   </release>
 </grit>
