@@ -1546,6 +1546,9 @@ void RewardsServiceImpl::TriggerOnGetPublisherActivityFromUrl(
   for (auto& observer : private_observers_)
     observer.OnGetPublisherActivityFromUrl(this, result, std::move(info),
                                            windowId);
+  for (auto& observer : observers_)
+    observer.OnGetPublisherActivityFromUrl(this, result, info.get(),
+                                           windowId);
 }
 
 void RewardsServiceImpl::SetContributionAutoInclude(std::string publisher_key,

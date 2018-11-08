@@ -11,6 +11,10 @@
 #include "brave/components/brave_rewards/browser/publisher_banner.h"
 #include "brave/components/brave_rewards/browser/wallet_properties.h"
 
+namespace ledger {
+  struct PublisherInfo;
+}
+
 namespace brave_rewards {
 
 class RewardsService;
@@ -50,6 +54,12 @@ class RewardsServiceObserver : public base::CheckedObserver {
                              brave_rewards::ContentSiteList) {};
   virtual void OnPublisherBanner(brave_rewards::RewardsService* rewards_service,
                                  const brave_rewards::PublisherBanner banner) {};
+
+  virtual void OnGetPublisherActivityFromUrl(
+      RewardsService* rewards_service,
+      int error_code,
+      ledger::PublisherInfo* info,
+      uint64_t windowId) {}
 };
 
 }  // namespace brave_rewards
