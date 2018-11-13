@@ -3,7 +3,7 @@ import os
 import sys
 import xml.etree.ElementTree
 from lib.config import get_env_var
-from lib.transifex import check_for_chromium_upgrade, check_missing_source_grd_strings_to_transifex, upload_source_files_to_transifex
+from lib.transifex import check_for_chromium_upgrade, upload_source_strings_desc, check_missing_source_grd_strings_to_transifex, upload_source_files_to_transifex
 
 
 BRAVE_SOURCE_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
@@ -33,10 +33,10 @@ def main():
 
   upload_source_files_to_transifex(source_string_path, filename)
   ext = os.path.splitext(source_string_path)[1]
-  if ext == '.grd':
-    check_for_chromium_upgrade(SOURCE_ROOT, source_string_path)
-    check_missing_source_grd_strings_to_transifex(source_string_path)
-
+  #if ext == '.grd':
+    #check_for_chromium_upgrade(SOURCE_ROOT, source_string_path)
+    #check_missing_source_grd_strings_to_transifex(source_string_path)
+  upload_source_strings_desc(source_string_path, filename)
 
 if __name__ == '__main__':
   sys.exit(main())
