@@ -24,15 +24,10 @@ BOTO_DIR = os.path.abspath(os.path.join(__file__, '..', '..', '..', 'vendor',
 
 
 def get_host_arch():
-<<<<<<< Updated upstream
     """Returns the host architecture with a predictable string."""
+    #### FIXME MBACCHI HACK TESTING NOT GOOD!!!
+    # return 'ia32'
     host_arch = platform.machine()
-=======
-  """Returns the host architecture with a predictable string."""
-  #### FIXME MBACCHI HACK TESTING NOT GOOD!!!
-  # return 'ia32'
-  host_arch = platform.machine()
->>>>>>> Stashed changes
 
     # Convert machine type to format recognized by gyp.
     if re.match(r'i.86', host_arch) or host_arch == 'i86pc':
