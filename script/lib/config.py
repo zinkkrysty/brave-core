@@ -7,12 +7,14 @@ import platform
 import re
 import sys
 
+#### FIXME MBACCHI HACK TESTING NOT GOOD!!!
 PLATFORM = {
     'cygwin': 'win32',
     'darwin': 'darwin',
     'linux2': 'linux',
     'win32': 'win32',
 }[sys.platform]
+# PLATFORM='darwin'
 
 SOURCE_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -38,11 +40,11 @@ def output_dir():
 
 # Use brave-browser/package.json version for canonical version definition
 def brave_browser_package():
-    pjson = os.path.join(BRAVE_BROWSER_ROOT, 'package.json')
-    with open(pjson) as f:
-        obj = json.load(f)
-        return obj
-
+#### FIXME MBACCHI HACK NOT GOOD!!!
+  pjson = os.path.join('../brave-browser', 'package.json')
+  with open(pjson) as f:
+    obj = json.load(f);
+    return obj;
 
 def brave_core_package():
     pjson = os.path.join(BRAVE_CORE_ROOT, 'package.json')

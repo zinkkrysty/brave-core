@@ -15,16 +15,24 @@ import urllib2
 import os
 import zipfile
 
-from config import is_verbose_mode
+from config import is_verbose_mode, PLATFORM
 from env_util import get_vs_env
+from helpers import release_channel
 
 BOTO_DIR = os.path.abspath(os.path.join(__file__, '..', '..', '..', 'vendor',
                                         'boto'))
 
 
 def get_host_arch():
+<<<<<<< Updated upstream
     """Returns the host architecture with a predictable string."""
     host_arch = platform.machine()
+=======
+  """Returns the host architecture with a predictable string."""
+  #### FIXME MBACCHI HACK TESTING NOT GOOD!!!
+  # return 'ia32'
+  host_arch = platform.machine()
+>>>>>>> Stashed changes
 
     # Convert machine type to format recognized by gyp.
     if re.match(r'i.86', host_arch) or host_arch == 'i86pc':
@@ -229,12 +237,37 @@ def s3put(bucket, access_key, secret_key, prefix, key_prefix, files):
 
 
 def import_vs_env(target_arch):
-    if sys.platform != 'win32':
-        return
+  if sys.platform != 'win32':
+    return
 
-    if target_arch == 'ia32':
-        vs_arch = 'amd64_x86'
-    else:
-        vs_arch = 'x86_amd64'
-    env = get_vs_env('14.0', vs_arch)
-    os.environ.update(env)
+  if target_arch == 'ia32':
+    vs_arch = 'amd64_x86'
+  else:
+    vs_arch = 'x86_amd64'
+  env = get_vs_env('14.0', vs_arch)
+  os.environ.update(env)
+
+
+def get_platform():
+  #### FIXME MBACCHI HACK TESTING NOT GOOD!!!
+  
+  # PLATFORM = {
+  #   'cygwin': 'win32',
+  #   'darwin': 'darwin',
+  #   'linux2': 'linux',
+  #   'win32': 'win32',
+  # }[sys.platform]
+  # return PLATFORM
+  return 'darwin'
+
+def omaha_channel():
+  if get_platform() == 'darwin':
+    return release_channel() if release_channel() not in 'release' else 'stable'
+  elif get_platform() == 'win32':
+    arch = get_host_arch() if get_host_arch() not in 'ia32' else 'x86'
+    if release_channel() in ['beta']:
+      chan = '{}-{}'.format(arch, release_channel()[0:2])
+      return chan
+    elif release_channel() in ['release', 'dev']:
+      chan = '{}-{}'.format(arch, release_channel()[0:3])
+      return chan

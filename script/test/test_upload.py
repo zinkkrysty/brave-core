@@ -13,6 +13,9 @@ from mock import Repo
 dirname = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(dirname, '..'))
 
+import upload
+
+from githubmock import Repo
 
 class TestGetDraft(unittest.TestCase):
     def setUp(self):
