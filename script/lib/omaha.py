@@ -56,18 +56,24 @@ def sign_update_sparkle(dmg, dsaprivpem):
     print("file: {}".format(dmg))
     print('dsaprivpem: {}'.format(dsaprivpem))
 
+    import base64
     from cryptography.hazmat.backends import default_backend
-    from cryptography.hazmat.primitives import hashes
+    from cryptography.hazmat.primitives import hashes, serialization
+    from cryptography.hazmat.primitives.asymmetric import padding
 
     digest = hashes.Hash(hashes.SHA1(), backend=default_backend())
     sha1digest = None
 
-    with open(dmg, 'rb') as infile:
-        dmgcontent = infile.read()
-        digest.update(dmgcontent)
-        sha1digest = digest.finalize()
+    with open(dmg, 'rb') as dmg:
+        with open(dsaprivpem, 'rb') as key:
+            dmgcontent = dmg.read()
+            digest.update(dmgcontent)
+            sha1digest = digest.finalize()
+
+            private_key = serialization.load_pem_private_key(key.read(), password=None, backend=default_backend())
+            signature = private_key.sign(sha1digest, hashes.SHA1())
+            encoded_sign = base64.encodestring(signature)
     
     if sha1digest is not None:
-        print("sha1digest: {}".format(sha1digest))
-        print("type(sha1digest): {}".format(type(sha1digest)))
-        return sha1digest
+        print("Encoded Sign: {}".format(encoded_sign))
+        return encoded_sign

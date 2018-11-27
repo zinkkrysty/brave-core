@@ -40,8 +40,7 @@ def output_dir():
 
 # Use brave-browser/package.json version for canonical version definition
 def brave_browser_package():
-#### FIXME MBACCHI HACK NOT GOOD!!!
-  pjson = os.path.join('../brave-browser', 'package.json')
+  pjson = os.path.join(BRAVE_BROWSER_ROOT, 'package.json')
   with open(pjson) as f:
     obj = json.load(f);
     return obj;
