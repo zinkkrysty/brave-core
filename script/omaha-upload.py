@@ -8,6 +8,7 @@ import sys
 
 from lib.config import get_brave_version, get_raw_version
 from lib.helpers import *
+from lib.connect import post_multipart
 from lib.util import get_host_arch, omaha_channel, get_platform
 from lib.omaha import get_app_info, get_base64_authorization, get_upload_version
 
@@ -28,14 +29,19 @@ def main():
     print('brave_version: {}'.format(get_brave_version()))
 
     if not os.environ.get('OMAHAPW') or not os.environ.get('OMAHAUSERID'):
-      message = ('Error: Please set the $OMAHAUSERID and $OMAHAPW '
+      message = ('Error: Please set the $OMAHAUSERID, $OMAHAPW and $OMAHAHOST'
             'environment variables')
       exit(message)
 
     omahaid = os.environ.get('OMAHAUSERID')
     omahapw = os.environ.get('OMAHAPW')
+    omahahost = os.environ.get('OMAHAHOST')
 
     auth = get_base64_authorization(omahaid, omahapw)
+    headers = {
+        'Authorization': 'Basic %s' % auth
+    }
+
     print(auth)
 
     if not os.environ.get('DMGFILE'):
@@ -52,8 +58,26 @@ def main():
       print('{}: {}'.format(item, app_info[item]))
     # print('channel: {}'.format(release_channel()))
     # print('arch: {}'.format(get_host_arch()))
-    PLATFORM = 'win32'
+    PLATFORM = 'darwin'
     print(omaha_channel())
+
+
+    url_omaha = '/api/omaha/version/'
+
+    with open(dmg, 'rb') as f:
+      file_content = f.read()
+      files = [
+        ('file', dmg, file_content),
+      ]
+
+      fields = [
+        ('app', app_info['appguid']),
+        ('channel', app_info['channel']),
+        ('platform', PLATFORM),
+        ('version', app_info['ver']),
+      ]
+
+      print post_multipart(omahahost, url_omaha, fields, files, headers)
     # need to do:
     # write tests
     # encode username:password in base64
