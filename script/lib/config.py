@@ -40,10 +40,10 @@ def output_dir():
 
 # Use brave-browser/package.json version for canonical version definition
 def brave_browser_package():
-  pjson = os.path.join(BRAVE_BROWSER_ROOT, 'package.json')
-  with open(pjson) as f:
-    obj = json.load(f);
-    return obj;
+    pjson = os.path.join(BRAVE_BROWSER_ROOT, 'package.json')
+    with open(pjson) as f:
+        obj = json.load(f)
+        return obj
 
 def brave_core_package():
     pjson = os.path.join(BRAVE_CORE_ROOT, 'package.json')
@@ -64,8 +64,8 @@ def project_name():
 
 def get_chrome_version():
     version = (os.environ.get('npm_config_brave_version') or
-               brave_browser_package()['version'])
-    return version.split('+')[1]
+               brave_browser_package()['config']['projects']['chrome']['tag'])
+    return version
 
 
 def get_brave_version():
