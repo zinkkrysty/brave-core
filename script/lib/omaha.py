@@ -42,7 +42,7 @@ def get_app_info(dmg, dsaprivpem):
     appinfo = {}
     appinfo['appguid'] = get_appguid(release_channel())
     appinfo['channel'] = release_channel()
-    appinfo['short_version'] = get_upload_version() ## FIXME: mbacchi not correct but good for now
+    appinfo['short_version'] = get_upload_version()
     min_version_delimeter = appinfo['short_version'].rfind(".")
     appinfo['version'] = appinfo['short_version'][:min_version_delimeter]
     appinfo['size'] = os.path.getsize(dmg)
@@ -62,7 +62,7 @@ def sign_update_sparkle(dmg, dsaprivpem):
     """
     Signs the Darwin dmg and returns the base64 encoded hash.
 
-    This replaces the functionality in https://github.com/brave/Sparkle/master/bin/sign_update
+    This replaces the functionality in https://github.com/brave/Sparkle/blob/master/bin/sign_update
 
     Need to run the equivalent of the command:
     `$openssl dgst -sha1 -binary < "$1" | $openssl dgst -sha1 -sign "$2" | $openssl enc -base64`
