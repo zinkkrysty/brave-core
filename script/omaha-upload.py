@@ -5,11 +5,15 @@
 import os
 import sys
 
-from lib.config import get_brave_version, get_raw_version
+from lib.config import PLATFORM, get_brave_version, get_raw_version
 from lib.helpers import *
 from lib.connect import post, get, post_with_file
 from lib.util import get_host_arch, omaha_channel, get_platform
-from lib.omaha import get_app_info, get_base64_authorization, get_channel_id, get_upload_version
+from lib.omaha import get_app_info, get_base64_authorization, get_channel_id, get_upload_version, get_event_id
+
+#### FIXME MBACCHI HACK TESTING NOT GOOD!!!
+# PLATFORM = 'darwin'
+PLATFORM = 'win32'
 
 # API DOCUMENTATION
 # created id jenkins-upload account(PW IN 1password) on the `updates-panel-dev` omaha server
@@ -36,8 +40,23 @@ def create_app(host, app_info, headers):
   }
   print post(url, params, headers)
 
+def post_action(host, version, action, headers):
+  url = host + '/api/action'
+  print ("url: {}, version: {}, action: {}, headers: {}".format(url, version, action, headers))
+  params = {
+    "version": version,
+    "event": get_event_id(action)
+  }
+  if release_channel() not in 'release':
+    params['arguments'] = "--chrome-" + release_channel()
+  print("in post_action, params:")
+  for item in params:
+      print('{}: {}'.format(item, params[item]))
+  print post(url, params, headers)
+
 def main():
     print('brave_version: {}'.format(get_brave_version()))
+    print("PLATFORM is {}".format(PLATFORM))
 
     if not os.environ.get('OMAHAPW') or not os.environ.get('OMAHAUSERID'):
       message = ('Error: Please set the $OMAHAUSERID, $OMAHAPW and $OMAHAHOST'
@@ -55,40 +74,63 @@ def main():
 
     print(auth)
 
-    if not os.environ.get('DMGFILE'):
-      exit('Error: Please set the $DMGFILE environment variable')
-    if not os.environ.get('DSAPRIVPEM'):
-      exit('Error: Please set the $DSAPRIVPEM environment variable')
+    if not os.environ.get('SOURCEFILE'):
+      exit('Error: Please set the $SOURCEFILE environment variable')
 
-    dmg = os.environ.get('DMGFILE')
-    # FIXME: Probably need to open this and provide it as file contents not a file location
-    dsaprivpem = os.environ.get('DSAPRIVPEM')
+    if PLATFORM in 'darwin':
+      version_url = '/api/sparkle/version/'
 
-    app_info = get_app_info(dmg, dsaprivpem)
+      if not os.environ.get('DSAPRIVPEM'):
+        exit('Error: Please set the $DSAPRIVPEM environment variable')
+
+      # dmg = os.environ.get('SOURCEFILE')
+      # dsaprivpem = os.environ.get('DSAPRIVPEM')
+
+      # app_info = get_app_info()
+
+    else:
+      version_url = '/api/omaha/version/'
+
+      # exe = os.environ.get('SOURCEFILE')
+
+    app_info = get_app_info()
+
     for item in app_info:
       print('{}: {}'.format(item, app_info[item]))
     # print('channel: {}'.format(release_channel()))
     # print('arch: {}'.format(get_host_arch()))
-    PLATFORM = 'darwin'
-    print(omaha_channel())
+    print("omaha_channel: {}".format(omaha_channel()))
+    print("omaha_channel_id: {}".format(get_channel_id(omaha_channel())))
 
-    url_sparkle = '/api/sparkle/version/'
-    url = omahahost + url_sparkle
+    url = omahahost + version_url
+    source_file = os.environ.get('SOURCEFILE')
 
     #create_app(omahahost, app_info, headers)
 
-    with open(dmg, 'rb') as f:
+    with open(source_file, 'rb') as f:
       files = {'file': f}
       params = {
         'app': app_info['appguid'],
-        'channel': get_channel_id(app_info['channel']),
+        'channel': get_channel_id(omaha_channel()),
         'version': app_info['version'],
-        'short_version': app_info['short_version'],
-        'dsa_signature': app_info['darwindsasig'],
         'release_notes': app_info['release_notes']
       }
+      if app_info['platform'] in 'win32':
+        params['is_enabled'] = app_info['is_enabled']
+        params['platform'] = app_info['platform_id']
+      else:
+        params['dsa_signature'] = app_info['darwindsasig']
+        params['short_version'] = app_info['short_version']
 
-      print post_with_file(url, files, params, headers)
+      response = post_with_file(url, files, params, headers)
+      print("response: {}".format(response.text))
+      rjson = response.json()
+      print ("response['id']: {}".format(rjson['id']))
+
+    # now add action to version just created
+    post_action(omahahost, rjson['id'], 'install', headers)
+    post_action(omahahost, rjson['id'], 'update', headers)
+
     # need to do:
     # write tests
     # encode username:password in base64

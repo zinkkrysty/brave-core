@@ -253,7 +253,7 @@ def get_platform():
   #   'win32': 'win32',
   # }[sys.platform]
   # return PLATFORM
-  return 'darwin'
+  return 'win32'
 
 def omaha_channel():
   if get_platform() == 'darwin':

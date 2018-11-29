@@ -15,4 +15,4 @@ def post(url, params, headers):
 
 def post_with_file(url, files, params, headers):
     response = requests.post(url, files=files, data=params, headers=headers)
-    return response.text
+    return response
