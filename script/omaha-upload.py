@@ -84,7 +84,8 @@ def main():
         'channel': get_channel_id(app_info['channel']),
         'version': app_info['version'],
         'short_version': app_info['short_version'],
-        'dsa_signature': app_info['darwindsasig']
+        'dsa_signature': app_info['darwindsasig'],
+        'release_notes': app_info['release_notes']
       }
 
       print post_with_file(url, files, params, headers)

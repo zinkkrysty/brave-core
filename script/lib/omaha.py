@@ -1,8 +1,8 @@
 import base64
-import os
 import cryptography
+import os
 
-from lib.config import get_brave_version, get_raw_version
+from lib.config import get_brave_version, get_raw_version, get_chrome_version
 from lib.helpers import release_channel
 from lib.util import get_platform
 
@@ -42,13 +42,17 @@ def get_app_info(dmg, dsaprivpem):
     appinfo = {}
     appinfo['appguid'] = get_appguid(release_channel())
     appinfo['channel'] = release_channel()
-    appinfo['short_version'] = get_upload_version()
-    min_version_delimeter = appinfo['short_version'].rfind(".")
-    appinfo['version'] = appinfo['short_version'][:min_version_delimeter]
+    chrome_major = get_chrome_version().split('.')[0]
+    chrome_minor = get_chrome_version().split('.')[1]
+    appinfo['short_version'] = chrome_major + '.' + get_upload_version()
+    appinfo['version'] = appinfo['short_version'].split('.')[2] + \
+                         '.' + appinfo['short_version'].split('.')[3]
     appinfo['size'] = os.path.getsize(dmg)
     appinfo['platform'] = get_platform()
     if appinfo['platform'] in 'darwin':
         appinfo['darwindsasig'] = sign_update_sparkle(dmg, dsaprivpem).rstrip('\n')
+    appinfo['release_notes'] = 'Brave Browser Channel: {}; Version: {}; ' \
+                                'Uploaded by omaha-upload.py script.'.format(release_channel(), appinfo['version'])
 
     return appinfo
 
