@@ -6,6 +6,16 @@ from lib.config import get_brave_version, get_raw_version
 from lib.helpers import release_channel
 from lib.util import get_platform
 
+channel_id = {
+    'x64-dev': 0,
+    'alpha': 1,
+    'beta': 2,
+    'stable': 3
+}
+
+def get_channel_id(channel): 
+    return channel_id[channel]
+
 def get_base64_authorization(omahaid, omahapw):
     """
     Returns a base64 encoded string created from the Omaha ID and PW
@@ -14,13 +24,14 @@ def get_base64_authorization(omahaid, omahapw):
     concatstr = omahaid + ':' + omahapw
     return base64.b64encode(concatstr.encode())
 
+#To-Do: Add functions to create apps
 def get_appguid(channel):
     if channel in 'dev':
-        return 'CB2150F2-595F-4633-891A-E39720CE0531'
+        return '{CB2150F2-595F-4633-891A-E39720CE0531}'
     elif channel in 'beta':
-        return '103BD053-949B-43A8-9120-2E424887DE11'
+        return '{CB2150F2-595F-4633-891A-E39720CE0531}'
     elif channel in 'release' or channel in 'stable':
-        return 'AFE6A462-C574-4B8A-AF43-4CC60DF4563B'
+        return '{AFE6A462-C574-4B8A-AF43-4CC60DF4563B}'
 
 def get_app_info(dmg, dsaprivpem):
     """
@@ -31,10 +42,13 @@ def get_app_info(dmg, dsaprivpem):
     appinfo = {}
     appinfo['appguid'] = get_appguid(release_channel())
     appinfo['channel'] = release_channel()
-    appinfo['longver'] = '70.' + get_upload_version() ## FIXME: mbacchi not correct but good for now
-    appinfo['ver'] = get_upload_version()
-    if get_platform() in 'darwin':
-        appinfo['darwindsasig'] = sign_update_sparkle(dmg, dsaprivpem)
+    appinfo['short_version'] = get_upload_version() ## FIXME: mbacchi not correct but good for now
+    min_version_delimeter = appinfo['short_version'].rfind(".")
+    appinfo['version'] = appinfo['short_version'][:min_version_delimeter]
+    appinfo['size'] = os.path.getsize(dmg)
+    appinfo['platform'] = get_platform()
+    if appinfo['platform'] in 'darwin':
+        appinfo['darwindsasig'] = sign_update_sparkle(dmg, dsaprivpem).rstrip('\n')
 
     return appinfo
 
