@@ -14,12 +14,15 @@ from lib.connect import post, get, post_with_file
 from lib.util import get_host_arch, omaha_channel
 from lib.omaha import get_app_info, get_base64_authorization, get_channel_id, get_upload_version, get_event_id
 
+# FIXME Still need to do:
+# 1. write tests
+
 # API DOCUMENTATION
 # created id jenkins-upload account(PW IN 1password) on the `updates-panel-dev` omaha server
 #   to generate base64 string on commandline use 'echo -n userid:password" | base64'
 #### THE jenkins-upload USER CAN ONLY ADD OMAHA OR SPARKLE VERSION, CANNOT DELETE OR MODIFY EXISTING VERSIONS
 # EXAMPLE CURL
-# curl -L -D- -X GET -H "Authorization: Basic BASE64USERIDANDPASSWORD" -H "Content-Type: application/json" "http://updates-panel-dev.brave.software/api/omaha/version"
+# curl -L -D- -X GET -H "Authorization: Basic BASE64USERIDANDPASSWORD" -H "Content-Type: application/json" "http://OMAHA-HOSTNAME/api/omaha/version"
 # https://crystalnix.github.io/omaha-server/#header-supplying-basic-auth-headers
 # https://crystalnix.github.io/omaha-server/#omaha-version-version-list-post
 # https://crystalnix.github.io/omaha-server/#sparkle-version-version-list-post
@@ -64,7 +67,7 @@ def main():
 
     if args.debug:
       logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
-      logging.debug('brave_version: {}'.format(get_brave_version()))
+      logging.debug('brave_version: {}'.format(get_upload_version()))
       logging.debug("args.platform is \'{}\'".format(args.platform))
 
     if args.platform not in ['win32', 'darwin']:
@@ -89,18 +92,16 @@ def main():
 
     if args.platform in 'darwin':
       version_url = '/api/sparkle/version/'
-
       if not os.environ.get('DSAPRIVPEM'):
         exit('Error: Please set the $DSAPRIVPEM environment variable')
-
     elif args.platform in 'win32':
       version_url = '/api/omaha/version/'
-
-      # exe = os.environ.get('SOURCEFILE')
 
     app_info = get_app_info(args)
 
     url = 'http://' + omahahost + version_url
+
+    source_file = args.file
 
     if args.debug:
       for item in app_info:
@@ -108,10 +109,7 @@ def main():
       logging.debug("omaha_channel: {}".format(omaha_channel(args.platform)))
       logging.debug("omaha_channel_id: {}".format(get_channel_id(omaha_channel(args.platform))))
       logging.debug("URL: {}".format(url))
-
-    source_file = args.file
-
-    #create_app(omahahost, app_info, headers)
+      logging.debug("File: {}".format(source_file))
 
     with open(source_file, 'rb') as f:
       files = {'file': f}
@@ -138,17 +136,8 @@ def main():
       rjson = response.json()
       if args.debug:
         logging.debug("response['id']: {}".format(rjson['id']))
-      post_action(omahahost, rjson['id'], 'install', headers)
-      post_action(omahahost, rjson['id'], 'update', headers)
-
-    # need to do:
-    # write tests
-    # encode username:password in base64
-    # setup connection (httplib or requests)
-    # sign mac dmg with DSA Signature using Sparkle private key
-    # create new versions with metadata
-    #   1. test channel version (both win platfoms and mac dmg)
-    #   2. main channel version (both win platfoms and mac dmg)
+      post_action(omahahost, rjson['id'], 'install', headers, args)
+      post_action(omahahost, rjson['id'], 'update', headers, args)
 
 def parse_args():
   desc = "Upload Windows/Mac install files to Omaha server" \
