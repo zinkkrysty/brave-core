@@ -2,13 +2,9 @@ import base64
 import cryptography
 import os
 
-from lib.config import PLATFORM, get_brave_version, get_raw_version, get_chrome_version
+from lib.config import get_brave_version, get_raw_version, get_chrome_version
 from lib.helpers import release_channel
-from lib.util import get_platform, omaha_channel
-
-#### FIXME MBACCHI HACK TESTING NOT GOOD!!!
-# PLATFORM = 'darwin'
-PLATFORM = 'win32'
+from lib.util import omaha_channel
 
 # FIXME THIS WILL NEED TO BE VERIFIED ON ALL NEW OMAHA SERVERS
 # FIXME MAYBE WE WANT TO PERFORM A REQUEST TO FILL THIS WITH
@@ -36,7 +32,7 @@ platform_id = {
 }
 
 def get_channel_id(channel): 
-    return channel_id[omaha_channel()]
+    return channel_id[channel]
 
 def get_event_id(event):
     return event_id[event]
@@ -65,7 +61,7 @@ def get_appguid(channel):
     elif channel in 'release' or channel in 'stable':
         return '{AFE6A462-C574-4B8A-AF43-4CC60DF4563B}'
 
-def get_app_info():
+def get_app_info(args):
     """
     Returns a dict with all the info about the omaha app that we will need
     to perform the upload
@@ -77,15 +73,14 @@ def get_app_info():
     appinfo = {}
     appinfo['appguid'] = get_appguid(release_channel())
     appinfo['channel'] = release_channel()
-    appinfo['platform'] = get_platform()
-    appinfo['platform_id'] = get_platform_id(get_platform())
-    print("appinfo['platform'] is {}".format(appinfo['platform']))
-    if appinfo['platform'] in 'win32':
+    appinfo['platform'] = args.platform
+    appinfo['platform_id'] = get_platform_id(args.platform)
+    if args.platform in 'win32':
         # By default enable the win32 version on upload
         appinfo['is_enabled'] = True
         # The win32 version is the equivalent of the 'short_version' on darwin
         appinfo['version'] = chrome_major + '.' + get_upload_version()
-    if appinfo['platform'] in 'darwin':
+    if args.platform in 'darwin':
         appinfo['darwindsasig'] = sign_update_sparkle(os.environ.get('SOURCEFILE'), os.environ.get('DSAPRIVPEM')).rstrip('\n')
         appinfo['short_version'] = chrome_major + '.' + get_upload_version()
         appinfo['version'] = appinfo['short_version'].split('.')[2] + \
@@ -111,8 +106,6 @@ def sign_update_sparkle(dmg, dsaprivpem):
     Need to run the equivalent of the command:
     `$openssl dgst -sha1 -binary < "$1" | $openssl dgst -sha1 -sign "$2" | $openssl enc -base64`
     """
-    print("file: {}".format(dmg))
-    print('dsaprivpem: {}'.format(dsaprivpem))
 
     import base64
     from cryptography.hazmat.backends import default_backend
@@ -133,5 +126,4 @@ def sign_update_sparkle(dmg, dsaprivpem):
             encoded_sign = base64.encodestring(signature)
     
     if sha1digest is not None:
-        print("Encoded Sign: {}".format(encoded_sign))
         return encoded_sign

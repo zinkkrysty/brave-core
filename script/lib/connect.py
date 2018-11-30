@@ -11,7 +11,7 @@ def get(url, headers):
 
 def post(url, params, headers):
     response = requests.post(url, json=params, headers=headers)
-    return response.text
+    return response
 
 def post_with_file(url, files, params, headers):
     response = requests.post(url, files=files, data=params, headers=headers)

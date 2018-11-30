@@ -244,21 +244,18 @@ def import_vs_env(target_arch):
 
 
 def get_platform():
-  #### FIXME MBACCHI HACK TESTING NOT GOOD!!!
-  
-  # PLATFORM = {
-  #   'cygwin': 'win32',
-  #   'darwin': 'darwin',
-  #   'linux2': 'linux',
-  #   'win32': 'win32',
-  # }[sys.platform]
-  # return PLATFORM
-  return 'win32'
+  PLATFORM = {
+    'cygwin': 'win32',
+    'darwin': 'darwin',
+    'linux2': 'linux',
+    'win32': 'win32',
+  }[sys.platform]
+  return PLATFORM
 
-def omaha_channel():
-  if get_platform() == 'darwin':
+def omaha_channel(platform):
+  if get_platform() == 'darwin' or platform == 'darwin':
     return release_channel() if release_channel() not in 'release' else 'stable'
-  elif get_platform() == 'win32':
+  elif get_platform() == 'win32' or platform == 'win32':
     arch = get_host_arch() if get_host_arch() not in 'ia32' else 'x86'
     if release_channel() in ['beta']:
       chan = '{}-{}'.format(arch, release_channel()[0:2])
