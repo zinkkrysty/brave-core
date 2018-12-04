@@ -124,7 +124,7 @@ class RewardsServiceImpl : public RewardsService,
   void RemoveRecurring(const std::string& publisher_key) override;
   void UpdateRecurringDonationsList() override;
   void UpdateTipsList() override;
-  void AddRecurringPayment(const std::string& publisher_key, double new_amount) override;
+  void SaveRecurringDonation(const std::string& publisher_key, const int amount) override;
   void SetContributionAutoInclude(
     std::string publisher_key, bool excluded, uint64_t windowId) override;
   RewardsNotificationService* GetNotificationService() const override;
@@ -186,7 +186,6 @@ class RewardsServiceImpl : public RewardsService,
       const ledger::PublisherInfo* publisher_info = NULL) override;
   void OnContributionInfoSaved(const ledger::PUBLISHER_CATEGORY category, bool success);
   void OnRecurringDonationSaved(bool success);
-  void SaveRecurringDonation(const std::string& publisher_key, const int amount);
   void OnRecurringDonationsData(const ledger::PublisherInfoListCallback callback,
                                 const ledger::PublisherInfoList list);
   void OnRecurringDonationUpdated(const ledger::PublisherInfoList& list);

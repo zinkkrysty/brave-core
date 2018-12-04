@@ -1563,10 +1563,6 @@ void RewardsServiceImpl::OnTipsUpdatedData(const ledger::PublisherInfoList list)
   }
 }
 
-void RewardsServiceImpl::AddRecurringPayment(const std::string& publisher_key, double new_amount) {
-  SaveRecurringDonation(publisher_key, new_amount);
-}
-
 void RewardsServiceImpl::RemoveRecurring(const std::string& publisher_key) {
   ledger_->RemoveRecurring(publisher_key);
 }

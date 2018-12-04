@@ -151,7 +151,7 @@ ExtensionFunction::ResponseAction
   RewardsService* rewards_service_ = RewardsServiceFactory::GetForProfile(profile);
 
   if (rewards_service_) {
-    rewards_service_->AddRecurringPayment(params->publisher_key, params->new_amount);
+    rewards_service_->SaveRecurringDonation(params->publisher_key, params->new_amount);
   }
 
   return RespondNow(NoArguments());

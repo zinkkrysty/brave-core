@@ -9,12 +9,13 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test_utils.h"
+#include "brave/components/brave_rewards/browser/content_site.h"
 
 using namespace brave_rewards;
 
 class ExtensionRewardsServiceObserverBrowserTest
     : public InProcessBrowserTest,
-      public RewardsServiceObserver {
+      public ExtensionRewardsServiceObserver {
   public:
 
   void SetUpOnMainThread() override {
@@ -28,33 +29,46 @@ class ExtensionRewardsServiceObserverBrowserTest
 
   void OnRecurringDonations(
       RewardsService* rewards_service,
-      const ledger::PublisherInfoList& list) override {
+      brave_rewards::ContentSiteList list) override {
 
-    ledger::PublisherInfo firstPublisher = list.front();
-    EXPECT_STREQ(firstPublisher.id.c_str(), "brave.com");
-    EXPECT_STREQ(std::to_string(firstPublisher.weight).c_str(), "10");
-
-    on_recurring_notifications_callback_was_called_ = true;
+    if (!donations_should_be_empty) {
+      EXPECT_STREQ(list.front().id.c_str(), "brave.com");
+      EXPECT_STREQ(std::to_string(list.front().weight).c_str(), "10.000000");
+    } else {
+      EXPECT_TRUE(list.size() == 0);
+      rewards_service_->RemoveObserver(this);
+    }
   }
 
-  void WaitForOnRecurringDonationsCallback() {
-    if (on_recurring_notifications_callback_was_called_) {
-      return;
-    }
+  ledger::PublisherInfo CreatePublisherInfo(const std::string& publisher_key) {
+    ledger::PublisherInfo info;
 
-    base::RunLoop run_loop;
-    run_loop.Run();
+    info.id = publisher_key;
+    info.month = ledger::PUBLISHER_MONTH::ANY;
+    info.year = -1;
+    info.verified = true;
+    info.excluded = ledger::PUBLISHER_EXCLUDE::DEFAULT;
+    info.name = publisher_key;
+    info.url = publisher_key;
+    info.provider = publisher_key;
+    info.favicon_url = publisher_key;
+
+    return info;
   }
 
   RewardsService* rewards_service_;
-  bool on_recurring_notifications_callback_was_called_ = false;
+  bool donations_should_be_empty = false;
 };
 
-IN_PROC_BROWSER_TEST_F(ExtensionRewardsServiceObserverBrowserTest, SaveARecurringDonation) {
+IN_PROC_BROWSER_TEST_F(ExtensionRewardsServiceObserverBrowserTest, SaveAndRemoveRecurringDonation) {
   rewards_service_->AddObserver(this);
 
-  rewards_service_->AddRecurringPayment("brave.com", 10);
-  WaitForOnRecurringDonationsCallback();
+  std::string publisher_key = "brave.com";
+  ledger::PublisherInfo publisher_info = CreatePublisherInfo(publisher_key);
 
-  rewards_service_->RemoveObserver(this);
+  rewards_service_->OnDonate(publisher_key, 10, true, &publisher_info);
+  rewards_service_->SaveRecurringDonation(publisher_key, 10);
+
+  donations_should_be_empty = true;
+  rewards_service_->RemoveRecurring(publisher_key);
 }

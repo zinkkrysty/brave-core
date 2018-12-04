@@ -318,7 +318,6 @@ test("brave_browser_tests") {
     ":brave_browser_tests_deps",
     ":browser_tests_runner",
     "//testing/gmock",
-    "//brave/vendor/bat-native-ledger",
   ]
   data_deps = [
     "//ppapi:ppapi_tests",
