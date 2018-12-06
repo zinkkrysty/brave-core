@@ -399,7 +399,8 @@ std::unique_ptr<WebContents> CreateImportedTab(
 // TODO How do I open tabs, but only trigger load once they're visited for the first time?
 void OpenImportedBrowserTabs(Browser* browser,
     const std::vector<ImportedBrowserTab>& tabs,
-    bool pinned) {
+    bool pinned,
+    std::vector<RestoredTab>& restored_tabs) {
 //  for (const auto tab : tabs) {
 //    NavigateParams params(browser, tab.location,
 //                          ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
@@ -421,8 +422,12 @@ void OpenImportedBrowserTabs(Browser* browser,
     //}
     
     // TODO (optional): InsertWebContentsAt (will AppendWebContents maintain the correct tab order?)
+    WebContents* raw_web_contents = web_contents.get();
     browser->tab_strip_model()->AppendWebContents(
         std::move(web_contents), false);
+
+    RestoredTab restored_tab(raw_web_contents, false, false, false);
+    restored_tabs.push_back(restored_tab);
 
     // TODO (optional): resize web contents for background tabs?
     // See https://cs.chromium.org/chromium/src/chrome/browser/ui/browser_tabrestore.cc?l=126-143&rcl=4fb3760d9ce0e4510de0f9b5e354d27acf1d1542
@@ -451,12 +456,13 @@ void ShowBrowser(Browser* browser, int selected_tab_index) {
   browser->tab_strip_model()->GetActiveWebContents()->SetInitialFocus();
 }
 
+/*
 void PrependPinnedTabs(Browser* browser,
     const std::vector<ImportedBrowserTab>& tabs) {
   OpenImportedBrowserTabs(browser, tabs, true);
 }
+*/
 
-/*
 void FinishedRestoringTabs(
     std::vector<RestoredTab>& restored_tabs) {
   // Do I need to use a pointer rather than reference to restored_tabs?
@@ -465,10 +471,10 @@ void FinishedRestoringTabs(
   // TODO: is there any reason to start the restore_starte_ timer at the
   // beginning of BraveProfileWriter::UpdateWindows instead (similar to how it
   // is initialized in the constructtor of SessionRestoreImpl?
+  LOG(ERROR) << "About to SessionRestoreDelegate::RestoreTabs";
   SessionRestoreDelegate::RestoreTabs(restored_tabs,
                                       base::TimeTicks::Now());
 }
-*/
 
 void BraveProfileWriter::UpdateWindows(
     const ImportedWindowState& windowState) {
@@ -482,21 +488,24 @@ void BraveProfileWriter::UpdateWindows(
   Browser* first = nullptr;
 
   // Track restored tabs so we schedule their intial loads efficiently.
-  //std::vector<RestoredTab> restored_tabs;
+  std::vector<RestoredTab> restored_tabs;
 
   for (const auto window : windowState.windows) {
     Browser* browser = OpenImportedBrowserWindow(window, profile_);
-    OpenImportedBrowserTabs(browser, window.tabs, false);
+    OpenImportedBrowserTabs(browser, window.tabs, false, restored_tabs);
     ShowBrowser(browser, GetSelectedTabIndex(window));
 
     if (!first)
       first = browser;
   }
 
-  //FinishedRestoringTabs(restored_tabs);
+  LOG(ERROR) << "About to FinishedRestoringTabs";
+  FinishedRestoringTabs(restored_tabs);
 
+  /*
   if (first)
     PrependPinnedTabs(first, windowState.pinnedTabs);
+  */
 
   if (active)
     active->window()->Show();
