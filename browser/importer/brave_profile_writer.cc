@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "components/prefs/pref_service.h"
@@ -382,16 +383,26 @@ Browser* OpenImportedBrowserWindow(
 std::unique_ptr<WebContents> CreateImportedTab(
     Browser *browser,
     const ImportedBrowserTab& tab) {
-  WebContents::CreateParams create_params(
-      browser->profile(),
-      tab_util::GetSiteInstanceForNewTab(browser->profile(),
-                                         tab.location));
+  // Create web contents WITHOUT renderer
+  // (we don't want to load everything at once)
+  WebContents::CreateParams create_params(browser->profile());
   create_params.initially_hidden = true;  // TODO (optional): set true/false depending on whether this is active/selected tab in window
   create_params.desired_renderer_state =
       WebContents::CreateParams::kNoRendererProcess;
   // TODO (optional): set create_params.initial_size
   std::unique_ptr<WebContents> web_contents =
       WebContents::Create(create_params);
+
+  // Simulate navigating to the specified URL (so it has a history)
+  std::unique_ptr<content::NavigationEntry> ne =
+      content::NavigationEntry::Create();
+  ne->SetURL(tab.location);
+
+  // NOTE: for more properties, see content/public/browser/navigation_entry.h
+  std::vector<std::unique_ptr<content::NavigationEntry>> entries;
+  entries.push_back(std::move(ne));
+  web_contents->GetController().Restore(0,
+      content::RestoreType::LAST_SESSION_EXITED_CLEANLY, &entries);
 
   return web_contents;
 }
