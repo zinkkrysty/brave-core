@@ -21,6 +21,8 @@
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/session_restore_delegate.h"
+#include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -30,6 +32,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "components/prefs/pref_service.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
@@ -39,6 +42,9 @@
 #include "ui/base/ui_base_types.h"
 
 #include <sstream>
+
+using content::WebContents;
+using RestoredTab = SessionRestoreDelegate::RestoredTab;
 
 BraveProfileWriter::BraveProfileWriter(Profile* profile)
     : ProfileWriter(profile),
@@ -373,16 +379,53 @@ Browser* OpenImportedBrowserWindow(
   return new Browser(params);
 }
 
+std::unique_ptr<WebContents> CreateImportedTab(
+    Browser *browser,
+    const ImportedBrowserTab& tab) {
+  WebContents::CreateParams create_params(
+      browser->profile(),
+      tab_util::GetSiteInstanceForNewTab(browser->profile(),
+                                         tab.location));
+  create_params.initially_hidden = true;  // TODO (optional): set true/false depending on whether this is active/selected tab in window
+  create_params.desired_renderer_state =
+      WebContents::CreateParams::kNoRendererProcess;
+  // TODO (optional): set create_params.initial_size
+  std::unique_ptr<WebContents> web_contents =
+      WebContents::Create(create_params);
+
+  return web_contents;
+}
+
+// TODO How do I open tabs, but only trigger load once they're visited for the first time?
 void OpenImportedBrowserTabs(Browser* browser,
     const std::vector<ImportedBrowserTab>& tabs,
     bool pinned) {
+//  for (const auto tab : tabs) {
+//    NavigateParams params(browser, tab.location,
+//                          ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+//    params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+//    // |= TabStripModel::ADD_ACTIVE vs. ADD_NONE? 
+//    params.tabstrip_add_types = pinned ? TabStripModel::ADD_PINNED
+//                                       : TabStripModel::ADD_FORCE_INDEX;
+//    Navigate(&params);
+//  }
   for (const auto tab : tabs) {
-    NavigateParams params(browser, tab.location,
-                          ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-    params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
-    params.tabstrip_add_types = pinned ? TabStripModel::ADD_PINNED
-                                       : TabStripModel::ADD_FORCE_INDEX;
-    Navigate(&params);
+    std::unique_ptr<WebContents> web_contents = CreateImportedTab(browser, tab);
+    // TODO (optional): If tab is active/selected, use ::ADD_ACTIVE instead.
+    int add_types = TabStripModel::ADD_NONE;
+    if (pinned) {
+      add_types |= TabStripModel::ADD_PINNED;
+    }
+    //else {
+    //  add_types |= TabStripModel::ADD_FORCE_INDEX;
+    //}
+    
+    // TODO (optional): InsertWebContentsAt (will AppendWebContents maintain the correct tab order?)
+    browser->tab_strip_model()->AppendWebContents(
+        std::move(web_contents), false);
+
+    // TODO (optional): resize web contents for background tabs?
+    // See https://cs.chromium.org/chromium/src/chrome/browser/ui/browser_tabrestore.cc?l=126-143&rcl=4fb3760d9ce0e4510de0f9b5e354d27acf1d1542
   }
 }
 
@@ -413,10 +456,33 @@ void PrependPinnedTabs(Browser* browser,
   OpenImportedBrowserTabs(browser, tabs, true);
 }
 
+/*
+void FinishedRestoringTabs(
+    std::vector<RestoredTab>& restored_tabs) {
+  // Do I need to use a pointer rather than reference to restored_tabs?
+  // e.g. https://cs.chromium.org/chromium/src/chrome/browser/sessions/session_restore.cc?l=368&rcl=68aeecd72490835c20c594762d135add607ba0b2
+  std::stable_sort(restored_tabs.begin(), restored_tabs.end());
+  // TODO: is there any reason to start the restore_starte_ timer at the
+  // beginning of BraveProfileWriter::UpdateWindows instead (similar to how it
+  // is initialized in the constructtor of SessionRestoreImpl?
+  SessionRestoreDelegate::RestoreTabs(restored_tabs,
+                                      base::TimeTicks::Now());
+}
+*/
+
 void BraveProfileWriter::UpdateWindows(
     const ImportedWindowState& windowState) {
+  // Save the currently active browser window so we can return focus to it
+  // after importing the other windows.
   Browser* active = chrome::FindBrowserWithActiveWindow();
+
+  // Track the first imported window so we can prepend pinned tabs to it. This
+  // is a compromise between Muon's global pinned tabs and
+  // Chromium/brave-core's per-window pinned tabs.
   Browser* first = nullptr;
+
+  // Track restored tabs so we schedule their intial loads efficiently.
+  //std::vector<RestoredTab> restored_tabs;
 
   for (const auto window : windowState.windows) {
     Browser* browser = OpenImportedBrowserWindow(window, profile_);
@@ -427,9 +493,11 @@ void BraveProfileWriter::UpdateWindows(
       first = browser;
   }
 
-  PrependPinnedTabs(first, windowState.pinnedTabs);
+  //FinishedRestoringTabs(restored_tabs);
 
-  // Re-focus the window that was originally focused before import.
+  if (first)
+    PrependPinnedTabs(first, windowState.pinnedTabs);
+
   if (active)
     active->window()->Show();
 }
