@@ -30,6 +30,14 @@ class GitHub:
     print("in GitHub:download(): path: {}".format(path))
     if 'params' in kw:
       print('params: {}'.format(json.dumps(kw['params'])))
+    r = requests.get(kw['params']['browser_download_url'], kw['headers'], stream=True)
+    with open(kw['params']['filename'], 'wb') as f:
+      for chunk in r.iter_content(chunk_size=1024):
+        if chunk:
+          f.write(chunk)
+    # print("status_code: {}".format(r.status_code))
+    # print("wrote file: {}".format(kw['params']['filename']))
+    return r
 
   def send(self, method, path, **kw):
     print("in GitHub:send(): method: {}: path: {}".format(method,path))

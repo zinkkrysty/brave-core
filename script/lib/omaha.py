@@ -3,25 +3,15 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 import base64
 import cryptography
+import logging
 import os
 
-from lib.config import get_brave_version, get_raw_version, get_chrome_version
+from lib.config import get_brave_version, get_chrome_version, get_raw_version
+from lib.connect import post, get
 from lib.helpers import release_channel
 from lib.util import omaha_channel
 
-# FIXME THIS WILL NEED TO BE VERIFIED ON ALL NEW OMAHA SERVERS
-# FIXME MAYBE WE WANT TO PERFORM A REQUEST TO FILL THIS WITH
-# FIXME RELEVANT DATA FROM THE OMAHA SERVER WE'RE COMMUNICATING WITH
-channel_id = {
-    'stable': 1,
-    'beta': 2,
-    'alpha': 3,
-    'x64-dev': 4,
-    'x64-be': 5,
-    'x86-be': 6,
-    'x86-dev': 7
-}
-
+# Event IDs never change
 event_id = {
     'preinstall': 0,
     'install': 1,
@@ -29,13 +19,30 @@ event_id = {
     'update': 3
 }
 
+# Platform IDs never change
 platform_id = {
     'win': 1,
     'mac': 2
 }
 
-def get_channel_id(channel): 
-    return channel_id[channel]
+def get_channel_id(channel, host, headers, logging):
+    channel_json = get_channel_ids_from_omaha_server(host, headers, logging)
+    id = next(item["id"] for item in channel_json if item["name"] == channel)
+    return id
+
+def get_channel_ids_from_omaha_server(host, headers, logging):
+    """
+    Channel IDs can change between Omaha servers and over time
+    may even change on the same Omaha server. Get all IDs from
+    the server versus hardcoding in an enum like we do above
+    with Event IDs or Platform IDs.
+    """
+    url = 'http://' + host + '/api/channel'
+    response = get(url, headers)
+    if response.status_code != 200:
+        logging.error("ERROR: Cannot GET /api/channel from Omaha host {}! response.status_code : {}".format(host, response.status_code))
+        exit(1)
+    return response.json()
 
 def get_event_id(event):
     return event_id[event]
@@ -64,7 +71,7 @@ def get_appguid(channel):
     elif channel in 'release' or channel in 'stable':
         return '{AFE6A462-C574-4B8A-AF43-4CC60DF4563B}'
 
-def get_app_info(args):
+def get_app_info(appinfo, args):
     """
     Returns a dict with all the info about the omaha app that we will need
     to perform the upload
@@ -73,24 +80,23 @@ def get_app_info(args):
     chrome_major = get_chrome_version().split('.')[0]
     chrome_minor = get_chrome_version().split('.')[1]
 
-    appinfo = {}
     appinfo['appguid'] = get_appguid(release_channel())
     appinfo['channel'] = release_channel()
-    appinfo['platform'] = args.platform
-    appinfo['platform_id'] = get_platform_id(args.platform)
-    if args.platform in 'win32':
+    appinfo['chrome_version'] = get_chrome_version()
+    appinfo['platform_id'] = get_platform_id(appinfo['platform'])
+    appinfo['preview'] = args.preview
+    if appinfo['platform'] in 'win32':
         # By default enable the win32 version on upload
         appinfo['is_enabled'] = True
         # The win32 version is the equivalent of the 'short_version' on darwin
         appinfo['version'] = chrome_major + '.' + get_upload_version()
-    if args.platform in 'darwin':
+    if appinfo['platform'] in 'darwin':
         appinfo['darwindsasig'] = sign_update_sparkle(os.environ.get('SOURCEFILE'), os.environ.get('DSAPRIVPEM')).rstrip('\n')
         appinfo['short_version'] = chrome_major + '.' + get_upload_version()
         appinfo['version'] = appinfo['short_version'].split('.')[2] + \
                             '.' + appinfo['short_version'].split('.')[3]
     appinfo['release_notes'] = 'Brave Browser Channel: {}; Version: {}; ' \
                                 'Uploaded by omaha-upload.py script.'.format(release_channel(), appinfo['version'])
-    appinfo['size'] = os.path.getsize(os.environ.get('SOURCEFILE'))
 
     return appinfo
 

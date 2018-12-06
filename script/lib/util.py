@@ -252,14 +252,36 @@ def get_platform():
   }[sys.platform]
   return PLATFORM
 
-def omaha_channel(platform):
+def omaha_channel(platform, arch, preview):
   if get_platform() == 'darwin' or platform == 'darwin':
-    return release_channel() if release_channel() not in 'release' else 'stable'
+    if preview:
+        return 'test'
+    else:
+        return release_channel() if release_channel() not in 'release' else 'stable'
   elif get_platform() == 'win32' or platform == 'win32':
-    arch = get_host_arch() if get_host_arch() not in 'ia32' else 'x86'
+    if arch in 'ia32':
+        if preview:
+            arch = '86'
+        else:
+            arch = 'x86'
+    elif arch in 'x64':
+        if preview:
+            arch = '64'
     if release_channel() in ['beta']:
-      chan = '{}-{}'.format(arch, release_channel()[0:2])
+      if preview:
+        chan = '{}-{}-test'.format(arch, release_channel()[0:2])
+      else:
+        chan = '{}-{}'.format(arch, release_channel()[0:2])
       return chan
-    elif release_channel() in ['release', 'dev']:
-      chan = '{}-{}'.format(arch, release_channel()[0:3])
+    elif release_channel() in ['dev']:
+      if preview:
+        chan = '{}-dv-test'.format(arch)
+      else:
+        chan = '{}-{}'.format(arch, release_channel()[0:3])
+      return chan
+    elif release_channel() in ['release']:
+      if preview:
+        chan = '{}-rel-test'.format(arch)
+      else:
+        chan = '{}-{}'.format(arch, release_channel()[0:3])
       return chan

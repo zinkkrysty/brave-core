@@ -7,14 +7,12 @@ import platform
 import re
 import sys
 
-#### FIXME MBACCHI HACK TESTING NOT GOOD!!!
 PLATFORM = {
     'cygwin': 'win32',
     'darwin': 'darwin',
     'linux2': 'linux',
     'win32': 'win32',
 }[sys.platform]
-# PLATFORM='darwin'
 
 SOURCE_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -25,6 +23,12 @@ BRAVE_CORE_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..'))
 BRAVE_BROWSER_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))
+"""
+SHALLOW_BRAVE_BROWSER_ROOT assumes the brave-browser directory is in the same
+parent directory as brave-core
+"""
+SHALLOW_BRAVE_BROWSER_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', '..', '..', 'brave-browser'))
 verbose_mode = False
 
 
@@ -40,10 +44,24 @@ def output_dir():
 
 # Use brave-browser/package.json version for canonical version definition
 def brave_browser_package():
-    pjson = os.path.join(BRAVE_BROWSER_ROOT, 'package.json')
-    with open(pjson) as f:
-        obj = json.load(f)
-        return obj
+    try:
+        pjson = os.path.join(BRAVE_BROWSER_ROOT, 'package.json')
+        with open(pjson) as f:
+            obj = json.load(f)
+            return obj
+    except IOError:
+        # When IOError exception is caught, try SHALLOW_BRAVE_BROWSER_ROOT next
+        try:
+            """
+            SHALLOW_BRAVE_BROWSER_ROOT assumes the brave-browser directory is in the same
+            parent directory as brave-core
+            """
+            pjson = os.path.join(SHALLOW_BRAVE_BROWSER_ROOT, 'package.json')
+            with open(pjson) as f:
+                obj = json.load(f)
+                return obj
+        except Exception as e:
+            exit("Error: cannot open file package.json: {}".format(e))
 
 def brave_core_package():
     pjson = os.path.join(BRAVE_CORE_ROOT, 'package.json')

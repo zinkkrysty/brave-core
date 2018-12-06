@@ -7,7 +7,7 @@ def get_content_type(filename):
 
 def get(url, headers):
     response = requests.get(url, headers=headers)
-    return response.text
+    return response
 
 def post(url, params, headers):
     response = requests.post(url, json=params, headers=headers)
