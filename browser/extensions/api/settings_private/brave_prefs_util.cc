@@ -5,6 +5,7 @@
 #include "brave/browser/extensions/api/settings_private/brave_prefs_util.h"
 
 #include "brave/common/pref_names.h"
+#include "brave/components/brave_ads/common/pref_names.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/extensions/api/settings_private.h"
@@ -40,6 +41,13 @@ const PrefsUtil::TypedPrefMap& BravePrefsUtil::GetWhitelistedKeys() {
   // appearance prefs
   (*s_brave_whitelist)[kLocationBarIsWide] =
     settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  // Rewards prefs
+  (*s_brave_whitelist)[brave_ads::prefs::kBraveAdsEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_brave_whitelist)[brave_ads::prefs::kBraveAdsPerHour] =
+      settings_api::PrefType::PREF_TYPE_NUMBER;
+  (*s_brave_whitelist)[brave_ads::prefs::kBraveAdsPerDay] =
+      settings_api::PrefType::PREF_TYPE_NUMBER;
   return *s_brave_whitelist;
 }
 

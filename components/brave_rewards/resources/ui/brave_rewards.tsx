@@ -15,6 +15,7 @@ require('../../../fonts/muli.css')
 require('../../../fonts/poppins.css')
 
 // Utils
+import * as storage from './storage'
 import store from './store'
 import { ThemeProvider } from 'brave-ui/theme'
 import Theme from 'brave-ui/theme/brave-default'
@@ -37,6 +38,16 @@ window.cr.define('brave_rewards', function () {
         </ThemeProvider>
       </Provider>,
       document.getElementById('root'))
+
+    // there is probably a better way to get the list of props from the type definition
+    for (let setting in storage.defaultState.settings) {
+      chrome.settingsPrivate.getPref(setting, (pref) => {
+        if (pref !== undefined) {
+          getActions().onSettingChanged(setting, pref.value)
+        }
+      })
+      // TODO - add chrome.settingsPrivate.onPrefsChanged.addListener
+    }
   }
 
   function getActions () {
@@ -125,10 +136,6 @@ window.cr.define('brave_rewards', function () {
     getActions().onImportedCheck(imported)
   }
 
-  function adsData (adsData: Rewards.AdsData) {
-    getActions().onAdsData(adsData)
-  }
-
   return {
     initialize,
     walletCreated,
@@ -149,8 +156,7 @@ window.cr.define('brave_rewards', function () {
     recurringDonationUpdate,
     currentTips,
     initAutoContributeSettings,
-    imported,
-    adsData
+    imported
   }
 })
 

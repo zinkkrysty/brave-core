@@ -47,25 +47,13 @@ export const defaultState: Rewards.State = {
   recurringLoad: false,
   tipsLoad: false,
   excluded: [],
-  adsData: {
-    adsEnabled: false,
-    adsPerHour: 0
+  settings: {
+    'brave.brave_ads.ads_per_hour': 0,
+    'brave.brave_ads.enabled': false
   }
 }
 
-export const getLoadTimeData = (state: Rewards.State): Rewards.State => {
-  state = { ...state }
-  state.adsData = defaultState.adsData
-
-  state.adsData.adsEnabled = (chrome.getVariableValue('adsEnabled') === 'true')
-  state.adsData.adsPerHour = parseInt(chrome.getVariableValue('adsPerHour'), 10)
-
-  return state
-}
-
-const cleanData = (state: Rewards.State) => {
-  return getLoadTimeData(state)
-}
+const cleanData = (state: Rewards.State) => state
 
 export const load = (): Rewards.State => {
   const data = window.localStorage.getItem(keyName)

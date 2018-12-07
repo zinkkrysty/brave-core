@@ -22,12 +22,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/common/bindings_policy.h"
-#include "brave/components/brave_ads/common/pref_names.h"
-#include "components/prefs/pref_change_registrar.h"
-#include "components/prefs/pref_service.h"
-#include "content/public/browser/render_view_host.h"
-#include "chrome/browser/extensions/api/settings_private/prefs_util.h"
-#include "chrome/browser/extensions/api/settings_private/settings_private_api.h"
 
 #if !defined(OS_ANDROID)
 #include "brave/components/brave_rewards/resources/grit/brave_rewards_resources.h"
@@ -81,7 +75,6 @@ class RewardsDOMHandler : public WebUIMessageHandler,
   void UpdateTipsList(const base::ListValue* args);
   void GetContributionList(const base::ListValue* args);
   void CheckImported(const base::ListValue* args);
-  void SaveAdsSetting(const base::ListValue* args);
 
   // RewardsServiceObserver implementation
   void OnWalletInitialized(brave_rewards::RewardsService* rewards_service,
@@ -206,9 +199,6 @@ void RewardsDOMHandler::RegisterMessages() {
                                                         base::Unretained(this)));
   web_ui()->RegisterMessageCallback("brave_rewards.checkImported",
                                     base::BindRepeating(&RewardsDOMHandler::CheckImported,
-                                                        base::Unretained(this)));
-  web_ui()->RegisterMessageCallback("brave_rewards.saveAdsSetting",
-                                    base::BindRepeating(&RewardsDOMHandler::SaveAdsSetting,
                                                         base::Unretained(this)));
 }
 
@@ -701,34 +691,6 @@ void RewardsDOMHandler::CheckImported(const base::ListValue *args) {
   }
 }
 
-void RewardsDOMHandler::SaveAdsSetting(const base::ListValue* args) {
-  if (web_ui()->CanCallJavascript()) {
-    std::string key;
-    std::string value;
-    auto funcArgs = std::make_unique<base::ListValue>();
-
-    args->GetString(0, &key);
-    args->GetString(1, &value);
-
-    if (key == "adsEnabled") {
-      bool ads_enabled = value == "true";
-      funcArgs->AppendString("brave.brave_ads.enabled");
-      funcArgs->AppendBoolean(ads_enabled);
-    }
-
-    if (key == "adsPerHour") {
-      funcArgs->AppendString("brave.brave_ads.ads_per_hour");
-      funcArgs->AppendInteger(std::stoi(value));
-    }
-
-    // This shouldn't be otherwise since we only have
-    // these two keys that can be set, but better to be safe.
-    if (funcArgs->GetSize() == 2) {
-      web_ui()->CallJavascriptFunctionUnsafe("chrome.settingsPrivate.setPref", *funcArgs);
-    }
-  }
-}
-
 }  // namespace
 
 BraveRewardsUI::BraveRewardsUI(content::WebUI* web_ui, const std::string& name)
@@ -740,41 +702,10 @@ BraveRewardsUI::BraveRewardsUI(content::WebUI* web_ui, const std::string& name)
     kBraveRewardsSettingsGenerated, kBraveRewardsSettingsGeneratedSize,
 #endif
     IDR_BRAVE_REWARDS_HTML) {
-  Profile* profile = Profile::FromWebUI(web_ui);
-  PrefService* prefs = profile->GetPrefs();
-  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  pref_change_registrar_->Init(prefs);
-  pref_change_registrar_->Add(brave_ads::prefs::kBraveAdsEnabled,
-                              base::Bind(&BraveRewardsUI::OnPreferenceChanged,
-                              base::Unretained(this)));
-  pref_change_registrar_->Add(brave_ads::prefs::kBraveAdsPerHour,
-                              base::Bind(&BraveRewardsUI::OnPreferenceChanged,
-                              base::Unretained(this)));
-
   auto handler_owner = std::make_unique<RewardsDOMHandler>();
   RewardsDOMHandler * handler = handler_owner.get();
   web_ui->AddMessageHandler(std::move(handler_owner));
   handler->Init();
-}
-
-void BraveRewardsUI::CustomizeBraveRewardsUIProperties(content::RenderViewHost* render_view_host) {
-  DCHECK(IsSafeToSetWebUIProperties());
-  Profile* profile = Profile::FromWebUI(web_ui());
-  PrefService* prefs = profile->GetPrefs();
-
-  if (render_view_host) {
-    render_view_host->SetWebUIProperty("adsEnabled",
-                                       std::to_string(prefs->GetUint64(brave_ads::prefs::kBraveAdsEnabled)));
-    render_view_host->SetWebUIProperty("adsPerHour",
-                                       std::to_string(prefs->GetUint64(brave_ads::prefs::kBraveAdsPerHour)));
-  }
-}
-
-void BraveRewardsUI::OnPreferenceChanged(){
-  if (IsSafeToSetWebUIProperties()) {
-    CustomizeBraveRewardsUIProperties(GetRenderViewHost());
-    web_ui()->CallJavascriptFunctionUnsafe("brave_rewards.adsData");
-  }
 }
 
 BraveRewardsUI::~BraveRewardsUI() {

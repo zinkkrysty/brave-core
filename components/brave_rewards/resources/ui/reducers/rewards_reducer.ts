@@ -7,9 +7,6 @@ import { Reducer } from 'redux'
 // Constant
 import { types } from '../constants/rewards_types'
 
-// Utils
-import * as storage from '../storage'
-
 const rewardsReducer: Reducer<Rewards.State | undefined> = (state: Rewards.State, action) => {
   switch (action.type) {
     case types.INIT_AUTOCONTRIBUTE_SETTINGS:
@@ -48,8 +45,12 @@ const rewardsReducer: Reducer<Rewards.State | undefined> = (state: Rewards.State
       const key = action.payload.key
       const value = action.payload.value
       if (key) {
-        state[key] = value
-        chrome.send('brave_rewards.saveSetting', [key, value.toString()])
+        if (state.settings[key]) {
+          chrome.settingsPrivate.setPref(key, value)
+        } else {
+          state[key] = value
+          chrome.send('brave_rewards.saveSetting', [key, value.toString()])
+        }
       }
       break
     case types.ON_MODAL_BACKUP_CLOSE:
@@ -120,20 +121,12 @@ const rewardsReducer: Reducer<Rewards.State | undefined> = (state: Rewards.State
         }
         break
       }
-    case types.ON_ADS_DATA:
-      {
-        state = storage.getLoadTimeData(state)
-        break
-      }
-      case types.ON_ADS_SETTING_SAVE:
+    case types.ON_SETTING_CHANGED:
       {
         state = { ...state }
         const key = action.payload.key
         const value = action.payload.value
-        if (key) {
-          state[key] = value
-          chrome.send('brave_rewards.saveAdsSetting', [key, value.toString()])
-        }
+        state.settings[key] = value
         break
       }
   }

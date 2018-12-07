@@ -36,15 +36,12 @@ class AdsBox extends React.Component<Props, {}> {
     )
   }
 
-  onAdsSettingChange = (key: string, value: string) => {
-    let newValue: any = value
-    const { adsEnabled } = this.props.rewardsData.adsData
+  onSelectSettingChange = (key: string, value: any) => {
+    this.props.actions.onSettingSave(key, +value)
+  }
 
-    if (key === 'adsEnabled') {
-      newValue = !adsEnabled
-    }
-
-    this.props.actions.onAdsSettingSave(key, newValue)
+  onToggleSetting = (key: string) => {
+    this.props.actions.onSettingSave(key, !this.props.rewardsData.settings[key])
   }
 
   adsSettings = (enabled?: boolean) => {
@@ -52,7 +49,7 @@ class AdsBox extends React.Component<Props, {}> {
       return null
     }
 
-    const { adsPerHour } = this.props.rewardsData.adsData
+    const adsPerHour = this.props.rewardsData.settings['brave.brave_ads.ads_per_hour']
 
     return (
       <Grid columns={1} customStyle={{ maxWidth: '270px', margin: '0 auto' }}>
@@ -60,7 +57,7 @@ class AdsBox extends React.Component<Props, {}> {
           <ControlWrapper text={getLocale('adsPerHour')}>
             <Select
               value={adsPerHour.toString()}
-              onChange={this.onAdsSettingChange.bind(this, 'adsPerHour')}
+              onChange={this.onSelectSettingChange.bind(this, 'brave.brave_ads.ads_per_hour')}
             >
               {['1', '2', '3', '4', '5'].map((num: string) => {
                 return (
@@ -77,14 +74,7 @@ class AdsBox extends React.Component<Props, {}> {
   }
 
   render () {
-    let adsEnabled
-    const { adsData } = this.props.rewardsData
-
-    if (!adsData) {
-      adsEnabled = false
-    } else {
-      adsEnabled = this.props.rewardsData.adsData.adsEnabled
-    }
+    const adsEnabled = this.props.rewardsData.settings['brave.brave_ads.enabled']
 
     return (
       <Box
@@ -96,7 +86,7 @@ class AdsBox extends React.Component<Props, {}> {
         settingsChild={this.adsSettings(adsEnabled)}
         testId={'braveAdsSettings'}
         disabledContent={this.adsDisabled()}
-        onToggle={this.onAdsSettingChange.bind(this, 'adsEnabled', '')}
+        onToggle={this.onToggleSetting.bind(this, 'brave.brave_ads.enabled')}
       />
     )
   }

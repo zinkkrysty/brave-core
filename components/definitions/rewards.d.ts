@@ -25,7 +25,6 @@ declare namespace Rewards {
 
   export interface State {
     addresses?: Record<AddressesType, Address>
-    adsData: AdsData
     autoContributeList: Publisher[]
     connectedWallet: boolean
     contributeLoad: boolean
@@ -49,6 +48,10 @@ declare namespace Rewards {
     recurringList: Publisher[]
     recurringLoad: boolean
     reports: Record<string, Report>
+    settings: {
+      'brave.brave_ads.ads_per_hour': number
+      'brave.brave_ads.enabled': boolean
+    }
     tipsList: Publisher[]
     tipsLoad: boolean
     ui: {
@@ -135,9 +138,12 @@ declare namespace Rewards {
     image: string
     hint: string
   }
+}
 
-  export interface AdsData {
-    adsEnabled: boolean
-    adsPerHour: number
+declare namespace chrome.settingsPrivate {
+  export interface Pref {
+    value?: string;
   }
+  export function getPref(name: string, callback?: (pref: Pref) => void): void;
+  export function setPref(name: string, value: any): void;
 }

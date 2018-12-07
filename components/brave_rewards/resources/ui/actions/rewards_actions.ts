@@ -139,11 +139,7 @@ export const onImportedCheck = (imported: boolean) => action(types.ON_IMPORTED_C
   imported
 })
 
-export const onAdsData = (adsData: Rewards.AdsData) => action(types.ON_ADS_DATA, {
-  adsData
-})
-
-export const onAdsSettingSave = (key: string, value: any) => action(types.ON_ADS_SETTING_SAVE, {
+export const onSettingChanged = (key: string, value: any) => action(types.ON_SETTING_CHANGED, {
   key,
   value
 })
