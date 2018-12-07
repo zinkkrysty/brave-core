@@ -41,6 +41,12 @@ let dialogEl: HTMLElement | null
 async function offerUserTip (anchorElement: Element) {
   console.log('offerUserTip', anchorElement)
   removeDialog()
+  // Create a closed shadow on document.body so that we show no trace
+  // of our elements to the host page.
+  const bodyShadow = document.body.attachShadow({ mode: 'closed' })
+  // Make sure the body's existing children still show
+  bodyShadow.innerHTML = '<slot></slot>'
+  // Render the dialog inside the closed shadow
   dialogEl = document.createElement('div')
   const anchorElementRect = anchorElement.getBoundingClientRect()
   // TODO: Show bottom / top and left / right
@@ -52,8 +58,8 @@ async function offerUserTip (anchorElement: Element) {
   dialogEl.style.position = 'absolute'
   dialogEl.style.left = `${dialogPosition.x}px`
   dialogEl.style.top = `${dialogPosition.y}px`
+  bodyShadow.appendChild(dialogEl)
   renderTipDialog(dialogEl, 'topLeft')
-  document.body.appendChild(dialogEl)
   document.body.addEventListener('click', onDocumentDialogBackgroundClick)
 }
 
