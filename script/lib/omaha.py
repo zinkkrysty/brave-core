@@ -91,7 +91,6 @@ def get_app_info(appinfo, args):
         # The win32 version is the equivalent of the 'short_version' on darwin
         appinfo['version'] = chrome_major + '.' + get_upload_version()
     if appinfo['platform'] in 'darwin':
-        appinfo['darwindsasig'] = sign_update_sparkle(os.environ.get('SOURCEFILE'), os.environ.get('DSAPRIVPEM')).rstrip('\n')
         appinfo['short_version'] = chrome_major + '.' + get_upload_version()
         appinfo['version'] = appinfo['short_version'].split('.')[2] + \
                             '.' + appinfo['short_version'].split('.')[3]

@@ -14,7 +14,7 @@ from lib.helpers import *
 from lib.connect import post, get, post_with_file
 from lib.util import get_host_arch, omaha_channel
 from lib.omaha import get_app_info, get_base64_authorization, get_channel_id, get_upload_version, get_event_id, \
-                      get_channel_ids_from_omaha_server
+                      get_channel_ids_from_omaha_server, sign_update_sparkle
 
 # FIXME TODO:
 # 1. write tests
@@ -144,6 +144,7 @@ def main():
         params['is_enabled'] = app_info['is_enabled']
         params['platform'] = app_info['platform_id']
       else:
+        app_info['darwindsasig'] = sign_update_sparkle(source_file, os.environ.get('DSAPRIVPEM')).rstrip('\n')
         params['dsa_signature'] = app_info['darwindsasig']
         params['short_version'] = app_info['short_version']
 
@@ -199,6 +200,7 @@ def download_from_github(args):
           params={'id': asset_id, 'browser_download_url': browser_download_url, 'filename': filename},
           headers={'accept': 'application/octet-stream'}
       )
+      print("r.status_code: {}".format(r.status_code))
       if r.status_code == 200:
         file_list.append('./' + filename)
   return file_list
