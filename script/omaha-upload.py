@@ -84,7 +84,7 @@ def main():
   omahahost = os.environ.get('OMAHAHOST')
 
   if args.github:
-    file_list = download_from_github(args)
+    file_list = download_from_github(args, logging)
   else:
     file_list = [ args.file ]
 
@@ -151,26 +151,26 @@ def main():
       response = post_with_file(app_info['version_post_url'], files, params, headers)
       if response.status_code != 201:
         logging.error("ERROR: Version not created! response.status_code : {}".format(response.status_code))
+        logging.error("response.text : {}".format(response.text))
+        remove_github_downloaded_files(file_list, logging)
         exit(1)
 
-      # if downloading from github, remove files after upload
-      if args.github:
-        try:
-          os.remove(source_file)
-          logging.debug("Removed file: {}".format(source_file))
-        except OSError:
-          raise
-
     if app_info['platform'] in 'win32':
-      # For windows add actions to version just created
+      # When uploading windows builds, add actions to version just created
       rjson = response.json()
       if args.debug:
         logging.debug("response['id']: {}".format(rjson['id']))
       post_action(app_info['omahahost'], rjson['id'], 'install', headers, args)
       post_action(app_info['omahahost'], rjson['id'], 'update', headers, args)
 
-def download_from_github(args):
-  from lib.githubdebug import GitHub
+  # if downloading from github, remove files after upload
+  if args.github:
+    remove_github_downloaded_files(file_list, logging)
+
+def download_from_github(args, logging):
+  import requests
+
+  from lib.github import GitHub
 
   file_list = []
 
@@ -191,19 +191,46 @@ def download_from_github(args):
                 or re.match(r'brave_installer.*\.exe$', asset['name']):
       filename = asset['name']
       asset_id = asset['id']
-      browser_download_url = asset['browser_download_url']
       asset_url = asset['url']
-      print("direct_dl_url: {}".format(asset_url + '/' + filename))
-      print("Getting: {}, ID: {}, browser_download_url: {}".format(filename, asset_id, browser_download_url))
+      if args.debug:
+        logging.debug("GitHub asset_url: {}".format(asset_url + '/' + filename))
 
-      r = repo.releases(release['id']).assets.download(
-          params={'id': asset_id, 'browser_download_url': browser_download_url, 'filename': filename},
-          headers={'accept': 'application/octet-stream'}
-      )
-      print("r.status_code: {}".format(r.status_code))
+      # Instantiate new requests session, versus reusing the repo session above.
+      # Headers was likely being reused in that session, and not allowing us
+      # to set the Accept header to the below.
+      headers={'Accept': 'application/octet-stream'}
+      asset_auth_url = asset_url + '?access_token=' + os.environ.get('BRAVE_GITHUB_TOKEN')
+      if args.debug:
+        # disable urllib3 logging for this session to avoid showing
+        # access_token in logs
+        logging.getLogger("urllib3").setLevel(logging.WARNING)
+      r = requests.get(asset_auth_url, headers=headers, stream=True)
+      if args.debug:
+        logging.getLogger("urllib3").setLevel(logging.DEBUG)
+      with open(filename, 'wb') as f:
+        for chunk in r.iter_content(chunk_size=1024):
+          if chunk:
+            f.write(chunk)
+
+      logging.debug("Requests Response status_code: {}".format(r.status_code))
       if r.status_code == 200:
         file_list.append('./' + filename)
+      else:
+        logging.debug("Requests Response status_code != 200: {}".format(r.status_code))
+
+  if len(file_list) < 3:
+    logging.error("Cannot get all 3 install files from Github! (\'*.dmg\', \'brave_installer-x64.exe\', \'brave-installer-ia32.exe\')")
+    remove_github_downloaded_files(file_list, logging)
+    exit(1)
   return file_list
+
+def remove_github_downloaded_files(file_list, logging):
+  for source_file in file_list:
+      try:
+        os.remove(source_file)
+        logging.debug("Removed file: {}".format(source_file))
+      except OSError:
+        raise
 
 def parse_args():
   desc = "Upload Windows/Mac install files to Omaha server" \
