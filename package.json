@@ -245,7 +245,7 @@
     ],
     "setupTestFrameworkScriptFile": "<rootDir>/components/test/testSetup.ts",
     "setupFiles": [
-      "<rootDir>/components/test/testPolyfills.ts"
+      "<rootDir>/components/test/testPolyfills.js"
     ],
     "moduleNameMapper": {
       "\\.(jpg|jpeg|png|gif|eot|otf|svg|ttf|woff|woff2)$": "<rootDir>/components/test/fileMock.ts",
