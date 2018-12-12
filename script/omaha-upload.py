@@ -125,9 +125,11 @@ def main():
     if args.debug:
       for item in app_info:
         logging.debug('{}: {}'.format(item, app_info[item]))
-      logging.debug("omaha_channel: {}".format(omaha_channel(app_info['platform'], app_info['arch'], app_info['preview'])))
-      logging.debug("omaha_channel_id: {}".format(get_channel_id(omaha_channel(app_info['platform'], app_info['arch'],
-                                                  app_info['preview']), app_info['omahahost'], app_info['headers'], logging)))
+      logging.debug("omaha_channel: {}".format(omaha_channel(app_info['platform'], app_info['arch'],
+                                               app_info['preview'])))
+      logging.debug("omaha_channel_id: {}".format(get_channel_id(omaha_channel(app_info['platform'],
+                                                  app_info['arch'], app_info['preview']),
+                                                  app_info['omahahost'], app_info['headers'], logging)))
       logging.debug("URL: {}".format(app_info['version_post_url']))
       logging.debug("file_list: {}".format(file_list))
 
@@ -152,6 +154,10 @@ def main():
       if response.status_code != 201:
         logging.error("ERROR: Version not created! response.status_code : {}".format(response.status_code))
         logging.error("response.text : {}".format(response.text))
+        if response.status_code == 400 and 'version must make a unique set' in response.text:
+          logging.error("ERROR: This version({}), channel({}), appguid({}) set has already been " \
+                        "uploaded to the Omaha server!".format(params['version'], app_info['channel'],
+                        params['app']))
         remove_github_downloaded_files(file_list, logging)
         exit(1)
 

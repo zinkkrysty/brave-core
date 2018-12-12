@@ -40,7 +40,8 @@ def get_channel_ids_from_omaha_server(host, headers, logging):
     url = 'http://' + host + '/api/channel'
     response = get(url, headers)
     if response.status_code != 200:
-        logging.error("ERROR: Cannot GET /api/channel from Omaha host {}! response.status_code : {}".format(host, response.status_code))
+        logging.error("ERROR: Cannot GET /api/channel from Omaha host {}! " \
+                      "response.status_code : {}".format(host, response.status_code))
         exit(1)
     return response.json()
 
@@ -95,7 +96,8 @@ def get_app_info(appinfo, args):
         appinfo['version'] = appinfo['short_version'].split('.')[2] + \
                             '.' + appinfo['short_version'].split('.')[3]
     appinfo['release_notes'] = 'Brave Browser Channel: {}; Version: {}; ' \
-                                'Uploaded by omaha-upload.py script.'.format(release_channel(), appinfo['version'])
+                                'Uploaded by omaha-upload.py script.'.format(release_channel(),
+                                appinfo['version'])
 
     return appinfo
 
@@ -109,7 +111,8 @@ def sign_update_sparkle(dmg, dsaprivpem):
     """
     Signs the Darwin dmg and returns the base64 encoded hash.
 
-    This replaces the functionality in https://github.com/brave/Sparkle/blob/master/bin/sign_update
+    This replaces the functionality in:
+    https://github.com/brave/Sparkle/blob/master/bin/sign_update
 
     Need to run the equivalent of the command:
     `$openssl dgst -sha1 -binary < "$1" | $openssl dgst -sha1 -sign "$2" | $openssl enc -base64`
@@ -129,7 +132,8 @@ def sign_update_sparkle(dmg, dsaprivpem):
             digest.update(dmgcontent)
             sha1digest = digest.finalize()
 
-            private_key = serialization.load_pem_private_key(key.read(), password=None, backend=default_backend())
+            private_key = serialization.load_pem_private_key(key.read(), password=None,
+                                                             backend=default_backend())
             signature = private_key.sign(sha1digest, hashes.SHA1())
             encoded_sign = base64.encodestring(signature)
     

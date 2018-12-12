@@ -281,7 +281,7 @@ def omaha_channel(platform, arch, preview):
       return chan
     elif release_channel() in ['release']:
       if preview:
-        chan = '{}-rel-test'.format(arch)
+        chan = '{}-r-test'.format(arch)
       else:
         chan = '{}-{}'.format(arch, release_channel()[0:3])
       return chan
