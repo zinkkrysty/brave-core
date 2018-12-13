@@ -124,7 +124,10 @@ def main():
 
     if args.debug:
       for item in app_info:
-        logging.debug('{}: {}'.format(item, app_info[item]))
+        if item in 'headers':
+          logging.debug('{}: {}'.format(item, '{\'Authorization\': \'Basic NOTAREALPASSWORD\'}')
+        else:
+          logging.debug('{}: {}'.format(item, app_info[item]))
       logging.debug("omaha_channel: {}".format(omaha_channel(app_info['platform'], app_info['arch'],
                                                app_info['preview'])))
       logging.debug("omaha_channel_id: {}".format(get_channel_id(omaha_channel(app_info['platform'],
