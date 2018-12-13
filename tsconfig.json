@@ -31,5 +31,8 @@
   },
   "include": [
     "./components/definitions/*"
+  ],
+  "exclude": [
+    "node_modules/brave-ui/src/**/**/*.d.ts"
   ]
 }

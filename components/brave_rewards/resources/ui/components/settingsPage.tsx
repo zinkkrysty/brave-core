@@ -43,7 +43,7 @@ class SettingsPage extends React.Component<Props, {}> {
     }
 
     this.actions.getWalletProperties()
-    this.balanceTimerId = setInterval(() => {
+    this.balanceTimerId = window.setInterval(() => {
       this.actions.getWalletProperties()
     }, 60000)
 

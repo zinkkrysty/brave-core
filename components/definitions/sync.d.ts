@@ -19,7 +19,7 @@ declare namespace Sync {
   export interface Devices {
     name: string
     id: number
-    lastActive: number
+    lastActive: string
   }
 
 export type SetupErrorType =

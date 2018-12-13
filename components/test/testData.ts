@@ -53,7 +53,32 @@ export const rewardsInitialState: Rewards.ApplicationState = {
     contributionNonVerified: true,
     contributionVideos: true,
     donationAbilityYT: true,
-    donationAbilityTwitter: true
+    donationAbilityTwitter: true,
+    autoContributeList: [],
+    connectedWallet: false,
+    contributeLoad: false,
+    excluded: [],
+    numExcludedSites: 0,
+    walletInfo: {
+      balance: 0,
+      choices: [5.0, 7.5, 10.0, 17.5, 25.0, 50.0, 75.0, 100.0],
+      probi: '0'
+    },
+    recoveryKey: '',
+    reconcileStamp: 0,
+    ui: {
+      emptyWallet: true,
+      modalBackup: false,
+      walletCorrupted: false,
+      walletImported: false,
+      walletRecoverySuccess: null,
+      walletServerProblem: false
+    },
+    reports: {},
+    recurringList: [],
+    tipsList: [],
+    recurringLoad: false,
+    tipsLoad: false
   }
 }
 
@@ -78,6 +103,11 @@ export const syncInitialState: Sync.ApplicationState = {
     ],
     isSyncConfigured: false,
     seedQRImageSource: '',
-    syncWords: ''
+    syncWords: '',
+    syncBookmarks: true,
+    syncSavedSiteSettings: false,
+    syncBrowsingHistory: false,
+    error: undefined
   }
 }
+ 
