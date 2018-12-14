@@ -124,7 +124,9 @@ def main():
 
     if args.debug:
       for item in app_info:
-        if item in 'headers':
+        if item in 'auth':
+          logging.debug('{}: {}'.format(item, "NOTAREALPASSWORD"))
+        elif item in 'headers':
           logging.debug('{}: {}'.format(item, "{'Authorization': 'Basic NOTAREALPASSWORD'}"))
         else:
           logging.debug('{}: {}'.format(item, app_info[item]))
