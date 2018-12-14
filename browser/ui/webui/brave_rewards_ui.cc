@@ -223,6 +223,8 @@ void RewardsDOMHandler::Init() {
 
   if (rewards_service_)
     rewards_service_->AddObserver(this);
+
+  // TODO(ryanml) - add a registrar for pref changes to trigger UI update
 }
 
 void RewardsDOMHandler::GetAllBalanceReports() {
@@ -528,7 +530,8 @@ void RewardsDOMHandler::SaveSetting(const base::ListValue* args) {
     args->GetString(1, &value);
 
     if (key == "enabledMain") {
-      rewards_service_->SetRewardsMainEnabled(value == "true");
+      // TODO(ryanml) - set kBraveRewardsEnabled pref here
+      // rewards_service_->SetRewardsMainEnabled(value == "true");
     }
 
     if (key == "contributionMonthly") {

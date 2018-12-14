@@ -46,6 +46,7 @@ class RewardsService : public KeyedService {
   RewardsService();
   ~RewardsService() override;
 
+  virtual bool is_enabled() const = 0;
   virtual void CreateWallet() = 0;
   virtual void FetchWalletProperties() = 0;
   virtual void GetCurrentContributeList(
@@ -80,7 +81,6 @@ class RewardsService : public KeyedService {
 
   virtual uint64_t GetReconcileStamp() const = 0;
   virtual std::map<std::string, std::string> GetAddresses() const = 0;
-  virtual void SetRewardsMainEnabled(bool enabled) const = 0;
   virtual uint64_t GetPublisherMinVisitTime() const = 0;
   virtual void SetPublisherMinVisitTime(uint64_t duration_in_seconds) const = 0;
   virtual unsigned int GetPublisherMinVisits() const = 0;

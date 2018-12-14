@@ -6,9 +6,11 @@
 
 #include "brave/components/brave_rewards/browser/buildflags/buildflags.h"
 #include "brave/components/brave_rewards/browser/rewards_service.h"
+#include "brave/components/brave_rewards/common/pref_names.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 
 #if BUILDFLAG(BRAVE_REWARDS_ENABLED)
 #include "brave/components/brave_rewards/browser/rewards_service_impl.h"
@@ -45,7 +47,6 @@ KeyedService* RewardsServiceFactory::BuildServiceInstanceFor(
 #if BUILDFLAG(BRAVE_REWARDS_ENABLED)
   std::unique_ptr<RewardsServiceImpl> rewards_service(
       new RewardsServiceImpl(Profile::FromBrowserContext(context)));
-  rewards_service->Init();
   return rewards_service.release();
 #else
   return NULL;
@@ -63,6 +64,13 @@ content::BrowserContext* RewardsServiceFactory::GetBrowserContextToUse(
 
 bool RewardsServiceFactory::ServiceIsNULLWhileTesting() const {
   return false;
+}
+
+void RewardsServiceFactory::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterBooleanPref(prefs::kBraveRewardsEnabled, false);
+  registry->RegisterBooleanPref(
+      prefs::kBraveRewardsEnabledSettingMigrated, false);
 }
 
 }  // namespace brave_rewards

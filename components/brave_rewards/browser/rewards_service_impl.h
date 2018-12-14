@@ -19,6 +19,7 @@
 #include "bat/ledger/ledger_client.h"
 #include "brave/components/brave_rewards/browser/rewards_service.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/one_shot_event.h"
@@ -70,7 +71,8 @@ class RewardsServiceImpl : public RewardsService,
   // KeyedService:
   void Shutdown() override;
 
-  void Init();
+  // RewardsService impl
+  bool is_enabled() const override;
   void CreateWallet() override;
   void FetchWalletProperties() override;
   void FetchGrant(const std::string& lang, const std::string& paymentId) override;
@@ -242,7 +244,6 @@ class RewardsServiceImpl : public RewardsService,
       ledger::LedgerCallbackHandler* handler) override;
 
   void RunIOTask(std::unique_ptr<ledger::LedgerTaskRunner> task) override;
-  void SetRewardsMainEnabled(bool enabled) const override;
   void SetPublisherMinVisitTime(uint64_t duration_in_seconds) const override;
   void SetPublisherMinVisits(unsigned int visits) const override;
   void SetPublisherAllowNonVerified(bool allow) const override;
@@ -277,7 +278,10 @@ class RewardsServiceImpl : public RewardsService,
                      int line,
                      const ledger::LogLevel log_level) const override;
 
+  void Start();
+  void Stop();
   void OnIOTaskComplete(std::function<void(void)> callback);
+  void OnPrefsChanged(const std::string& pref);
 
   // URLFetcherDelegate impl
   void OnURLFetchComplete(const net::URLFetcher* source) override;
@@ -307,6 +311,8 @@ class RewardsServiceImpl : public RewardsService,
   std::vector<BitmapFetcherService::RequestId> request_ids_;
 
   uint32_t next_timer_id_;
+
+  PrefChangeRegistrar profile_pref_change_registrar_;
 
   DISALLOW_COPY_AND_ASSIGN(RewardsServiceImpl);
 };
