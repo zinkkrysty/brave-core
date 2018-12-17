@@ -37,7 +37,7 @@ def get_channel_ids_from_omaha_server(host, headers, logging):
     the server versus hardcoding in an enum like we do above
     with Event IDs or Platform IDs.
     """
-    url = 'http://' + host + '/api/channel'
+    url = 'https://' + host + '/api/channel'
     response = get(url, headers)
     if response.status_code != 200:
         logging.error("ERROR: Cannot GET /api/channel from Omaha host {}! " \
@@ -64,11 +64,11 @@ def get_base64_authorization(omahaid, omahapw):
     return base64.b64encode(concatstr.encode())
 
 #To-Do: Add functions to create apps
-def get_appguid(channel):
-    if channel in 'dev' or channel in 'stable':
+def get_appguid(channel, platform):
+    if channel in 'dev' or channel in 'release' and platform in 'darwin':
         return '{CB2150F2-595F-4633-891A-E39720CE0531}'
     elif channel in 'beta':
-        return '{CB2150F2-595F-4633-891A-E39720CE0531}'
+        return '{103BD053-949B-43A8-9120-2E424887DE11}'
     elif channel in 'release':
         return '{AFE6A462-C574-4B8A-AF43-4CC60DF4563B}'
 
@@ -81,7 +81,7 @@ def get_app_info(appinfo, args):
     chrome_major = get_chrome_version().split('.')[0]
     chrome_minor = get_chrome_version().split('.')[1]
 
-    appinfo['appguid'] = get_appguid(release_channel())
+    appinfo['appguid'] = get_appguid(release_channel(), appinfo['platform'])
     appinfo['channel'] = release_channel()
     appinfo['chrome_version'] = get_chrome_version()
     appinfo['platform_id'] = get_platform_id(appinfo['platform'])
