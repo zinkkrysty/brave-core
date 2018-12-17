@@ -32,17 +32,6 @@ from lib.omaha import get_app_info, get_base64_authorization, get_channel_id, ge
 # Example of using API to communicate with Sparkle:
 # https://gist.github.com/yurtaev/294a5fbd78016e5d7456
 
-# TO-DO: Other apps need to be created 
-def create_app(host, app_info, headers):
-  url = 'https://' + host + '/api/app/'
-  #print "app ids"
-  #print get(url, headers)
-
-  params = {
-    "id": app_info['appguid'],
-    "name": 'Brave-Browser-Darwin',
-  }
-  print post(url, params, headers)
 
 def post_action(host, version, action, headers, args):
   url = 'https://' + host + '/api/action/'
