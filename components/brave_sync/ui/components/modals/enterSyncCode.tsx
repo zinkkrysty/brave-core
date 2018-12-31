@@ -5,7 +5,8 @@
 import * as React from 'react'
 
 // Components
-import { AlertBox, Button, Modal, TextAreaClipboard } from 'brave-ui'
+import { Button, Modal, TextAreaClipboard } from 'brave-ui'
+import { LoaderIcon } from 'brave-ui/components/icons'
 
 // Feature-specific components
 import {
@@ -14,9 +15,7 @@ import {
   ModalSubTitle,
   ModalContent,
   TwoColumnButtonGrid,
-  OneColumnButtonGrid,
-  Title,
-  SubTitle
+  OneColumnButtonGrid
 } from 'brave-ui/features/sync'
 
 // Utils
@@ -25,26 +24,44 @@ import { getLocale } from '../../../../common/locale'
 interface Props {
   syncData: Sync.State
   actions: any
-  onClose: () => void
 }
 interface State {
   passphrase: string
+  willCreateNewSyncChainFromCode: boolean
 }
 
 export default class EnterSyncCodeModal extends React.PureComponent<Props, State> {
   constructor (props: Props) {
     super(props)
     this.state = {
-      passphrase: ''
+      passphrase: '',
+      willCreateNewSyncChainFromCode: false
     }
   }
 
-  onUserNoticedError = () => {
-    this.props.actions.resetSyncSetupError()
+  componentDidUpdate (prevProps: Props) {
+    // when component updates with a different config,
+    // disable the loading state and unfreeze the modal.
+    // at this point the component auto refresh and lead
+    // the user to the enabledContent view
+    if (
+      this.props.syncData.error !== undefined ||
+      (
+        this.state.willCreateNewSyncChainFromCode &&
+        prevProps.syncData.isSyncConfigured !==
+        this.props.syncData.isSyncConfigured
+      )
+    ) {
+      this.setState({ willCreateNewSyncChainFromCode: false })
+    }
   }
 
   onEnterPassphrase = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     this.setState({ passphrase: event.target.value })
+  }
+
+  onDismissModal = () => {
+    this.props.actions.maybeOpenSyncModal('enterSyncCode', false)
   }
 
   onClickConfirmSyncCode = () => {
@@ -53,44 +70,14 @@ export default class EnterSyncCodeModal extends React.PureComponent<Props, State
       return
     }
     const { passphrase } = this.state
+    this.setState({ willCreateNewSyncChainFromCode: true })
     this.props.actions.onSetupSyncHaveCode(passphrase, '')
   }
 
   render () {
-    const { onClose, syncData } = this.props
+    const { willCreateNewSyncChainFromCode } = this.state
     return (
-      <Modal id='enterSyncCodeModal' onClose={onClose} size='small'>
-        {
-           syncData.error === 'ERR_SYNC_WRONG_WORDS'
-           ? <AlertBox okString={getLocale('ok')} onClickOk={this.onUserNoticedError}>
-               <Title>{getLocale('errorWrongCodeTitle')}</Title>
-               <SubTitle>{getLocale('errorWrongCodeDescription')}</SubTitle>
-           </AlertBox>
-           : null
-        }
-        {
-           syncData.error === 'ERR_SYNC_MISSING_WORDS'
-           ? <AlertBox okString={getLocale('ok')} onClickOk={this.onUserNoticedError}>
-               <Title>{getLocale('errorMissingCodeTitle')}</Title>
-           </AlertBox>
-           : null
-        }
-        {
-           syncData.error === 'ERR_SYNC_NO_INTERNET'
-           ? <AlertBox okString={getLocale('ok')} onClickOk={this.onUserNoticedError}>
-               <Title>{getLocale('errorNoInternetTitle')}</Title>
-               <SubTitle>{getLocale('errorNoInternetDescription')}</SubTitle>
-             </AlertBox>
-           : null
-        }
-        {
-          syncData.error === 'ERR_SYNC_INIT_FAILED'
-          ? <AlertBox okString={getLocale('ok')} onClickOk={this.onUserNoticedError}>
-              <Title>{getLocale('errorSyncInitFailedTitle')}</Title>
-              <SubTitle>{getLocale('errorSyncInitFailedDescription')}</SubTitle>
-            </AlertBox>
-          : null
-        }
+      <Modal id='enterSyncCodeModal' displayCloseButton={false} size='small'>
         <ModalHeader>
           <div>
             <ModalTitle level={1}>{getLocale('enterSyncCode')}</ModalTitle>
@@ -110,7 +97,8 @@ export default class EnterSyncCodeModal extends React.PureComponent<Props, State
               level='secondary'
               type='accent'
               size='medium'
-              onClick={onClose}
+              disabled={willCreateNewSyncChainFromCode}
+              onClick={this.onDismissModal}
               text={getLocale('cancel')}
             />
           </OneColumnButtonGrid>
@@ -120,6 +108,11 @@ export default class EnterSyncCodeModal extends React.PureComponent<Props, State
             size='medium'
             onClick={this.onClickConfirmSyncCode}
             text={getLocale('confirmCode')}
+            disabled={willCreateNewSyncChainFromCode}
+            icon={{
+              position: 'after',
+              image: willCreateNewSyncChainFromCode && <LoaderIcon />
+            }}
           />
         </TwoColumnButtonGrid>
       </Modal>

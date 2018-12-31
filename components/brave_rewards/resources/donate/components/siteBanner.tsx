@@ -159,7 +159,7 @@ class Banner extends React.Component<Props, State> {
         social={this.generateSocialLinks()}
         showUnVerifiedNotice={!verified}
         learnMoreNotice={'https://brave.com/faq-rewards/#unclaimed-funds'}
-        addFundsLink={this.addFundsLink}
+        // addFundsLink={this.addFundsLink}
       >
         {description}
       </SiteBanner>

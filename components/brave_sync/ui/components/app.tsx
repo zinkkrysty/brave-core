@@ -10,6 +10,19 @@ import { connect } from 'react-redux'
 import DisabledContent from './disabledContent'
 import EnabledContent from './enabledContent'
 
+// Modals
+import DeviceTypeModal from './modals/deviceType'
+import EnterSyncCodeModal from './modals/enterSyncCode'
+import ScanCodeModal from './modals/scanCode'
+import ViewSyncCodeModal from './modals/viewSyncCode'
+import ResetSyncModal from './modals/resetSync'
+
+// Error alerts
+import InitFailedDialog from './errorDialogs/initFailed'
+import MissingWordsDialog from './errorDialogs/missingWords'
+import NoInternetDialog from './errorDialogs/noInternet'
+import WrongWordsDialog from './errorDialogs/wrongWords'
+
 // Utils
 import * as syncActions from '../actions/sync_actions'
 
@@ -29,6 +42,10 @@ export class SyncPage extends React.PureComponent<Props, {}> {
     this.props.actions.onPageLoaded()
   }
 
+  onUserNoticedError = () => {
+    this.props.actions.resetSyncSetupError()
+  }
+
   render () {
     const { syncData, actions } = this.props
 
@@ -38,6 +55,42 @@ export class SyncPage extends React.PureComponent<Props, {}> {
 
     return (
       <div id='syncPage'>
+        {
+           syncData.error === 'ERR_SYNC_WRONG_WORDS' &&
+           <WrongWordsDialog onUserNoticedError={this.onUserNoticedError} />
+        }
+        {
+           syncData.error === 'ERR_SYNC_MISSING_WORDS' &&
+           <MissingWordsDialog onUserNoticedError={this.onUserNoticedError} />
+        }
+        {
+           syncData.error === 'ERR_SYNC_NO_INTERNET' &&
+           <NoInternetDialog onUserNoticedError={this.onUserNoticedError} />
+        }
+        {
+          syncData.error === 'ERR_SYNC_INIT_FAILED' &&
+          <InitFailedDialog onUserNoticedError={this.onUserNoticedError} />
+        }
+        {
+          syncData.modalsOpen.deviceType &&
+          <DeviceTypeModal syncData={syncData} actions={actions} />
+        }
+        {
+          syncData.modalsOpen.enterSyncCode &&
+          <EnterSyncCodeModal syncData={syncData} actions={actions} />
+        }
+        {
+          syncData.modalsOpen.scanCode &&
+          <ScanCodeModal syncData={syncData} actions={actions} />
+        }
+        {
+          syncData.modalsOpen.viewSyncCode &&
+          <ViewSyncCodeModal syncData={syncData} actions={actions} />
+        }
+        {
+          syncData.modalsOpen.resetSync &&
+          <ResetSyncModal syncData={syncData} actions={actions} />
+        }
         {
           syncData.isSyncConfigured && syncData.devices.length > 1
             ? <EnabledContent syncData={syncData} actions={actions} />

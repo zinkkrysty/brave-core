@@ -21,7 +21,6 @@ import {
 import { getLocale } from '../../../../common/locale'
 
 interface Props {
-  onClose: (event?: React.MouseEvent<HTMLButtonElement>) => void
   actions: any
   deviceName: string | undefined
   deviceId: number | undefined
@@ -31,14 +30,18 @@ export default class RemoveMainDeviceModal extends React.PureComponent<Props, {}
   onClickConfirmRemoveDeviceButton = () => {
     const { deviceName, deviceId } = this.props
     this.props.actions.onRemoveDevice(Number(deviceId), deviceName)
-    this.props.onClose()
+    this.props.actions.maybeOpenSyncModal('removeDevice', false)
+  }
+
+  onDismissModal = () => {
+    this.props.actions.maybeOpenSyncModal('removeDevice', false)
   }
 
   render () {
-    const { onClose, deviceName, deviceId } = this.props
+    const { deviceName, deviceId } = this.props
 
     return (
-      <Modal id='removeMainDeviceModal' onClose={onClose} size='small'>
+      <Modal id='removeMainDeviceModal' displayCloseButton={false} size='small'>
         <ModalHeader>
           <ModalTitle level={1}>{getLocale('remove')} “{deviceName}” {getLocale('thisSyncChain')}?</ModalTitle>
         </ModalHeader>
@@ -59,7 +62,7 @@ export default class RemoveMainDeviceModal extends React.PureComponent<Props, {}
                 level='secondary'
                 type='accent'
                 size='medium'
-                onClick={onClose}
+                onClick={this.onDismissModal}
                 text={getLocale('cancel')}
               />
             </OneColumnButtonGrid>

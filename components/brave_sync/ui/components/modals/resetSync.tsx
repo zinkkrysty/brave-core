@@ -25,7 +25,6 @@ import { getLocale } from '../../../../common/locale'
 interface Props {
   syncData: Sync.State
   actions: any
-  onClose: () => void
 }
 
 interface State {
@@ -38,7 +37,7 @@ export default class ResetSyncModal extends React.PureComponent<Props, State> {
     this.state = { showAlert: false }
   }
 
-  onResetSync = () => {
+  onClickResetSync = () => {
     this.setState({ showAlert: !this.state.showAlert })
   }
 
@@ -46,8 +45,12 @@ export default class ResetSyncModal extends React.PureComponent<Props, State> {
     this.props.actions.onSyncReset()
   }
 
+  onDismissModal = () => {
+    this.props.actions.maybeOpenSyncModal('resetSync', false)
+  }
+
   render () {
-    const { onClose, syncData } = this.props
+    const { syncData } = this.props
     const { showAlert } = this.state
 
     if (!syncData) {
@@ -55,7 +58,7 @@ export default class ResetSyncModal extends React.PureComponent<Props, State> {
     }
 
     return (
-      <Modal id='resetSyncModal' onClose={onClose} size='small'>
+      <Modal id='resetSyncModal' displayCloseButton={false} size='small'>
         {
           showAlert
           ? (
@@ -63,7 +66,7 @@ export default class ResetSyncModal extends React.PureComponent<Props, State> {
                 okString={getLocale('ok')}
                 onClickOk={this.onConfirmResetSync}
                 cancelString={getLocale('cancel')}
-                onClickCancel={onClose}
+                onClickCancel={this.onClickResetSync}
               >
                 <Title level={1}>{getLocale('areYouSure')}</Title>
               </AlertBox>
@@ -86,7 +89,7 @@ export default class ResetSyncModal extends React.PureComponent<Props, State> {
                 level='secondary'
                 type='accent'
                 size='medium'
-                onClick={onClose}
+                onClick={this.onDismissModal}
                 text={getLocale('cancel')}
               />
             </OneColumnButtonGrid>
@@ -94,7 +97,7 @@ export default class ResetSyncModal extends React.PureComponent<Props, State> {
               level='primary'
               type='accent'
               size='medium'
-              onClick={this.onResetSync}
+              onClick={this.onClickResetSync}
               text={getLocale('remove')}
             />
           </TwoColumnButtonGrid>

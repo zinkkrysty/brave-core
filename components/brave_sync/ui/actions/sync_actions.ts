@@ -120,6 +120,15 @@ export const resetSyncSetupError = () => {
 }
 
 /**
+ * Dispatches a message indicating which Sync modal should be open
+ * @param {Sync.ModalOptions} modalName - the modal that should be either open or closed
+ * @param {boolean} open - whether or not the modal should be visible to the user
+ */
+export const maybeOpenSyncModal = (modalName: Sync.ModalOptions, open: boolean) => {
+  return action(types.SYNC_MAYBE_OPEN_MODAL, { modalName, open })
+}
+
+/**
  * Dispatched by the back-end to inform useful log messages for debugging purposes
  * @param {string} message - the log message
  */

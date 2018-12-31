@@ -5,7 +5,7 @@
 import * as React from 'react'
 
 // Components
-import { Button, AlertBox } from 'brave-ui'
+import { Button } from 'brave-ui'
 import { CloseCircleIcon } from 'brave-ui/components/icons'
 import Table, { Cell, Row } from 'brave-ui/components/dataTables/table'
 import { Toggle } from 'brave-ui/features/shields'
@@ -16,7 +16,6 @@ import {
   Title,
   Paragraph,
   SectionBlock,
-  SubTitle,
   TableRowDevice,
   TableRowRemove,
   TableRowRemoveButton,
@@ -29,9 +28,6 @@ import {
 
 // Modals
 import RemoveDeviceModal from './modals/removeDevice'
-import ViewSyncCodeModal from './modals/viewSyncCode'
-import DeviceTypeModal from './modals/deviceType'
-import ResetSyncModal from './modals/resetSync'
 
 // Utils
 import { getLocale } from '../../../common/locale'
@@ -43,9 +39,6 @@ interface Props {
 
 interface State {
   removeDevice: boolean
-  viewSyncCode: boolean
-  addDevice: boolean
-  resetSync: boolean
   deviceToRemoveName: string | undefined
   deviceToRemoveId: string | undefined
 }
@@ -55,9 +48,6 @@ export default class SyncEnabledContent extends React.PureComponent<Props, State
     super(props)
     this.state = {
       removeDevice: false,
-      viewSyncCode: false,
-      addDevice: false,
-      resetSync: false,
       deviceToRemoveName: '',
       deviceToRemoveId: ''
     }
@@ -141,20 +131,16 @@ export default class SyncEnabledContent extends React.PureComponent<Props, State
     })
   }
 
-  onUserNoticedError = () => {
-    this.props.actions.resetSyncSetupError()
-  }
-
   onClickViewSyncCodeButton = () => {
-    this.setState({ viewSyncCode: !this.state.viewSyncCode })
+    this.props.actions.maybeOpenSyncModal('viewSyncCode', true)
   }
 
   onClickAddDeviceButton = () => {
-    this.setState({ addDevice: !this.state.addDevice })
+    this.props.actions.maybeOpenSyncModal('deviceType', true)
   }
 
   onClickResetSyncButton = () => {
-    this.setState({ resetSync: !this.state.resetSync })
+    this.props.actions.maybeOpenSyncModal('resetSync', true)
   }
 
   onSyncBookmarks = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -163,14 +149,7 @@ export default class SyncEnabledContent extends React.PureComponent<Props, State
 
   render () {
     const { actions, syncData } = this.props
-    const {
-      removeDevice,
-      viewSyncCode,
-      addDevice,
-      resetSync,
-      deviceToRemoveName,
-      deviceToRemoveId
-    } = this.state
+    const { deviceToRemoveName, deviceToRemoveId } = this.state
 
     if (!syncData) {
       return null
@@ -180,46 +159,14 @@ export default class SyncEnabledContent extends React.PureComponent<Props, State
       <EnabledContent>
         <Main>
           {
-            syncData.error === 'ERR_SYNC_NO_INTERNET'
-            ? <AlertBox okString={getLocale('ok')} onClickOk={this.onUserNoticedError}>
-                <Title>{getLocale('errorNoInternetTitle')}</Title>
-                <SubTitle>{getLocale('errorNoInternetDescription')}</SubTitle>
-              </AlertBox>
-            : null
-          }
-          {
-            syncData.error === 'ERR_SYNC_INIT_FAILED'
-            ? <AlertBox okString={getLocale('ok')} onClickOk={this.onUserNoticedError}>
-                <Title>{getLocale('errorSyncInitFailedTitle')}</Title>
-                <SubTitle>{getLocale('errorSyncInitFailedDescription')}</SubTitle>
-              </AlertBox>
-            : null
-          }
-          {
-            removeDevice
+            syncData.modalsOpen.removeDevice
               ? (
                 <RemoveDeviceModal
                   deviceName={deviceToRemoveName}
                   deviceId={Number(deviceToRemoveId)}
                   actions={actions}
-                  onClose={this.onClickRemoveDeviceButton}
                 />
               )
-              : null
-          }
-          {
-            viewSyncCode
-              ? <ViewSyncCodeModal syncData={syncData} actions={actions} onClose={this.onClickViewSyncCodeButton} />
-              : null
-          }
-          {
-            addDevice
-              ? <DeviceTypeModal syncData={syncData} actions={actions} onClose={this.onClickAddDeviceButton} />
-              : null
-          }
-          {
-            resetSync
-              ? <ResetSyncModal syncData={syncData} actions={actions} onClose={this.onClickResetSyncButton} />
               : null
           }
           <SyncCard>

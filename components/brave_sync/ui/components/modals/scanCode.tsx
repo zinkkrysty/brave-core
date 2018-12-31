@@ -19,9 +19,6 @@ import {
   Link
 } from 'brave-ui/features/sync'
 
-// Modals
-import ViewSyncCode from './viewSyncCode'
-
 // Utils
 import { getLocale } from '../../../../common/locale'
 
@@ -31,40 +28,40 @@ import { SyncMobilePicture, QRCode } from 'brave-ui/features/sync/images'
 interface Props {
   syncData: Sync.State
   actions: any
-  onClose: () => void
-}
-interface State {
-  viewSyncCode: boolean
 }
 
-export default class ScanCodeModal extends React.PureComponent<Props, State> {
-  constructor (props: Props) {
-    super(props)
-    this.state = {
-      viewSyncCode: false
+export default class ScanCodeModal extends React.PureComponent<Props, {}> {
+  componentDidMount () {
+    const { scanCode, deviceType } = this.props.syncData.modalsOpen
+    if (scanCode) {
+      this.props.actions.maybeOpenSyncModal('viewSyncCode', false)
+    }
+    if (deviceType) {
+      this.props.actions.maybeOpenSyncModal('deviceType', false)
     }
   }
 
   onClickEnterCodeWordsInstead = () => {
-    this.setState({ viewSyncCode: !this.state.viewSyncCode })
+    this.props.actions.maybeOpenSyncModal('viewSyncCode', true)
   }
 
-  onCancel = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault()
-    this.props.onClose()
+  onDismissModal = () => {
+    const { devices, isSyncConfigured } = this.props.syncData
+    // sync is enabled when at least 2 devices are in the chain.
+    // this modal works both with sync enabled and disabled states.
+    // in case user opens it in the enabled content screen,
+    // check there are 2 devices in chain before reset
+    if (isSyncConfigured && devices.length < 2) {
+      this.props.actions.onSyncReset()
+    }
+    this.props.actions.maybeOpenSyncModal('scanCode', false)
   }
 
   render () {
-    const { onClose, syncData, actions } = this.props
-    const { viewSyncCode } = this.state
+    const { syncData } = this.props
 
     return (
       <Modal id='scanCodeModal' displayCloseButton={false} size='small'>
-        {
-          viewSyncCode
-            ? <ViewSyncCode syncData={syncData} actions={actions} onClose={this.onClickEnterCodeWordsInstead} />
-            : null
-        }
         <ModalHeader>
           <div>
             <Title level={1}>{getLocale('scanThisCode')}</Title>
@@ -83,7 +80,7 @@ export default class ScanCodeModal extends React.PureComponent<Props, State> {
         </ScanGrid>
         <ThreeColumnButtonGrid>
         <div>
-            <Link onClick={this.onCancel}>{getLocale('cancel')}</Link>
+            <Link onClick={this.onDismissModal}>{getLocale('cancel')}</Link>
           </div>
           <div>
             <Button
@@ -95,11 +92,11 @@ export default class ScanCodeModal extends React.PureComponent<Props, State> {
             />
           </div>
           <div>
-          <Button
+            <Button
               level='primary'
               type='accent'
               size='medium'
-              onClick={onClose}
+              onClick={this.onDismissModal}
               disabled={syncData.devices.length < 2}
               text={
                 syncData.devices.length < 2

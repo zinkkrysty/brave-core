@@ -5,7 +5,7 @@
 // Utils
 import { debounce } from '../../common/debounce'
 
-const keyName = 'sync-data_t'
+const keyName = 'sync-data_test'
 
 export const defaultState = {
   thisDeviceName: '',
@@ -17,7 +17,15 @@ export const defaultState = {
   syncBookmarks: true,
   syncSavedSiteSettings: true,
   syncBrowsingHistory: true,
-  error: undefined
+  error: undefined,
+  modalsOpen: {
+    deviceType: false,
+    enterSyncCode: false,
+    removeDevice: false,
+    resetSync: false,
+    scanCode: false,
+    viewSyncCode: false
+  }
 }
 
 const cleanData = (state: Sync.State) => {

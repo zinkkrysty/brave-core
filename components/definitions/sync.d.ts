@@ -23,12 +23,21 @@ declare namespace Sync {
     lastActive: number
   }
 
-export type SetupErrorType =
-  'ERR_SYNC_NO_INTERNET' |
-  'ERR_SYNC_MISSING_WORDS' |
-  'ERR_SYNC_WRONG_WORDS' |
-  'ERR_SYNC_INIT_FAILED' |
-  undefined
+  export type SetupErrorType =
+    'ERR_SYNC_NO_INTERNET' |
+    'ERR_SYNC_MISSING_WORDS' |
+    'ERR_SYNC_WRONG_WORDS' |
+    'ERR_SYNC_INIT_FAILED' |
+    undefined
+
+  export interface ModalOptions {
+    deviceType?: boolean
+    enterSyncCode?: boolean
+    removeDevice?: boolean
+    resetSync?: boolean
+    scanCode?: boolean
+    viewSyncCode?: boolean
+  }
 
   export interface State {
     thisDeviceName: string
@@ -40,6 +49,7 @@ export type SetupErrorType =
     syncBookmarks: boolean
     syncSavedSiteSettings: boolean
     syncBrowsingHistory: boolean
-    error: SetupErrorType
+    error: SetupErrorType,
+    modalsOpen: ModalOptions
   }
 }

@@ -18,50 +18,46 @@ import {
   Link
 } from 'brave-ui/features/sync'
 
-// Modals
-import ScanCode from './scanCode'
-
 // Utils
 import { getLocale } from '../../../../common/locale'
 
 interface Props {
   syncData: Sync.State
   actions: any
-  onClose: () => void
 }
 
-interface State {
-  useCameraInstead: boolean
-}
-
-export default class ViewSyncCodeModal extends React.PureComponent<Props, State> {
-  constructor (props: Props) {
-    super(props)
-    this.state = {
-      useCameraInstead: false
+export default class ViewSyncCodeModal extends React.PureComponent<Props, {}> {
+  componentDidMount () {
+    const { scanCode, deviceType } = this.props.syncData.modalsOpen
+    if (scanCode) {
+      this.props.actions.maybeOpenSyncModal('scanCode', false)
+    }
+    if (deviceType) {
+      this.props.actions.maybeOpenSyncModal('deviceType', false)
     }
   }
 
   onClickUseCameraInsteadButton = () => {
-    this.setState({ useCameraInstead: !this.state.useCameraInstead })
+    this.props.actions.maybeOpenSyncModal('scanCode', true)
   }
 
-  onCancel = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault()
-    this.props.onClose()
+  onDismissModal = () => {
+    const { devices, isSyncConfigured } = this.props.syncData
+    // sync is enabled when at least 2 devices are in the chain.
+    // this modal works both with sync enabled and disabled states.
+    // in case user opens it in the enabled content screen,
+    // check there are 2 devices in chain before reset
+    if (isSyncConfigured && devices.length < 2) {
+      this.props.actions.onSyncReset()
+    }
+    this.props.actions.maybeOpenSyncModal('viewSyncCode', false)
   }
 
   render () {
-    const { onClose, actions, syncData } = this.props
-    const { useCameraInstead } = this.state
+    const { syncData } = this.props
 
     return (
       <Modal id='viewSyncCodeModal' displayCloseButton={false} size='small'>
-        {
-          useCameraInstead
-            ? <ScanCode syncData={syncData} actions={actions} onClose={this.onClickUseCameraInsteadButton} />
-            : null
-        }
         <ModalHeader>
           <div>
             <Title level={1}>{getLocale('chainCode')}</Title>
@@ -84,7 +80,7 @@ export default class ViewSyncCodeModal extends React.PureComponent<Props, State>
           }
         <ThreeColumnButtonGrid>
           <div>
-            <Link onClick={this.onCancel}>{getLocale('cancel')}</Link>
+            <Link onClick={this.onDismissModal}>{getLocale('cancel')}</Link>
           </div>
           <div>
             <Button
@@ -99,7 +95,7 @@ export default class ViewSyncCodeModal extends React.PureComponent<Props, State>
             level='primary'
             type='accent'
             size='medium'
-            onClick={onClose}
+            onClick={this.onDismissModal}
             disabled={syncData.devices.length < 2}
             text={
               syncData.devices.length < 2
