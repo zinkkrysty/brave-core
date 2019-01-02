@@ -129,6 +129,7 @@ export default class SyncEnabledContent extends React.PureComponent<Props, State
       deviceToRemoveId: target.dataset.id,
       removeDevice: !this.state.removeDevice
     })
+    this.props.actions.maybeOpenSyncModal('removeDevice', true)
   }
 
   onClickViewSyncCodeButton = () => {
@@ -162,8 +163,9 @@ export default class SyncEnabledContent extends React.PureComponent<Props, State
             syncData.modalsOpen.removeDevice
               ? (
                 <RemoveDeviceModal
+                  syncData={syncData}
                   deviceName={deviceToRemoveName}
-                  deviceId={Number(deviceToRemoveId)}
+                  deviceId={deviceToRemoveId}
                   actions={actions}
                 />
               )

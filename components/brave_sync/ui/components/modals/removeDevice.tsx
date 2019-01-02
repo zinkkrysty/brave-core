@@ -17,20 +17,46 @@ import {
   OneColumnButtonGrid
 } from 'brave-ui/features/sync'
 
+// Icons
+import { LoaderIcon } from 'brave-ui/components/icons'
+
 // Utils
 import { getLocale } from '../../../../common/locale'
 
 interface Props {
   actions: any
+  syncData: Sync.State
   deviceName: string | undefined
-  deviceId: number | undefined
+  deviceId: string | undefined
 }
 
-export default class RemoveMainDeviceModal extends React.PureComponent<Props, {}> {
+interface State {
+  willRemoveDevice: boolean
+}
+
+export default class RemoveMainDeviceModal extends React.PureComponent<Props, State> {
+  constructor (props: Props) {
+    super(props)
+    this.state = { willRemoveDevice: false }
+  }
+
+  componentDidUpdate (prevProps: Props) {
+    // if devices lengh is different it means that sync
+    // computed the device removal. in this case, cancel
+    // the loading state and close the modal
+    if (
+      prevProps.syncData.devices.length !==
+      this.props.syncData.devices.length
+    ) {
+      this.setState({ willRemoveDevice: false })
+      this.props.actions.maybeOpenSyncModal('removeDevice', false)
+    }
+  }
+
   onClickConfirmRemoveDeviceButton = () => {
     const { deviceName, deviceId } = this.props
+    this.setState({ willRemoveDevice: true })
     this.props.actions.onRemoveDevice(Number(deviceId), deviceName)
-    this.props.actions.maybeOpenSyncModal('removeDevice', false)
   }
 
   onDismissModal = () => {
@@ -38,7 +64,8 @@ export default class RemoveMainDeviceModal extends React.PureComponent<Props, {}
   }
 
   render () {
-    const { deviceName, deviceId } = this.props
+    const { syncData, deviceName, deviceId } = this.props
+    const { willRemoveDevice } = this.state
 
     return (
       <Modal id='removeMainDeviceModal' displayCloseButton={false} size='small'>
@@ -47,8 +74,7 @@ export default class RemoveMainDeviceModal extends React.PureComponent<Props, {}
         </ModalHeader>
         <ModalContent>
           {
-            // zero is always the this device
-            deviceId === 0
+            deviceId === syncData.thisDeviceId
             ? <div>
                 <Paragraph>{getLocale('thisDeviceRemovalDescription')}</Paragraph>
                 <Paragraph>{getLocale('joinSyncChain')}</Paragraph>
@@ -60,18 +86,24 @@ export default class RemoveMainDeviceModal extends React.PureComponent<Props, {}
             <OneColumnButtonGrid>
               <Button
                 level='secondary'
-                type='accent'
+                type='subtle'
                 size='medium'
+                disabled={willRemoveDevice}
                 onClick={this.onDismissModal}
                 text={getLocale('cancel')}
               />
             </OneColumnButtonGrid>
             <Button
               level='primary'
-              type='accent'
+              type='warn'
               size='medium'
               onClick={this.onClickConfirmRemoveDeviceButton}
               text={getLocale('remove')}
+              disabled={willRemoveDevice}
+              icon={{
+                position: 'after',
+                image: willRemoveDevice && <LoaderIcon />
+              }}
             />
         </TwoColumnButtonGrid>
       </Modal>

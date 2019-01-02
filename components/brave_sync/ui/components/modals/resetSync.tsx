@@ -5,7 +5,7 @@
 import * as React from 'react'
 
 // Components
-import { AlertBox, Button, Modal } from 'brave-ui'
+import { Button, Modal } from 'brave-ui'
 
 // Feature-specific components
 import {
@@ -15,9 +15,14 @@ import {
   ModalContent,
   TwoColumnButtonGrid,
   OneColumnButtonGrid,
-  Title,
   Paragraph
 } from 'brave-ui/features/sync'
+
+// Dialogs
+import AreYouSure from '../commonDialogs/areYouSure'
+
+// Icons
+import { LoaderIcon } from 'brave-ui/components/icons'
 
 // Utils
 import { getLocale } from '../../../../common/locale'
@@ -29,12 +34,27 @@ interface Props {
 
 interface State {
   showAlert: boolean
+  willResetSync: boolean
 }
 
 export default class ResetSyncModal extends React.PureComponent<Props, State> {
   constructor (props: Props) {
     super(props)
-    this.state = { showAlert: false }
+    this.state = {
+      showAlert: false,
+      willResetSync: false
+    }
+  }
+
+  componentDidUpdate (prevProps: Props) {
+    // wait until sync is not configured to proceed
+    if (
+      prevProps.syncData.isSyncConfigured !==
+      this.props.syncData.isSyncConfigured
+    ) {
+      this.setState({ willResetSync: false })
+      this.props.actions.maybeOpenSyncModal('resetSync', false)
+    }
   }
 
   onClickResetSync = () => {
@@ -42,6 +62,10 @@ export default class ResetSyncModal extends React.PureComponent<Props, State> {
   }
 
   onConfirmResetSync = () => {
+    this.setState({
+      showAlert: false,
+      willResetSync: true
+    })
     this.props.actions.onSyncReset()
   }
 
@@ -51,7 +75,7 @@ export default class ResetSyncModal extends React.PureComponent<Props, State> {
 
   render () {
     const { syncData } = this.props
-    const { showAlert } = this.state
+    const { showAlert, willResetSync } = this.state
 
     if (!syncData) {
       return null
@@ -60,18 +84,8 @@ export default class ResetSyncModal extends React.PureComponent<Props, State> {
     return (
       <Modal id='resetSyncModal' displayCloseButton={false} size='small'>
         {
-          showAlert
-          ? (
-              <AlertBox
-                okString={getLocale('ok')}
-                onClickOk={this.onConfirmResetSync}
-                cancelString={getLocale('cancel')}
-                onClickCancel={this.onClickResetSync}
-              >
-                <Title level={1}>{getLocale('areYouSure')}</Title>
-              </AlertBox>
-            )
-          : null
+          showAlert &&
+          <AreYouSure onClickOk={this.onConfirmResetSync} onClickCancel={this.onClickResetSync} />
         }
         <ModalHeader>
           <div>
@@ -87,18 +101,24 @@ export default class ResetSyncModal extends React.PureComponent<Props, State> {
             <OneColumnButtonGrid>
               <Button
                 level='secondary'
-                type='accent'
+                type='subtle'
                 size='medium'
                 onClick={this.onDismissModal}
                 text={getLocale('cancel')}
+                disabled={willResetSync}
               />
             </OneColumnButtonGrid>
             <Button
               level='primary'
-              type='accent'
+              type='warn'
               size='medium'
               onClick={this.onClickResetSync}
               text={getLocale('remove')}
+              disabled={willResetSync}
+              icon={{
+                position: 'after',
+                image: willResetSync && <LoaderIcon />
+              }}
             />
           </TwoColumnButtonGrid>
       </Modal>
