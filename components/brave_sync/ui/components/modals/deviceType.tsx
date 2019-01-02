@@ -29,9 +29,6 @@ interface Props {
 }
 
 export default class DeviceTypeModal extends React.PureComponent<Props, {}> {
-  onUserNoticedError = () => {
-    this.props.actions.resetSyncSetupError()
-  }
 
   onClickPhoneTabletButton = () => {
     this.props.actions.maybeOpenSyncModal('scanCode', true)

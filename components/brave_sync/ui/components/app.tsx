@@ -43,7 +43,7 @@ export class SyncPage extends React.PureComponent<Props, {}> {
   }
 
   onUserNoticedError = () => {
-    this.props.actions.resetSyncSetupError()
+    this.props.actions.clearSyncSetupError()
   }
 
   render () {
