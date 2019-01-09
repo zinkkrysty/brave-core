@@ -1,6 +1,6 @@
 use_relative_paths = True
 
-gclient_gn_args_file = 'src/brave/build/config/gclient_args.gni'
+gclient_gn_args_file = 'brave/build/config/gclient_args.gni'
 gclient_gn_args = [
   'rust_deps_version',
   'rustup_home',
