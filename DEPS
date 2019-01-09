@@ -1,5 +1,16 @@
 use_relative_paths = True
 
+gclient_gn_args_file = 'src/brave/build/config/gclient_args.gni'
+gclient_gn_args = [
+  'rust_deps_version',
+  'rustup_home',
+]
+
+vars = {
+  'rustup_home': 'test',
+  'rust_deps_version': '0.1.0',
+}
+
 deps = {
   "vendor/ad-block": "https://github.com/brave/ad-block.git@366274d84d144f514bf65bca71552d60721959e9",
   "vendor/tracking-protection": "https://github.com/brave/tracking-protection.git@e67738e656244f7ab6e0ed9815071ca744f5468f",
@@ -46,7 +57,10 @@ hooks = [
     # Download rust deps if necessary
     'name': 'download_rust_deps',
     'pattern': '.',
-    'action': ['python', 'src/brave/script/download_rust_deps.py'],
+    'action': ['python', 'src/brave/script/download_rust_deps.py',
+        '--platform', Var('host_os'),
+        '--rustup_home', Var('rustup_home'),
+        '--rust_deps_version', Var('rust_deps_version')],
   },
   {
     # Build brave-sync

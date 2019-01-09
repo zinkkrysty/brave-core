@@ -5,6 +5,7 @@
 
 """Script to download rust_deps."""
 
+import argparse
 import os
 import re
 import subprocess
@@ -56,8 +57,22 @@ def DownloadAndUnpackRustDeps(platform):
 
 
 def main():
+  args = parse_args()
+  print args.rustup_home
+  print args.platform
   DownloadAndUnpackRustDeps(sys.platform)
   return 0
+
+def parse_args():
+    parser = argparse.ArgumentParser(description='Download rust deps')
+    parser.add_argument('--rustup_home',
+                        help='')
+    parser.add_argument('--platform',
+                        help='')
+    parser.add_argument('--rust_deps_version',
+                        help='')
+    return parser.parse_args()
+
 
 if __name__ == '__main__':
   sys.exit(main())
