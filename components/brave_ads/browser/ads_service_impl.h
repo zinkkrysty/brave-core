@@ -35,6 +35,10 @@ namespace base {
 class SequencedTaskRunner;
 }  // namespace base
 
+namespace brave_rewards {
+class RewardsNotificationServiceImpl;
+}  // namespace brave_rewards
+
 namespace brave_ads {
 
 class AdsNotificationHandler;
@@ -185,6 +189,7 @@ class AdsServiceImpl : public AdsService,
   uint32_t next_timer_id_;
   std::unique_ptr<BundleStateDatabase> bundle_state_backend_;
   NotificationDisplayService* display_service_;  // NOT OWNED
+  std::unique_ptr<brave_rewards::RewardsNotificationServiceImpl> notification_service_;
 #if !defined(OS_ANDROID)
   ui::IdleState last_idle_state_;
   bool is_foreground_;

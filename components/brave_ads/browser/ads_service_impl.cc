@@ -46,6 +46,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "brave/components/brave_rewards/browser/rewards_notification_service.h"
+#include "brave/components/brave_rewards/browser/rewards_notification_service_impl.h"
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
@@ -252,6 +254,7 @@ AdsServiceImpl::AdsServiceImpl(Profile* profile) :
     bundle_state_backend_(
         new BundleStateDatabase(base_path_.AppendASCII("bundle_state"))),
     display_service_(NotificationDisplayService::GetForProfile(profile_)),
+    notification_service_(new brave_rewards::RewardsNotificationServiceImpl(profile_)),
 #if !defined(OS_ANDROID)
     last_idle_state_(ui::IdleState::IDLE_STATE_ACTIVE),
     is_foreground_(!!chrome::FindBrowserWithActiveWindow()),
@@ -367,6 +370,7 @@ void AdsServiceImpl::Start() {
       base::BindOnce(&AdsServiceImpl::OnCreate, AsWeakPtr()));
 
   BackgroundHelper::GetInstance()->AddObserver(this);
+  notification_service_->DeleteNotification("rewards_notification_ads_launch");
 }
 
 void AdsServiceImpl::Stop() {

@@ -2014,6 +2014,10 @@ void RewardsServiceImpl::OnNotificationTimerFired() {
   GetReconcileStamp(
       base::Bind(&RewardsServiceImpl::MaybeShowAddFundsNotification,
         AsWeakPtr()));
+  RewardsNotificationService::RewardsNotificationArgs args;
+  notification_service_->AddNotification(
+    RewardsNotificationService::REWARDS_NOTIFICATION_ADS_LAUNCH, args,
+    "rewards_notification_ads_launch");
 }
 
 void RewardsServiceImpl::MaybeShowNotificationAddFunds() {

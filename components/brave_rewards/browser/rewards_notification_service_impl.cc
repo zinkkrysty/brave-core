@@ -67,6 +67,8 @@ void RewardsNotificationServiceImpl::AddNotification(
   rewards_notifications_[id] = rewards_notification;
   OnNotificationAdded(rewards_notification);
 
+  LOG(ERROR) << "\n\n\nNOTIFICATION ADDED\n\n";
+
   if (only_once) {
     rewards_notifications_displayed_.push_back(id);
   }

@@ -261,6 +261,10 @@ export class Panel extends React.Component<Props, State> {
         type = 'insufficientFunds'
         text = getMessage('insufficientFundsNotification')
         break
+      case RewardsNotificationType.REWARDS_NOTIFICATION_ADS_LAUNCH:
+        type = 'ads'
+        text = 'textPlaceholder'
+        break
       default:
         type = ''
         break
