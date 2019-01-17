@@ -29,6 +29,7 @@
 #include "bat/ledger/publisher_info.h"
 #include "bat/ledger/wallet_info.h"
 #include "brave/browser/ui/webui/brave_rewards_source.h"
+#include "brave/components/brave_ads/common/pref_names.h"
 #include "brave/components/brave_rewards/common/pref_names.h"
 #include "brave/common/pref_names.h"
 #include "brave/components/brave_rewards/browser/auto_contribution_props.h"
@@ -37,6 +38,8 @@
 #include "brave/components/brave_rewards/browser/rewards_fetcher_service_observer.h"
 #include "brave/components/brave_rewards/browser/rewards_notification_service.h"
 #include "brave/components/brave_rewards/browser/rewards_notification_service_impl.h"
+#include "brave/components/brave_ads/browser/ads_service.h"
+#include "brave/components/brave_ads/browser/ads_service_factory.h"
 #include "brave/components/brave_rewards/browser/rewards_service_factory.h"
 #include "brave/components/brave_rewards/browser/rewards_service_observer.h"
 #include "brave/components/brave_rewards/browser/switches.h"
@@ -2107,6 +2110,7 @@ void RewardsServiceImpl::OnNotificationTimerFired() {
   GetReconcileStamp(
       base::Bind(&RewardsServiceImpl::MaybeShowAddFundsNotification,
         AsWeakPtr()));
+  MaybeShowFirstLaunchNotification();
 }
 
 void RewardsServiceImpl::MaybeShowNotificationAddFunds() {
@@ -2130,6 +2134,32 @@ void RewardsServiceImpl::ShowNotificationAddFunds(bool sufficient) {
   notification_service_->AddNotification(
       RewardsNotificationService::REWARDS_NOTIFICATION_INSUFFICIENT_FUNDS, args,
       "rewards_notification_insufficient_funds");
+}
+
+void RewardsServiceImpl::MaybeShowFirstLaunchNotification() {
+  brave_ads::AdsService* ads_service_ =
+    brave_ads::AdsServiceFactory::GetForProfile(profile_);
+
+  if (!ads_service_->ShouldShowAdsNotification()) {
+    return;
+  }
+
+  uint64_t now = std::time(nullptr);
+  uint64_t adsLaunchTimestamp = ads_service_->GetAdsLaunchTimestamp();
+  uint64_t adsLaunchTimeout = ads_service_->GetAdsLaunchTimeout();
+
+  if (adsLaunchTimestamp == 0) {
+    RewardsNotificationService::RewardsNotificationArgs args;
+    notification_service_->AddNotification(
+      RewardsNotificationService::REWARDS_NOTIFICATION_ADS_LAUNCH,
+      args,
+      "rewards_notification_ads_launch");
+    profile_->GetPrefs()->SetUint64(brave_ads::prefs::kBraveAdsLaunchNotificationTimestamp,
+                                    std::time(nullptr));
+  } else if ((now - adsLaunchTimestamp) >= adsLaunchTimeout) {
+    notification_service_->DeleteNotification("rewards_notification_ads_launch");
+    profile_->GetPrefs()->SetBoolean(brave_ads::prefs::kRewardsShowAdsNotification, false);
+  }
 }
 
 std::unique_ptr<ledger::LogStream> RewardsServiceImpl::Log(

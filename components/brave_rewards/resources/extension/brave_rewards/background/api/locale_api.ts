@@ -24,6 +24,8 @@ export const getUIMessages = (): Record<string, string> => {
   const strings = [
     'backupWalletNotification',
     'backupWalletTitle',
+    'braveAdsLaunchTitle',
+    'braveAdsLaunchMsg',
     'braveAdsTitle',
     'braveContributeTitle',
     'braveRewards',
@@ -77,6 +79,7 @@ export const getUIMessages = (): Record<string, string> => {
     'rewardsContributeAttentionScore',
     'rewardsSummary',
     'tokenGrant',
+    'turnOnAds',
     'unVerifiedPublisher',
     'unVerifiedText',
     'unVerifiedTextMore',

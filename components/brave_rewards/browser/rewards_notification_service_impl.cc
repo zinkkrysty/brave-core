@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "bat/ledger/ledger_callback_handler.h"
 #include "bat/ledger/publisher_info.h"
+#include "brave/components/brave_ads/common/pref_names.h"
 #include "brave/components/brave_rewards/common/pref_names.h"
 #include "brave/components/brave_rewards/browser/rewards_notification_service_observer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -238,6 +239,10 @@ void RewardsNotificationServiceImpl::TriggerOnNotificationAdded(
 
 void RewardsNotificationServiceImpl::TriggerOnNotificationDeleted(
     const RewardsNotification& rewards_notification) {
+  if (rewards_notification.id_ == "rewards_notification_ads_launch") {
+    profile_->GetPrefs()->SetBoolean(brave_ads::prefs::kRewardsShowAdsNotification, false);
+  }
+
   for (auto& observer : observers_)
     observer.OnNotificationDeleted(this, rewards_notification);
 }

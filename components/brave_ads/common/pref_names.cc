@@ -11,5 +11,12 @@ const char kBraveAdsEnabled[] = "brave.brave_ads.enabled";
 const char kBraveAdsPerHour[] = "brave.brave_ads.ads_per_hour";
 const char kBraveAdsPerDay[] = "brave.brave_ads.ads_per_day";
 const char kBraveAdsIdleThreshold[] = "brave.brave_ads.idle_threshold";
+const char kRewardsShowAdsNotification[] =
+    "brave.brave_ads.show_ads_notification";
+const char kBraveAdsLaunchNotificationTimestamp[] =
+    "brave.brave_ads.launch_notification_timestamp";
+const char kBraveAdsLaunchNotificationTimeout[] =
+    "brave.brave_ads.launch_notification_timeout";
+
 }  // namespace prefs
 }  // namespace brave_ads

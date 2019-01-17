@@ -80,6 +80,11 @@ void AdsServiceFactory::RegisterProfilePrefs(
   registry->RegisterUint64Pref(prefs::kBraveAdsPerHour, 2);
   registry->RegisterUint64Pref(prefs::kBraveAdsPerDay, 6);
   registry->RegisterIntegerPref(prefs::kBraveAdsIdleThreshold, 15);
+  registry->RegisterUint64Pref(prefs::kBraveAdsLaunchNotificationTimestamp, 0);
+  // Set to one week
+  registry->RegisterUint64Pref(prefs::kBraveAdsLaunchNotificationTimeout,
+                              (24 * 60 * 60 * 7));
+  registry->RegisterBooleanPref(prefs::kRewardsShowAdsNotification, true);
 }
 
 }  // namespace brave_ads

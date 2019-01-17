@@ -364,6 +364,10 @@ void AdsServiceImpl::Start() {
     is_testing = true;
   }
 
+  if (ShouldShowAdsNotification()) {
+    profile_->GetPrefs()->SetBoolean(prefs::kRewardsShowAdsNotification, true);
+  }
+
   bat_ads_service_->SetProduction(is_production, base::NullCallback());
   bat_ads_service_->SetDebug(is_debug, base::NullCallback());
   bat_ads_service_->SetTesting(is_testing, base::NullCallback());
@@ -462,6 +466,18 @@ void AdsServiceImpl::set_ads_enabled(bool enabled) {
 
 void AdsServiceImpl::set_ads_per_hour(int ads_per_hour) {
   profile_->GetPrefs()->SetUint64(prefs::kBraveAdsPerHour, ads_per_hour);
+}
+
+bool AdsServiceImpl::ShouldShowAdsNotification() const {
+  return profile_->GetPrefs()->GetBoolean(prefs::kRewardsShowAdsNotification);
+}
+
+uint64_t AdsServiceImpl::GetAdsLaunchTimestamp() const {
+  return profile_->GetPrefs()->GetUint64(prefs::kBraveAdsLaunchNotificationTimestamp);
+}
+
+uint64_t AdsServiceImpl::GetAdsLaunchTimeout() const {
+  return profile_->GetPrefs()->GetUint64(prefs::kBraveAdsLaunchNotificationTimeout);
 }
 
 bool AdsServiceImpl::IsForeground() const {
