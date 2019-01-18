@@ -65,9 +65,6 @@ class AdsServiceImpl : public AdsService,
   void OnMediaStart(SessionID tab_id) override;
   void OnMediaStop(SessionID tab_id) override;
   void ClassifyPage(const std::string& url, const std::string& page) override;
-  bool ShouldShowAdsNotification() const override;
-  uint64_t GetAdsLaunchTimestamp() const override;
-  uint64_t GetAdsLaunchTimeout() const override;
 
   void Shutdown() override;
 
@@ -174,6 +171,10 @@ class AdsServiceImpl : public AdsService,
   void MaybeStart(bool restart);
   void NotificationTimedOut(uint32_t timer_id,
                             const std::string& notification_id);
+  bool ShouldShowAdsNotification() const;
+  void MaybeShowFirstLaunchNotification();
+  void FirstLaunchNotificationTimedOut(uint32_t timer_id,
+                                       const std::string& notification_id);
 
   uint32_t next_timer_id();
 

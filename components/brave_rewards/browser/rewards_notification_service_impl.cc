@@ -31,7 +31,7 @@ RewardsNotificationServiceImpl::RewardsNotificationServiceImpl(Profile* profile)
     : profile_(profile)
 {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  extension_rewards_notification_service_observer_ = 
+  extension_rewards_notification_service_observer_ =
           std::make_unique<ExtensionRewardsNotificationServiceObserver>(
               profile);
   AddObserver(extension_rewards_notification_service_observer_.get());
@@ -239,10 +239,6 @@ void RewardsNotificationServiceImpl::TriggerOnNotificationAdded(
 
 void RewardsNotificationServiceImpl::TriggerOnNotificationDeleted(
     const RewardsNotification& rewards_notification) {
-  if (rewards_notification.id_ == "rewards_notification_ads_launch") {
-    profile_->GetPrefs()->SetBoolean(brave_ads::prefs::kRewardsShowAdsNotification, false);
-  }
-
   for (auto& observer : observers_)
     observer.OnNotificationDeleted(this, rewards_notification);
 }

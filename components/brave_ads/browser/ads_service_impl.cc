@@ -23,6 +23,9 @@
 #include "brave/components/brave_ads/common/pref_names.h"
 #include "brave/components/brave_rewards/common/pref_names.h"
 #include "brave/components/brave_ads/common/switches.h"
+#include "brave/components/brave_rewards/browser/rewards_notification_service.h"
+#include "brave/components/brave_rewards/browser/rewards_service_factory.h"
+#include "brave/components/brave_rewards/browser/rewards_service.h"
 #include "brave/components/services/bat_ads/public/cpp/ads_client_mojo_bridge.h"
 #include "brave/components/services/bat_ads/public/interfaces/bat_ads.mojom.h"
 #include "chrome/browser/browser_process.h"
@@ -52,6 +55,8 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "net/android/network_library.h"
 #endif
+
+using brave_rewards::RewardsNotificationService;
 
 namespace brave_ads {
 
@@ -262,6 +267,15 @@ AdsServiceImpl::AdsServiceImpl(Profile* profile) :
 
   file_task_runner_->PostTask(FROM_HERE,
       base::BindOnce(&EnsureBaseDirectoryExists, base_path_));
+
+  // backwards compat for already enabled rewards
+  if (profile_->GetPrefs()->GetBoolean(prefs::kBraveAdsEnabled) &&
+      profile_->GetPrefs()->GetTime(
+          prefs::kBraveAdsLaunchNotificationTimestamp) == base::Time()) {
+    profile_->GetPrefs()->SetBoolean(
+        prefs::kBraveAdsShowAdsNotification, false);
+  }
+
   profile_pref_change_registrar_.Init(profile_->GetPrefs());
   profile_pref_change_registrar_.Add(
       prefs::kBraveAdsEnabled,
@@ -364,10 +378,6 @@ void AdsServiceImpl::Start() {
     is_testing = true;
   }
 
-  if (ShouldShowAdsNotification()) {
-    profile_->GetPrefs()->SetBoolean(prefs::kRewardsShowAdsNotification, true);
-  }
-
   bat_ads_service_->SetProduction(is_production, base::NullCallback());
   bat_ads_service_->SetDebug(is_debug, base::NullCallback());
   bat_ads_service_->SetTesting(is_testing, base::NullCallback());
@@ -376,6 +386,58 @@ void AdsServiceImpl::Start() {
       base::BindOnce(&AdsServiceImpl::OnCreate, AsWeakPtr()));
 
   BackgroundHelper::GetInstance()->AddObserver(this);
+  MaybeShowFirstLaunchNotification();
+}
+
+void AdsServiceImpl::MaybeShowFirstLaunchNotification() {
+  if (!ShouldShowAdsNotification())
+    return;
+
+  if (profile_->GetPrefs()->GetTime(
+          prefs::kBraveAdsLaunchNotificationTimestamp) == base::Time()) {
+      profile_->GetPrefs()->SetTime(
+          brave_ads::prefs::kBraveAdsLaunchNotificationTimestamp,
+        base::Time::Now());
+  }
+
+  auto* rewards_service =
+      brave_rewards::RewardsServiceFactory::GetForProfile(profile_);
+
+  auto* rewards_notification_service =
+      rewards_service->GetNotificationService();
+
+  RewardsNotificationService::RewardsNotificationArgs args;
+  rewards_notification_service->AddNotification(
+      RewardsNotificationService::REWARDS_NOTIFICATION_ADS_LAUNCH,
+      args,
+      "rewards_notification_ads_launch");
+
+  auto timeout = base::Time::Now() - profile_->GetPrefs()->GetTime(
+      brave_ads::prefs::kBraveAdsLaunchNotificationTimestamp) +
+      base::TimeDelta::FromSeconds(24 * 60 * 60 * 7);
+
+  uint32_t timer_id = next_timer_id();
+  timers_[timer_id] = std::make_unique<base::OneShotTimer>();
+  timers_[timer_id]->Start(FROM_HERE,
+      timeout,
+      base::BindOnce(&AdsServiceImpl::FirstLaunchNotificationTimedOut,
+          AsWeakPtr(),
+          timer_id,
+          "rewards_notification_ads_launch"));
+}
+
+void AdsServiceImpl::FirstLaunchNotificationTimedOut(uint32_t timer_id,
+                                          const std::string& notification_id) {
+  timers_.erase(timer_id);
+  auto* rewards_service_ =
+      brave_rewards::RewardsServiceFactory::GetForProfile(profile_);
+
+  auto* rewards_notification_service =
+      rewards_service_->GetNotificationService();
+
+  rewards_notification_service->DeleteNotification(notification_id);
+  profile_->GetPrefs()->SetBoolean(
+      brave_ads::prefs::kBraveAdsShowAdsNotification, false);
 }
 
 void AdsServiceImpl::Stop() {
@@ -469,15 +531,7 @@ void AdsServiceImpl::set_ads_per_hour(int ads_per_hour) {
 }
 
 bool AdsServiceImpl::ShouldShowAdsNotification() const {
-  return profile_->GetPrefs()->GetBoolean(prefs::kRewardsShowAdsNotification);
-}
-
-uint64_t AdsServiceImpl::GetAdsLaunchTimestamp() const {
-  return profile_->GetPrefs()->GetUint64(prefs::kBraveAdsLaunchNotificationTimestamp);
-}
-
-uint64_t AdsServiceImpl::GetAdsLaunchTimeout() const {
-  return profile_->GetPrefs()->GetUint64(prefs::kBraveAdsLaunchNotificationTimeout);
+  return profile_->GetPrefs()->GetBoolean(prefs::kBraveAdsShowAdsNotification);
 }
 
 bool AdsServiceImpl::IsForeground() const {
