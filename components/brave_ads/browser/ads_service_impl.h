@@ -17,6 +17,7 @@
 #include "bat/ads/ads_client.h"
 #include "brave/components/brave_ads/browser/ads_service.h"
 #include "brave/components/brave_ads/browser/background_helper.h"
+#include "brave/components/brave_rewards/browser/rewards_notification_service_observer.h"
 #include "brave/components/services/bat_ads/public/interfaces/bat_ads.mojom.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "components/history/core/browser/history_service_observer.h"
@@ -27,6 +28,8 @@
 #if !defined(OS_ANDROID)
 #include "ui/base/idle/idle.h"
 #endif
+
+using brave_rewards::RewardsNotificationService;
 
 class NotificationDisplayService;
 class Profile;
@@ -44,6 +47,7 @@ class AdsServiceImpl : public AdsService,
                        public ads::AdsClient,
                        public net::URLFetcherDelegate,
                        public history::HistoryServiceObserver,
+                       public brave_rewards::RewardsNotificationServiceObserver,
                        BackgroundHelper::Observer,
                        public base::SupportsWeakPtr<AdsServiceImpl> {
  public:
@@ -154,6 +158,12 @@ class AdsServiceImpl : public AdsService,
   // BackgroundHelper::Observer impl
   void OnBackground() override;
   void OnForeground() override;
+
+  // RewardsNotificationServerObserver impl
+  void OnNotificationDeleted(
+      RewardsNotificationService* rewards_notification_service,
+      const RewardsNotificationService::RewardsNotification& notification)
+          override;
 
   void OnGetAdsForCategory(const ads::OnGetAdsCallback& callback,
                            const std::string& region,

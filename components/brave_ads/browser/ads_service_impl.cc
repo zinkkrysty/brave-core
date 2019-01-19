@@ -60,6 +60,13 @@ using brave_rewards::RewardsNotificationService;
 
 namespace brave_ads {
 
+namespace {
+
+const std::string rewards_notification_ads_launch =
+    "rewards_notification_ads_launch";
+
+}
+
 class LogStreamImpl : public ads::LogStream {
  public:
   LogStreamImpl(const char* file,
@@ -410,7 +417,7 @@ void AdsServiceImpl::MaybeShowFirstLaunchNotification() {
   rewards_notification_service->AddNotification(
       RewardsNotificationService::REWARDS_NOTIFICATION_ADS_LAUNCH,
       args,
-      "rewards_notification_ads_launch");
+      rewards_notification_ads_launch);
 
   auto timeout = base::Time::Now() - profile_->GetPrefs()->GetTime(
       brave_ads::prefs::kBraveAdsLaunchNotificationTimestamp) +
@@ -423,7 +430,7 @@ void AdsServiceImpl::MaybeShowFirstLaunchNotification() {
       base::BindOnce(&AdsServiceImpl::FirstLaunchNotificationTimedOut,
           AsWeakPtr(),
           timer_id,
-          "rewards_notification_ads_launch"));
+          rewards_notification_ads_launch));
 }
 
 void AdsServiceImpl::FirstLaunchNotificationTimedOut(uint32_t timer_id,
@@ -436,8 +443,15 @@ void AdsServiceImpl::FirstLaunchNotificationTimedOut(uint32_t timer_id,
       rewards_service_->GetNotificationService();
 
   rewards_notification_service->DeleteNotification(notification_id);
-  profile_->GetPrefs()->SetBoolean(
+}
+
+void AdsServiceImpl::OnNotificationDeleted(
+      RewardsNotificationService* rewards_notification_service,
+      const RewardsNotificationService::RewardsNotification& notification) {
+  if (notification.id_ == rewards_notification_ads_launch) {
+    profile_->GetPrefs()->SetBoolean(
       brave_ads::prefs::kBraveAdsShowAdsNotification, false);
+  }
 }
 
 void AdsServiceImpl::Stop() {
