@@ -29,6 +29,7 @@ npm-debug.log
 CMakeLists.txt
 cmake-build-debug/
 coverage/
+/build/rustup/
 components/brave_rewards/extension/brave_rewards/out/17d173bb066b4ac1fa10c2409b421e8e.woff2
 components/brave_rewards/extension/brave_rewards/out/1bb9aa85741c6d1c077f043324aae835.svg
 components/brave_rewards/extension/brave_rewards/out/21bfb482964742768c5020312af36224.svg
