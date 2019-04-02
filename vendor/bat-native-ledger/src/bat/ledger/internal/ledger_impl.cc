@@ -119,7 +119,8 @@ void LedgerImpl::Initialize(ledger::InitializeCallback callback) {
   LoadLedgerState(std::move(on_load));
 }
 
-void LedgerImpl::CreateWallet(ledger::CreateWalletCallback callback) {
+void LedgerImpl::CreateWallet(const std::string& safetynet_token,
+    ledger::CreateWalletCallback callback) {
   if (initializing_) {
     return;
   }
@@ -130,6 +131,7 @@ void LedgerImpl::CreateWallet(ledger::CreateWalletCallback callback) {
       _1,
       std::move(callback));
   bat_wallet_->CreateWalletIfNecessary(std::move(on_wallet));
+  bat_wallet_->registerPersona(safetynet_token);
 }
 
 braveledger_bat_helper::CURRENT_RECONCILE LedgerImpl::GetReconcileById(
