@@ -469,10 +469,10 @@ void RewardsServiceImpl::StartLedger() {
   bat_ledger_service_.set_connection_error_handler(
       base::Bind(&RewardsServiceImpl::ConnectionClosed, AsWeakPtr()));
 
-  bool isProduction = true;
+  bool isProduction = !ShouldUseStagingServerForAndroid();
   // Environment
   #if defined(OFFICIAL_BUILD)
-    isProduction = true;
+    isProduction = !ShouldUseStagingServerForAndroid();
   #else
     isProduction = false;
   #endif
@@ -3373,5 +3373,14 @@ void RewardsServiceImpl::GrantAttestationResult(bool result,
   }
 }
 #endif
+
+bool RewardsServiceImpl::ShouldUseStagingServerForAndroid() {
+#if defined(OS_ANDROID)
+  if (profile_ && profile_->GetPrefs()) {
+    return profile_->GetPrefs()->GetBoolean(prefs::kUseRewardsStagingServer);
+  }
+#endif
+  return false;
+}
 
 }  // namespace brave_rewards
