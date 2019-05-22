@@ -333,8 +333,8 @@
   <message name="IDS_BOOKMARK_MANAGER_CLEAR_SEARCH" desc="Title of the button in the bookmark manager that stops a search.">
     Clear search
   </message>
-  <message name="IDS_BOOKMARK_MANAGER_EMPTY_LIST" desc="The message shown when the user has no bookmarks added. 'Star' refers to the icon in the omnibox for adding to bookmarks.">
-    To bookmark pages, click the star in the address bar
+  <message name="IDS_BOOKMARK_MANAGER_EMPTY_LIST" desc="The message shown when the user has no bookmarks added.">
+    To add a bookmark, click the bookmark button next to the address bar
   </message>
    <message name="IDS_BOOKMARK_MANAGER_EMPTY_UNMODIFIABLE_LIST" desc="The message shown when an unmodifiable bookmark folder is empty.">
     This folder is empty
