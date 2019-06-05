@@ -48,6 +48,8 @@ source_set("browser") {
       "background_helper_mac.h",
       "background_helper_win.cc",
       "background_helper_win.h",
+      "background_helper_android.cc",
+      "background_helper_android.h",
       "locale_helper.cc",
       "locale_helper.h",
       "locale_helper_linux.cc",
