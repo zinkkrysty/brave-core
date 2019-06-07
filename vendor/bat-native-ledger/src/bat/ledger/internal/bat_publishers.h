@@ -63,15 +63,15 @@ class BatPublishers : public ledger::LedgerCallbackHandler {
 
   void setPublisherAllowVideos(const bool& allow);
 
-  void setBalanceReport(ledger::ACTIVITY_MONTH month,
+  void SetBalanceReport(ledger::ACTIVITY_MONTH month,
                         int year,
-                        const ledger::BalanceReportInfo& report_info);
+                        ledger::BalanceReportInfoPtr report_info);
 
-  bool getBalanceReport(ledger::ACTIVITY_MONTH month,
+  bool GetBalanceReport(ledger::ACTIVITY_MONTH month,
                         int year,
-                        ledger::BalanceReportInfo* report_info);
+                        ledger::BalanceReportInfoPtr report_info);
 
-  std::map<std::string, ledger::BalanceReportInfo> getAllBalanceReports();
+  std::map<std::string, ledger::BalanceReportInfo> GetAllBalanceReports();
 
   uint64_t getPublisherMinVisitTime() const;  // In milliseconds
 

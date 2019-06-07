@@ -21,8 +21,13 @@
 #include "bat/ledger/transactions_info.h"
 #include "bat/ledger/rewards_internals_info.h"
 #include "bat/ledger/pending_contribution.h"
+#include "bat/ledger/public/interfaces/ledger.mojom.h"
 
 namespace ledger {
+
+using BalanceReportInfo = ledger::mojom::BalanceReportInfo;
+using BalanceReportInfoPtr = ledger::mojom::BalanceReportInfoPtr;
+using BalanceReportInfoList = std::vector<BalanceReportInfoPtr>;
 
 extern bool is_production;
 extern bool is_debug;

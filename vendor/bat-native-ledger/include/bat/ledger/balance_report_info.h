@@ -21,25 +21,6 @@ LEDGER_EXPORT enum ReportType {
   TIP = 5
 };
 
-LEDGER_EXPORT struct BalanceReportInfo {
-  BalanceReportInfo();
-  BalanceReportInfo(const BalanceReportInfo&);
-  ~BalanceReportInfo();
-
-  const std::string ToJson() const;
-  bool loadFromJson(const std::string& json);
-
-  std::string opening_balance_ = "0";
-  std::string closing_balance_ = "0";
-  std::string deposits_ = "0";
-  std::string grants_ = "0";
-  std::string earning_from_ads_ = "0";
-  std::string auto_contribute_ = "0";
-  std::string recurring_donation_ = "0";
-  std::string one_time_donation_ = "0";
-  std::string total_ = "0";
-};
-
 }  // namespace ledger
 
 #endif  // BAT_LEDGER_BALANCE_REPORT_INFO_HANDLER_

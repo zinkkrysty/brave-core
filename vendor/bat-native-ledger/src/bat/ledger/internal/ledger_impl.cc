@@ -806,19 +806,19 @@ bool LedgerImpl::GetBalanceReport(
     ledger::ACTIVITY_MONTH month,
     int year,
     ledger::BalanceReportInfo* report_info) const {
-  return bat_publishers_->getBalanceReport(month, year, report_info);
+  return bat_publishers_->GetBalanceReport(month, year, report_info);
 }
 
 std::map<std::string, ledger::BalanceReportInfo>
 LedgerImpl::GetAllBalanceReports() const {
-  return bat_publishers_->getAllBalanceReports();
+  return bat_publishers_->GetAllBalanceReports();
 }
 
 void LedgerImpl::SetBalanceReport(
     ledger::ACTIVITY_MONTH month,
     int year,
     const ledger::BalanceReportInfo& report_info) {
-  bat_publishers_->setBalanceReport(month, year, report_info);
+  bat_publishers_->SetBalanceReport(month, year, report_info);
 }
 
 void LedgerImpl::SaveUnverifiedContribution(

@@ -49,3 +49,15 @@ struct PendingContributionInfo {
   string viewing_id;
   uint64 expiration_date;
 };
+
+struct BalanceReportInfo {
+  string opening_balance = 0;
+  string closing_balance;
+  string deposits;
+  string grants;
+  string earnings_from_ads;
+  string auto_contribute;
+  string recurring_donation;
+  string one_time_donation;
+  string total;
+};

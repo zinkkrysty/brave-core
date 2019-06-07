@@ -292,17 +292,17 @@ void BatLedgerImpl::GetAllBalanceReports(
   auto reports = ledger_->GetAllBalanceReports();
   base::flat_map<std::string, std::string> out_reports;
   for (auto const& report : reports) {
-    out_reports[report.first] = report.second.ToJson();
+    out_reports[report.first] = report.second;
   }
   std::move(callback).Run(out_reports);
 }
 
 void BatLedgerImpl::GetBalanceReport(int32_t month, int32_t year,
     GetBalanceReportCallback callback) {
-  ledger::BalanceReportInfo info;
+  BalanceReportInfo info;
   bool result =
     ledger_->GetBalanceReport(ToLedgerPublisherMonth(month), year, &info);
-  std::move(callback).Run(result, info.ToJson());
+  std::move(callback).Run(result, info);
 }
 
 void BatLedgerImpl::IsWalletCreated(IsWalletCreatedCallback callback) {
