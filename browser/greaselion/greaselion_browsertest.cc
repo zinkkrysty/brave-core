@@ -38,7 +38,8 @@ const char kLocalDataFilesComponentTestBase64PublicKey[] =
 class GreaselionDownloadServiceWaiter
     : public GreaselionDownloadService::Observer {
  public:
-  GreaselionDownloadServiceWaiter(GreaselionDownloadService* download_service)
+  explicit GreaselionDownloadServiceWaiter(
+      GreaselionDownloadService* download_service)
       : download_service_(download_service), scoped_observer_(this) {
     scoped_observer_.Add(download_service_);
   }
