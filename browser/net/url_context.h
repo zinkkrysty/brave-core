@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback.h"
 #include "chrome/browser/net/chrome_network_delegate.h"
 #include "content/public/common/resource_type.h"
 #include "net/url_request/url_request.h"
@@ -19,8 +20,7 @@ class BraveNetworkDelegateBase;
 namespace brave {
 
 struct BraveRequestInfo;
-using ResponseCallback = base::Callback<void()>;
-
+using ResponseCallback = base::RepeatingCallback<int(int)>;
 }  // namespace brave
 
 namespace brave_rewards {
@@ -99,6 +99,7 @@ struct BraveRequestInfo {
       const brave::ResponseCallback& next_callback,
       std::shared_ptr<brave::BraveRequestInfo> ctx);
   friend class ::BraveNetworkDelegateBase;
+  friend class NetworkRequestHandler;
 
   // Don't use this directly after any dispatch
   // request is deprecated, do not use it.
@@ -110,8 +111,8 @@ struct BraveRequestInfo {
 
 // ResponseListener
 using OnBeforeURLRequestCallback =
-    base::Callback<int(const ResponseCallback& next_callback,
-        std::shared_ptr<BraveRequestInfo> ctx)>;
+    base::RepeatingCallback<int(const ResponseCallback& next_callback,
+                       std::shared_ptr<BraveRequestInfo> ctx)>;
 using OnBeforeStartTransactionCallback =
     base::Callback<int(net::URLRequest* request,
         net::HttpRequestHeaders* headers,

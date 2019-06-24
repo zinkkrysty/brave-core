@@ -27,6 +27,11 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "url/gurl.h"
 
+namespace brave {
+struct BraveRequestInfo;
+class NetworkRequestHandler;
+}
+
 namespace content {
 class ResourceContext;
 }  // namespace content
@@ -48,7 +53,6 @@ class BraveProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory,
    public:
     InProgressRequest(
         BraveProxyingURLLoaderFactory* factory,
-        uint64_t request_id,
         int32_t routing_id,
         int32_t network_service_request_id,
         uint32_t options,
@@ -185,6 +189,7 @@ class BraveProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory,
   // by calling MaybeProxyRequest().
   BraveProxyingURLLoaderFactory(
       Profile* browser_context,
+      std::shared_ptr<brave::BraveRequestInfo> ctx,
       int render_process_id,
       bool is_download,
       network::mojom::URLLoaderFactoryRequest request,
@@ -231,6 +236,7 @@ class BraveProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory,
   void MaybeRemoveProxy();
 
   Profile* profile_;
+  std::shared_ptr<brave::BraveRequestInfo> ctx_;
   const int render_process_id_;
   const bool is_download_;
 
@@ -250,6 +256,8 @@ class BraveProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory,
   std::set<std::unique_ptr<InProgressRequest>, base::UniquePtrComparator>
       requests_;
   DisconnectCallback disconnect_callback_;
+
+  std::unique_ptr<brave::NetworkRequestHandler> network_request_handler_;
 
   base::WeakPtrFactory<BraveProxyingURLLoaderFactory> weak_factory_;
 

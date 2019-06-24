@@ -42,7 +42,7 @@ void OnBeforeURLRequest_HttpsePostFileWork(
         brave_shields::kHTTPUpgradableResources);
   }
 
-  next_callback.Run();
+  next_callback.Run(net::OK);
 }
 
 int OnBeforeURLRequest_HttpsePreFileWork(

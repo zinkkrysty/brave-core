@@ -26,6 +26,8 @@ source_set("net") {
     "brave_static_redirect_network_delegate_helper.h",
     "brave_system_network_delegate.cc",
     "brave_system_network_delegate.h",
+    "network_request_handler.cc",
+    "network_request_handler.h",
     "url_context.cc",
     "url_context.h",
   ]

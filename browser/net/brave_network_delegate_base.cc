@@ -175,7 +175,7 @@ int BraveNetworkDelegateBase::OnBeforeURLRequest(
   ctx->new_url = new_url;
   ctx->event_type = brave::kOnBeforeRequest;
   callbacks_[request->identifier()] = std::move(callback);
-  RunNextCallback(request, ctx);
+  // RunNextCallback(request, ctx);
   return net::ERR_IO_PENDING;
 }
 
@@ -193,7 +193,7 @@ int BraveNetworkDelegateBase::OnBeforeStartTransaction(
   ctx->headers = headers;
   ctx->referral_headers_list = referral_headers_list_.get();
   callbacks_[request->identifier()] = std::move(callback);
-  RunNextCallback(request, ctx);
+  // RunNextCallback(request, ctx);
   return net::ERR_IO_PENDING;
 }
 
@@ -227,10 +227,10 @@ int BraveNetworkDelegateBase::OnHeadersReceived(
   // URLRequestHttpJob::awaiting_callback_ will be set to true after we
   // return net::ERR_IO_PENDING here, callbacks need to be run later than this
   // to set awaiting_callback_ back to false.
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
-      base::Bind(&BraveNetworkDelegateBase::RunNextCallback,
-                 base::Unretained(this), request, ctx));
+  // base::PostTaskWithTraits(
+  //     FROM_HERE, {BrowserThread::IO},
+  //     base::Bind(&BraveNetworkDelegateBase::RunNextCallback,
+  //                base::Unretained(this), request, ctx));
   return net::ERR_IO_PENDING;
 }
 
@@ -288,139 +288,136 @@ bool BraveNetworkDelegateBase::OnCanSetCookie(
   return allow;
 }
 
-void BraveNetworkDelegateBase::RunCallbackForRequestIdentifier(
-    uint64_t request_identifier,
-    int rv) {
-  std::map<uint64_t, net::CompletionOnceCallback>::iterator it =
-      callbacks_.find(request_identifier);
-  std::move(it->second).Run(rv);
-}
+// void BraveNetworkDelegateBase::RunCallbackForRequestIdentifier(
+//     uint64_t request_identifier,
+//     int rv) {
+//   std::map<uint64_t, net::CompletionOnceCallback>::iterator it =
+//       callbacks_.find(request_identifier);
+//   std::move(it->second).Run(rv);
+// }
 
-void BraveNetworkDelegateBase::RunNextCallback(
-    URLRequest* request,
-    std::shared_ptr<brave::BraveRequestInfo> ctx) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+// void BraveNetworkDelegateBase::RunNextCallback(
+//     URLRequest* request,
+//     std::shared_ptr<brave::BraveRequestInfo> ctx) {
+//   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  if (!ContainsKey(callbacks_, ctx->request_identifier)) {
-    return;
-  }
+//   if (!ContainsKey(callbacks_, ctx->request_identifier)) {
+//     return;
+//   }
 
-  if (request->status().status() == net::URLRequestStatus::CANCELED) {
-    return;
-  }
+//   if (request->status().status() == net::URLRequestStatus::CANCELED) {
+//     return;
+//   }
 
-  // Continue processing callbacks until we hit one that returns PENDING
-  int rv = net::OK;
+//   // Continue processing callbacks until we hit one that returns PENDING
+//   int rv = net::OK;
 
-  if (ctx->event_type == brave::kOnBeforeRequest) {
-    while (before_url_request_callbacks_.size() !=
-           ctx->next_url_request_index) {
-      brave::OnBeforeURLRequestCallback callback =
-          before_url_request_callbacks_[ctx->next_url_request_index++];
-      brave::ResponseCallback next_callback =
-          base::Bind(&BraveNetworkDelegateBase::RunNextCallback,
-                     base::Unretained(this), request, ctx);
-      rv = callback.Run(next_callback, ctx);
-      if (rv == net::ERR_IO_PENDING) {
-        return;
-      }
-      if (rv != net::OK) {
-        break;
-      }
-    }
-  } else if (ctx->event_type == brave::kOnBeforeStartTransaction) {
-    while (before_start_transaction_callbacks_.size() !=
-           ctx->next_url_request_index) {
-      brave::OnBeforeStartTransactionCallback callback =
-          before_start_transaction_callbacks_[ctx->next_url_request_index++];
-      brave::ResponseCallback next_callback =
-          base::Bind(&BraveNetworkDelegateBase::RunNextCallback,
-                     base::Unretained(this), request, ctx);
-      rv = callback.Run(request, ctx->headers, next_callback, ctx);
-      if (rv == net::ERR_IO_PENDING) {
-        return;
-      }
-      if (rv != net::OK) {
-        break;
-      }
-    }
-  } else if (ctx->event_type == brave::kOnHeadersReceived) {
-    while (headers_received_callbacks_.size() != ctx->next_url_request_index) {
-      brave::OnHeadersReceivedCallback callback =
-          headers_received_callbacks_[ctx->next_url_request_index++];
-      brave::ResponseCallback next_callback =
-          base::Bind(&BraveNetworkDelegateBase::RunNextCallback,
-                     base::Unretained(this), request, ctx);
-      rv = callback.Run(request, ctx->original_response_headers,
-                        ctx->override_response_headers,
-                        ctx->allowed_unsafe_redirect_url, next_callback, ctx);
-      if (rv == net::ERR_IO_PENDING) {
-        return;
-      }
-      if (rv != net::OK) {
-        break;
-      }
-    }
-  }
+//   if (ctx->event_type == brave::kOnBeforeRequest) {
+//     while (before_url_request_callbacks_.size() !=
+//            ctx->next_url_request_index) {
+//       brave::OnBeforeURLRequestCallback callback =
+//           before_url_request_callbacks_[ctx->next_url_request_index++];
+//       brave::ResponseCallback next_callback =
+//           base::Bind(&BraveNetworkDelegateBase::RunNextCallback,
+//                      base::Unretained(this), request, ctx);
+//       rv = callback.Run(next_callback, ctx);
+//       if (rv == net::ERR_IO_PENDING) {
+//         return;
+//       }
+//       if (rv != net::OK) {
+//         break;
+//       }
+//     }
+//   } else if (ctx->event_type == brave::kOnBeforeStartTransaction) {
+//     while (before_start_transaction_callbacks_.size() !=
+//            ctx->next_url_request_index) {
+//       brave::OnBeforeStartTransactionCallback callback =
+//           before_start_transaction_callbacks_[ctx->next_url_request_index++];
+//       brave::ResponseCallback next_callback =
+//           base::Bind(&BraveNetworkDelegateBase::RunNextCallback,
+//                      base::Unretained(this), request, ctx);
+//       rv = callback.Run(request, ctx->headers, next_callback, ctx);
+//       if (rv == net::ERR_IO_PENDING) {
+//         return;
+//       }
+//       if (rv != net::OK) {
+//         break;
+//       }
+//     }
+//   } else if (ctx->event_type == brave::kOnHeadersReceived) {
+//     while (headers_received_callbacks_.size() != ctx->next_url_request_index) {
+//       brave::OnHeadersReceivedCallback callback =
+//           headers_received_callbacks_[ctx->next_url_request_index++];
+//       brave::ResponseCallback next_callback =
+//           base::Bind(&BraveNetworkDelegateBase::RunNextCallback,
+//                      base::Unretained(this), request, ctx);
+//       rv = callback.Run(request, ctx->original_response_headers,
+//                         ctx->override_response_headers,
+//                         ctx->allowed_unsafe_redirect_url, next_callback, ctx);
+//       if (rv == net::ERR_IO_PENDING) {
+//         return;
+//       }
+//       if (rv != net::OK) {
+//         break;
+//       }
+//     }
+//   }
 
-  if (rv != net::OK) {
-    RunCallbackForRequestIdentifier(ctx->request_identifier, rv);
-    return;
-  }
+//   if (rv != net::OK) {
+//     RunCallbackForRequestIdentifier(ctx->request_identifier, rv);
+//     return;
+//   }
 
-  net::CompletionOnceCallback wrapped_callback =
-      base::BindOnce(&BraveNetworkDelegateBase::RunCallbackForRequestIdentifier,
-                     base::Unretained(this), ctx->request_identifier);
+//   net::CompletionOnceCallback wrapped_callback =
+//       base::BindOnce(&BraveNetworkDelegateBase::RunCallbackForRequestIdentifier,
+//                      base::Unretained(this), ctx->request_identifier);
 
-  if (ctx->event_type == brave::kOnBeforeRequest) {
-    if (!ctx->new_url_spec.empty() &&
-        (ctx->new_url_spec != ctx->request_url.spec()) &&
-        IsRequestIdentifierValid(ctx->request_identifier)) {
-      *ctx->new_url = GURL(ctx->new_url_spec);
-    }
-    if (ctx->blocked_by == brave::kAdBlocked ||
-        ctx->blocked_by == brave::kTrackerBlocked) {
-      // We are going to intercept this request and block it later in the
-      // network stack.
-      if (ctx->cancel_request_explicitly) {
-        RunCallbackForRequestIdentifier(ctx->request_identifier,
-            net::ERR_ABORTED);
-        return;
-      }
-      request->SetExtraRequestHeaderByName("X-Brave-Block", "", true);
-    }
-    if (!ctx->new_referrer.is_empty()) {
-      request->SetReferrer(ctx->new_referrer.spec());
-    }
-    rv = ChromeNetworkDelegate::OnBeforeURLRequest(
-        request, std::move(wrapped_callback), ctx->new_url);
-  } else if (ctx->event_type == brave::kOnBeforeStartTransaction) {
-    rv = ChromeNetworkDelegate::OnBeforeStartTransaction(
-        request, std::move(wrapped_callback), ctx->headers);
-  } else if (ctx->event_type == brave::kOnHeadersReceived) {
-    rv = ChromeNetworkDelegate::OnHeadersReceived(
-        request, std::move(wrapped_callback), ctx->original_response_headers,
-        ctx->override_response_headers, ctx->allowed_unsafe_redirect_url);
-  }
+//   if (ctx->event_type == brave::kOnBeforeRequest) {
+//     if (!ctx->new_url_spec.empty() &&
+//         (ctx->new_url_spec != ctx->request_url.spec()) &&
+//         IsRequestIdentifierValid(ctx->request_identifier)) {
+//       *ctx->new_url = GURL(ctx->new_url_spec);
+//     }
+//     if (ctx->blocked_by == brave::kAdBlocked ||
+//         ctx->blocked_by == brave::kTrackerBlocked) {
+//       // We are going to intercept this request and block it later in the
+//       // network stack.
+//       if (ctx->cancel_request_explicitly) {
+//         RunCallbackForRequestIdentifier(ctx->request_identifier,
+//             net::ERR_ABORTED);
+//         return;
+//       }
+//       request->SetExtraRequestHeaderByName("X-Brave-Block", "", true);
+//     }
+//     rv = ChromeNetworkDelegate::OnBeforeURLRequest(
+//         request, std::move(wrapped_callback), ctx->new_url);
+//   } else if (ctx->event_type == brave::kOnBeforeStartTransaction) {
+//     rv = ChromeNetworkDelegate::OnBeforeStartTransaction(
+//         request, std::move(wrapped_callback), ctx->headers);
+//   } else if (ctx->event_type == brave::kOnHeadersReceived) {
+//     rv = ChromeNetworkDelegate::OnHeadersReceived(
+//         request, std::move(wrapped_callback), ctx->original_response_headers,
+//         ctx->override_response_headers, ctx->allowed_unsafe_redirect_url);
+//   }
 
-  // ChromeNetworkDelegate returns net::ERR_IO_PENDING if an extension is
-  // intercepting the request and OK if the request should proceed normally.
-  if (rv != net::ERR_IO_PENDING) {
-    RunCallbackForRequestIdentifier(ctx->request_identifier, rv);
-  }
-}
+//   // ChromeNetworkDelegate returns net::ERR_IO_PENDING if an extension is
+//   // intercepting the request and OK if the request should proceed normally.
+//   if (rv != net::ERR_IO_PENDING) {
+//     RunCallbackForRequestIdentifier(ctx->request_identifier, rv);
+//   }
+// }
 
-void BraveNetworkDelegateBase::OnURLRequestDestroyed(URLRequest* request) {
-  if (ContainsKey(callbacks_, request->identifier())) {
-    callbacks_.erase(request->identifier());
-  }
-  ChromeNetworkDelegate::OnURLRequestDestroyed(request);
-}
+// void BraveNetworkDelegateBase::OnURLRequestDestroyed(URLRequest* request) {
+//   if (ContainsKey(callbacks_, request->identifier())) {
+//     callbacks_.erase(request->identifier());
+//   }
+//   ChromeNetworkDelegate::OnURLRequestDestroyed(request);
+// }
 
-bool BraveNetworkDelegateBase::IsRequestIdentifierValid(
-    uint64_t request_identifier) {
-  return ContainsKey(callbacks_, request_identifier);
-}
+// bool BraveNetworkDelegateBase::IsRequestIdentifierValid(
+//     uint64_t request_identifier) {
+//   return ContainsKey(callbacks_, request_identifier);
+// }
 
 void BraveNetworkDelegateBase::OnPreferenceChanged(
     const std::string& pref_name) {

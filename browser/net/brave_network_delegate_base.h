@@ -72,12 +72,12 @@ class BraveNetworkDelegateBase : public ChromeNetworkDelegate {
                       net::CookieOptions* options,
                       bool allowed_from_caller) override;
 
-  void OnURLRequestDestroyed(net::URLRequest* request) override;
-  void RunCallbackForRequestIdentifier(uint64_t request_identifier, int rv);
+  // void OnURLRequestDestroyed(net::URLRequest* request) override;
+  // void RunCallbackForRequestIdentifier(uint64_t request_identifier, int rv);
 
  protected:
-  void RunNextCallback(net::URLRequest* request,
-                       std::shared_ptr<brave::BraveRequestInfo> ctx);
+  // void RunNextCallback(net::URLRequest* request,
+                       // std::shared_ptr<brave::BraveRequestInfo> ctx);
   std::vector<brave::OnBeforeURLRequestCallback> before_url_request_callbacks_;
   std::vector<brave::OnBeforeStartTransactionCallback>
       before_start_transaction_callbacks_;
