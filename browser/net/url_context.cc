@@ -78,7 +78,6 @@ std::string GetUploadDataFromURLRequest(const net::URLRequest* request) {
   }
   return upload_data;
 }
-
 }  // namespace
 
 BraveRequestInfo::BraveRequestInfo() = default;
@@ -159,6 +158,8 @@ void BraveRequestInfo::FillCTX(
 
   ctx->resource_type =
       static_cast<content::ResourceType>(request.resource_type);
+
+  ctx->is_webtorrent_disabled = IsWebTorrentDisabled(resource_context);
 
   ctx->render_frame_id = request.render_frame_id;
   ctx->render_process_id = render_process_id;
