@@ -235,9 +235,6 @@ void BraveRequestInfo::FillCTX(
       brave_shields::kReferrers);
 
   ctx->upload_data = GetUploadData(request);
-
-  // TODO(iefremov): Erase this from the struct.
-  ctx->request = nullptr;
 }
 
 
