@@ -226,6 +226,7 @@ void PageGraph::RegisterDocumentRootCreated(const blink::DOMNodeId node_id,
 
   Log("RegisterDocumentRootCreated) node id: " + to_string(node_id)
     + " parent node id: " + to_string(parent_node_id));
+  NodeActor* const acting_node = GetCurrentActingNode();
 
   LOG_ASSERT(element_nodes_.count(parent_node_id) == 1);
 
@@ -236,7 +237,6 @@ void PageGraph::RegisterDocumentRootCreated(const blink::DOMNodeId node_id,
   Log("Child document ID: " + to_string(node_id));
 
   // Add the node creation edge.
-  NodeActor* const acting_node = GetCurrentActingNode();
   const EdgeNodeCreate* const creation_edge = new EdgeNodeCreate(this,
       acting_node, dom_root);
   AddEdge(creation_edge);
@@ -266,8 +266,10 @@ void PageGraph::RegisterDocumentRootCreated(const blink::DOMNodeId node_id,
 void PageGraph::RegisterHTMLElementNodeCreated(const DOMNodeId node_id,
     const String& tag_name) {
   string local_tag_name(tag_name.Utf8().data());
+
   Log("RegisterHTMLElementNodeCreated) node id: " + to_string(node_id)
     + " (" + local_tag_name + ")");
+  NodeActor* const acting_node = GetCurrentActingNode();
 
   LOG_ASSERT(element_nodes_.count(node_id) == 0);
   NodeHTMLElement* const new_node = new NodeHTMLElement(this,
@@ -275,8 +277,6 @@ void PageGraph::RegisterHTMLElementNodeCreated(const DOMNodeId node_id,
 
   AddNode(new_node);
   element_nodes_.emplace(node_id, new_node);
-
-  NodeActor* const acting_node = GetCurrentActingNode();
 
   const EdgeNodeCreate* const edge = new EdgeNodeCreate(this,
     acting_node, new_node);
@@ -289,14 +289,15 @@ void PageGraph::RegisterHTMLElementNodeCreated(const DOMNodeId node_id,
 void PageGraph::RegisterHTMLTextNodeCreated(const DOMNodeId node_id,
     const String& text) {
   string local_text(text.Utf8().data());
+
   Log("RegisterHTMLTextNodeCreated) node id: " + to_string(node_id)
     + ", text: '" + local_text + "'");
+  NodeActor* const acting_node = GetCurrentActingNode();
+
   LOG_ASSERT(text_nodes_.count(node_id) == 0);
   NodeHTMLText* const new_node = new NodeHTMLText(this, node_id, local_text);
   AddNode(new_node);
   text_nodes_.emplace(node_id, new_node);
-
-  NodeActor* const acting_node = GetCurrentActingNode();
 
   const EdgeNodeCreate* const edge = new EdgeNodeCreate(this,
     acting_node, new_node);
@@ -313,7 +314,6 @@ void PageGraph::RegisterHTMLElementNodeInserted(const DOMNodeId node_id,
   Log("RegisterHTMLElementNodeInserted) node id: " + to_string(node_id)
     + ", parent id: " + to_string(inserted_parent_node_id)
     + ", prev sibling id: " + to_string(before_sibling_id));
-
   NodeActor* const acting_node = GetCurrentActingNode();
 
   LOG_ASSERT(element_nodes_.count(node_id) == 1);
@@ -335,11 +335,10 @@ void PageGraph::RegisterHTMLTextNodeInserted(const DOMNodeId node_id,
   Log("RegisterHTMLTextNodeInserted) node id: " + to_string(node_id)
     + ", parent id: " + to_string(inserted_parent_node_id)
     + ", prev sibling id: " + to_string(before_sibling_id));
+  NodeActor* const acting_node = GetCurrentActingNode();
 
   LOG_ASSERT(text_nodes_.count(node_id) == 1);
   NodeHTMLText* const inserted_node = text_nodes_.at(node_id);
-
-  NodeActor* const acting_node = GetCurrentActingNode();
 
   const EdgeNodeInsert* const edge = new EdgeNodeInsert(this,
     acting_node, inserted_node, inserted_parent_node_id, before_sibling_id);
@@ -351,10 +350,10 @@ void PageGraph::RegisterHTMLTextNodeInserted(const DOMNodeId node_id,
 
 void PageGraph::RegisterHTMLElementNodeRemoved(const DOMNodeId node_id) {
   Log("RegisterHTMLElementNodeRemoved) node id: " + to_string(node_id));
+  NodeActor* const acting_node = GetCurrentActingNode();
+
   LOG_ASSERT(element_nodes_.count(node_id) == 1);
   NodeHTMLElement* const removed_node = element_nodes_.at(node_id);
-
-  NodeActor* const acting_node = GetCurrentActingNode();
 
   const EdgeNodeRemove* const edge = new EdgeNodeRemove(this,
     static_cast<NodeScript*>(acting_node), removed_node);
@@ -366,11 +365,10 @@ void PageGraph::RegisterHTMLElementNodeRemoved(const DOMNodeId node_id) {
 
 void PageGraph::RegisterHTMLTextNodeRemoved(const DOMNodeId node_id) {
   Log("RegisterHTMLTextNodeRemoved) node id: " + to_string(node_id));
+  NodeActor* const acting_node = GetCurrentActingNode();
 
   LOG_ASSERT(text_nodes_.count(node_id) == 1);
   NodeHTMLText* const removed_node = text_nodes_.at(node_id);
-
-  NodeActor* const acting_node = GetCurrentActingNode();
 
   const EdgeNodeRemove* const edge = new EdgeNodeRemove(this,
     static_cast<NodeScript*>(acting_node), removed_node);
@@ -413,7 +411,6 @@ void PageGraph::RegisterEventListenerAdd(const blink::DOMNodeId node_id,
     + ", event_type: " + local_event_type
     + ", listener_id: " + to_string(listener_id)
     + ", listener_script_id: " + to_string(listener_script_id));
-
   NodeActor* const acting_node = GetCurrentActingNode();
 
   LOG_ASSERT(element_nodes_.count(node_id) == 1);
@@ -438,7 +435,6 @@ void PageGraph::RegisterEventListenerRemove(const blink::DOMNodeId node_id,
     + ", event_type: " + local_event_type
     + ", listener_id: " + to_string(listener_id)
     + ", listener_script_id: " + to_string(listener_script_id));
-
   NodeActor* const acting_node = GetCurrentActingNode();
 
   LOG_ASSERT(element_nodes_.count(node_id) == 1);
@@ -461,11 +457,10 @@ void PageGraph::RegisterInlineStyleSet(const DOMNodeId node_id,
   Log("RegisterInlineStyleSet) node id: " + to_string(node_id)
     + ", attr: " + local_attr_name
     + ", value: " + local_attr_value);
+  NodeActor* const acting_node = GetCurrentActingNode();
 
   LOG_ASSERT(element_nodes_.count(node_id) == 1);
-
   NodeHTMLElement* const target_node = element_nodes_.at(node_id);
-  NodeActor* const acting_node = GetCurrentActingNode();
 
   const EdgeAttributeSet* const edge = new EdgeAttributeSet(this,
     acting_node, target_node, local_attr_name, local_attr_value, true);
@@ -481,11 +476,10 @@ void PageGraph::RegisterInlineStyleDelete(const DOMNodeId node_id,
 
   Log("RegisterInlineStyleDelete) node id: " + to_string(node_id)
     + ", attr: " + local_attr_name);
+  NodeActor* const acting_node = GetCurrentActingNode();
 
   LOG_ASSERT(element_nodes_.count(node_id) == 1);
-
   NodeHTMLElement* const target_node = element_nodes_.at(node_id);
-  NodeActor* const acting_node = GetCurrentActingNode();
 
   const EdgeAttributeDelete* const edge = new EdgeAttributeDelete(this,
     acting_node, target_node, local_attr_name, true);
@@ -503,11 +497,10 @@ void PageGraph::RegisterAttributeSet(const DOMNodeId node_id,
   Log("RegisterAttributeSet) node id: " + to_string(node_id)
     + ", attr: " + local_attr_name
     + ", value: " + local_attr_value);
+  NodeActor* const acting_node = GetCurrentActingNode();
 
   LOG_ASSERT(element_nodes_.count(node_id) == 1);
-
   NodeHTMLElement* const target_node = element_nodes_.at(node_id);
-  NodeActor* const acting_node = GetCurrentActingNode();
 
   const EdgeAttributeSet* const edge = new EdgeAttributeSet(this,
     acting_node, target_node, local_attr_name, local_attr_value);
@@ -523,12 +516,11 @@ void PageGraph::RegisterAttributeDelete(const DOMNodeId node_id,
 
   Log("RegisterAttributeDelete) node id: " + to_string(node_id)
     + ", attr: " + local_attr_name);
+  NodeActor* const acting_node = GetCurrentActingNode();
 
   LOG_ASSERT(element_nodes_.count(node_id) == 1);
-
   NodeHTMLElement* const target_node = element_nodes_.at(node_id);
 
-  NodeActor* const acting_node = GetCurrentActingNode();
   const EdgeAttributeDelete* const edge = new EdgeAttributeDelete(this,
     acting_node, target_node, local_attr_name);
   AddEdge(edge);
@@ -540,11 +532,11 @@ void PageGraph::RegisterAttributeDelete(const DOMNodeId node_id,
 void PageGraph::RegisterTextNodeChange(const blink::DOMNodeId node_id,
     const String& new_text) {
   Log("RegisterNewTextNodeText) node id: " + to_string(node_id));
-  LOG_ASSERT(text_nodes_.count(node_id) == 1);
-
-  NodeHTMLText* const text_node = text_nodes_.at(node_id);
   NodeScript* const acting_node = static_cast<NodeScript*>(
     GetCurrentActingNode());
+
+  LOG_ASSERT(text_nodes_.count(node_id) == 1);
+  NodeHTMLText* const text_node = text_nodes_.at(node_id);
 
   string local_new_text(new_text.Utf8().data());
   const EdgeTextChange* const edge = new EdgeTextChange(this,
@@ -596,15 +588,14 @@ void PageGraph::RegisterRequestStartFromElm(const DOMNodeId node_id,
 
 void PageGraph::RegisterRequestStartFromCurrentScript(
     const InspectorId request_id, const KURL& url, const RequestType type) {
-  NodeActor* const acting_node = GetCurrentActingNode();
   const KURL normalized_url = NormalizeUrl(url);
   const string local_url(normalized_url.GetString().Utf8().data());
 
-  Log("RegisterRequestStartFromCurrentScript) script id: "
-    + to_string((static_cast<NodeScript*>(acting_node))->GetScriptId())
-    + ", request id: " + to_string(request_id) +
+  Log("RegisterRequestStartFromCurrentScript) request id: " + to_string(request_id)
     + ", url: " + local_url
     + ", type: " + to_string(type));
+  NodeActor* const acting_node = GetCurrentActingNode();
+
   if (!acting_node->IsScript()) {
     Log("Skipping, i hope this is pre-fetch...");
     return;
@@ -810,10 +801,11 @@ void PageGraph::RegisterStorageRead(const String& key, const String& value,
     const StorageLocation location) {
   string local_key(key.Utf8().data());
   string local_value(value.Utf8().data());
+
   Log("RegisterStorageRead) key: " + local_key + ", value: " + local_value
     + ", location: " + StorageLocationToString(location));
-
   NodeActor* const acting_node = GetCurrentActingNode();
+
   LOG_ASSERT(acting_node->IsScript());
 
   NodeStorage* storage_node = nullptr;
@@ -847,10 +839,11 @@ void PageGraph::RegisterStorageWrite(const String& key, const String& value,
     const StorageLocation location) {
   string local_key(key.Utf8().data());
   string local_value(value.Utf8().data());
+
   Log("RegisterStorageWrite) key: " + local_key + ", value: " + local_value
     + ", location: " + StorageLocationToString(location));
-
   NodeActor* const acting_node = GetCurrentActingNode();
+
   LOG_ASSERT(acting_node->IsScript());
 
   NodeStorage* storage_node = nullptr;
@@ -877,10 +870,11 @@ void PageGraph::RegisterStorageWrite(const String& key, const String& value,
 void PageGraph::RegisterStorageDelete(const String& key,
     const StorageLocation location) {
   string local_key(key.Utf8().data());
+
   Log("RegisterStorageDelete) key: " + local_key + ", location: "
     + StorageLocationToString(location));
-
   NodeActor* const acting_node = GetCurrentActingNode();
+
   LOG_ASSERT(acting_node->IsScript());
 
   NodeStorage* storage_node = nullptr;
@@ -904,8 +898,8 @@ void PageGraph::RegisterStorageDelete(const String& key,
 
 void PageGraph::RegisterStorageClear(const StorageLocation location) {
   Log("RegisterStorageClear) location: " + StorageLocationToString(location));
-
   NodeActor* const acting_node = GetCurrentActingNode();
+
   LOG_ASSERT(acting_node->IsScript());
 
   NodeStorage* storage_node = nullptr;

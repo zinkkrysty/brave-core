@@ -1,5 +1,5 @@
 diff --git a/third_party/blink/renderer/core/dom/document.cc b/third_party/blink/renderer/core/dom/document.cc
-index 1b73cb405b753fd8ab999100f53ba184f62f3b23..947344dd9d60772933c14ce63e55fe79483f5057 100644
+index 1b73cb405b753fd8ab999100f53ba184f62f3b23..f565c8383a320b3fd68cb7dcf10dcb1a303710ee 100644
 --- a/third_party/blink/renderer/core/dom/document.cc
 +++ b/third_party/blink/renderer/core/dom/document.cc
 @@ -310,6 +310,15 @@ using WeakDocumentSet = blink::HeapHashSet<blink::WeakMember<blink::Document>>;
@@ -29,7 +29,7 @@ index 1b73cb405b753fd8ab999100f53ba184f62f3b23..947344dd9d60772933c14ce63e55fe79
        evaluate_media_queries_on_style_recalc_(false),
        pending_sheet_layout_(kNoLayoutWithPendingSheets),
        frame_(initializer.GetFrame()),
-@@ -778,8 +791,126 @@ Document::~Document() {
+@@ -778,7 +791,115 @@ Document::~Document() {
    DCHECK(!ax_object_cache_);
  
    InstanceCounters::DecrementCounter(InstanceCounters::kDocumentCounter);
@@ -81,8 +81,8 @@ index 1b73cb405b753fd8ab999100f53ba184f62f3b23..947344dd9d60772933c14ce63e55fe79
 +  }
 +
 +  return true;
- }
- 
++}
++
 +brave_page_graph::PageGraph* Document::GetPageGraph() {
 +  if (wasDiscarded() == true) {
 +    return nullptr;
@@ -100,29 +100,19 @@ index 1b73cb405b753fd8ab999100f53ba184f62f3b23..947344dd9d60772933c14ce63e55fe79
 +    return page_graph_;
 +  }
 +
-+  // Don't instrument documents that live in worker contexts.  The below
-+  // are, not 100% correct tests for this, but should be good enough to
-+  // infer in all practical cases.  This may need to be revisited in the future
-+  // if we can't accept any incorrectness.
++  // Only instrument documents belonging to ordinary pages (and not, e.g.,
++  // service workers).
++  bool is_ordinary_document = false;
 +
-+  bool current_doc_is_not_service_worker = false;
-+
-+  static const char* const serviceWorkerContainerSupplementName = "ServiceWorkerContainer";
-+  // from blink::ServiceWorkerContainer::kSupplementName
-+  static const char* const domWindowStorageControllerSupplementName = "DOMWindowStorageController";
-+  // from blink::DOMWindowStorageController::kSupplementName
-+
-+  const auto& supplements = Supplementable<Document>::supplements_.Keys();
-+  for (auto it = supplements.begin(); it != supplements.end(); ++it) {
-+    const char* const supplement = *it;
-+    if (strcmp(supplement, serviceWorkerContainerSupplementName) == 0 ||
-+        strcmp(supplement, domWindowStorageControllerSupplementName) == 0) {
-+      current_doc_is_not_service_worker = true;
-+      break;
++  LocalFrame* const frame = GetFrame();
++  if (frame) {
++    Page* const page = frame->GetPage();
++    if (page && page->IsOrdinary()) {
++      is_ordinary_document = true;
 +    }
 +  }
 +
-+  if (!current_doc_is_not_service_worker) {
++  if (!is_ordinary_document) {
 +    std::cout << "(skipping PageGraph instrumentation on document " << Url().GetString() << ")"
 +              << std::endl;
 +    return nullptr;
@@ -132,7 +122,7 @@ index 1b73cb405b753fd8ab999100f53ba184f62f3b23..947344dd9d60772933c14ce63e55fe79
 +  // to instantiate a page graph instance upward.  But we need to
 +  // make sure to add the page graph instance to the local isolate
 +  // if the top frame has a PageGraph.
-+  if (GetFrame()->IsMainFrame() == false) {  // We have a frame at this point.
++  if (frame->IsMainFrame() == false) {
 +    page_graph_non_owning_ = TopDocument().GetPageGraph();
 +    return page_graph_non_owning_;
 +  }
@@ -150,13 +140,12 @@ index 1b73cb405b753fd8ab999100f53ba184f62f3b23..947344dd9d60772933c14ce63e55fe79
 +
 +  page_graph_ = new ::brave_page_graph::PageGraph(*this);
 +  return page_graph_;
-+}
+ }
 +#endif
-+
+ 
  Range* Document::CreateRangeAdjustedToTreeScope(const TreeScope& tree_scope,
                                                  const Position& position) {
-   DCHECK(position.IsNotNull());
-@@ -2711,6 +2842,17 @@ void Document::Shutdown() {
+@@ -2711,6 +2832,17 @@ void Document::Shutdown() {
    if (!IsActive())
      return;
  
@@ -174,7 +163,7 @@ index 1b73cb405b753fd8ab999100f53ba184f62f3b23..947344dd9d60772933c14ce63e55fe79
    GetViewportData().Shutdown();
  
    // Frame navigation can cause a new Document to be attached. Don't allow that,
-@@ -5281,6 +5423,22 @@ String Document::cookie(ExceptionState& exception_state) const {
+@@ -5281,6 +5413,22 @@ String Document::cookie(ExceptionState& exception_state) const {
    if (cookie_url.IsEmpty())
      return String();
  
@@ -197,7 +186,7 @@ index 1b73cb405b753fd8ab999100f53ba184f62f3b23..947344dd9d60772933c14ce63e55fe79
    return Cookies(this, cookie_url);
  }
  
-@@ -5312,6 +5470,21 @@ void Document::setCookie(const String& value, ExceptionState& exception_state) {
+@@ -5312,6 +5460,21 @@ void Document::setCookie(const String& value, ExceptionState& exception_state) {
    if (cookie_url.IsEmpty())
      return;
  
