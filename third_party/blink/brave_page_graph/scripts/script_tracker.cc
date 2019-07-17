@@ -188,7 +188,8 @@ void ScriptTracker::AddScriptIdAlias(const ScriptId script_id,
     return;
   }
 
-  LOG_ASSERT(script_id_aliases_.count(script_id) == 0);
+  LOG_ASSERT(script_id_aliases_.count(script_id) == 0 ||
+      script_id_aliases_.at(script_id) == parent_script_id);
   script_id_aliases_.emplace(script_id, parent_script_id);
 }
 
