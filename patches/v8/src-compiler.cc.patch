@@ -1,5 +1,5 @@
 diff --git a/src/compiler.cc b/src/compiler.cc
-index d3cebfd58e679b9a2219e9595c1e8a279668710e..0d3413faa4146a69645857e21c5c8938983d25f3 100644
+index d3cebfd58e..e66ff7b3e6 100644
 --- a/src/compiler.cc
 +++ b/src/compiler.cc
 @@ -42,6 +42,8 @@
@@ -24,7 +24,7 @@ index d3cebfd58e679b9a2219e9595c1e8a279668710e..0d3413faa4146a69645857e21c5c8938
 +      if (maybe_script->IsScript()) {
 +        Script script = Script::cast(maybe_script);
 +        eval_script_compiled_func(*reinterpret_cast<v8::Isolate*>(isolate),
-+                                  script->id());
++            isolate->GetExecutingScriptId(), script->id());
 +      }
 +    }
 +  }

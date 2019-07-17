@@ -153,7 +153,8 @@ friend NodeHTMLElement;
   void RegisterScriptCompilationFromAttr(const blink::DOMNodeId node_id,
     const WTF::String& attr_name, const WTF::String& attr_value,
     const ScriptId script_id);
-  void RegisterScriptCompilationFromEval(const ScriptId script_id);
+  void RegisterScriptCompilationFromEval(const ScriptId parent_script_id,
+      const ScriptId script_id);
 
   void GenerateReportForNode(const blink::DOMNodeId node_id);
 

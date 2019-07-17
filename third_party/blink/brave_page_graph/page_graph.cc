@@ -159,10 +159,10 @@ PageGraph* PageGraph::GetFromExecutionContext(ExecutionContext& exec_context) {
 }
 
 static void OnEvalScriptCompiled(v8::Isolate& isolate,
-                                 const ScriptId script_id) {
+    const ScriptId parent_script_id, const ScriptId script_id) {
   PageGraph* const page_graph = PageGraph::GetFromIsolate(isolate);
   if (page_graph) {
-    page_graph->RegisterScriptCompilationFromEval(script_id);
+    page_graph->RegisterScriptCompilationFromEval(parent_script_id, script_id);
   }
 }
 
@@ -784,14 +784,14 @@ void PageGraph::RegisterScriptCompilationFromAttr(
   code_node->AddInEdge(execute_edge);
 }
 
-void PageGraph::RegisterScriptCompilationFromEval(const ScriptId script_id) {
-  const ScriptId parent_script_id = GetExecutingScriptId();
+void PageGraph::RegisterScriptCompilationFromEval(
+    const ScriptId parent_script_id, const ScriptId script_id) {
   if (parent_script_id == 0) {
     return;
   }
 
   Log("RegisterScriptCompilationFromEval) script id: " + to_string(script_id)
-    + ", parent script id: " + to_string(script_id));
+      + ", parent script id: " + to_string(parent_script_id));
 
   script_tracker_.AddScriptIdAlias(script_id, parent_script_id);
 }
