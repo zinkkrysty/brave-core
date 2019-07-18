@@ -164,6 +164,7 @@ class AdsServiceImpl : public AdsService,
       const std::string& locale,
       ads::OnLoadCallback callback) const override;
   bool IsNetworkConnectionAvailable() override;
+  void ResetTheWholeState(const base::Callback<void(bool)>& callback) override;
 
   // history::HistoryServiceObserver
   void OnURLsDeleted(
@@ -189,6 +190,8 @@ class AdsServiceImpl : public AdsService,
       const std::string& value);
   void OnSaved(const ads::OnSaveCallback& callback, bool success);
   void OnReset(const ads::OnResetCallback& callback, bool success);
+  void OnResetTheWholeState(base::Callback<void(bool)> callback,
+                                 bool success);
   void OnTimer(uint32_t timer_id);
   void MigratePrefs() const;
   bool MigratePrefs(
