@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/inspector/protocol/Protocol.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -92,6 +93,7 @@ using ::blink::ResourceType;
 using ::blink::ScriptSourceCode;
 using ::blink::To;
 using ::blink::ToExecutionContext;
+using ::blink::protocol::Array;
 using ::WTF::String;
 using ::std::endl;
 using ::std::make_unique;
@@ -921,9 +923,16 @@ void PageGraph::RegisterStorageClear(const StorageLocation location) {
   storage_node->AddInEdge(edge_storage);
 }
 
-void PageGraph::GenerateReportForNode(const blink::DOMNodeId node_id) {
-  LOG_ASSERT(element_nodes_.count(node_id) == 1);
-  const Node* node = element_nodes_.at(node_id);
+void PageGraph::GenerateReportForNode(const blink::DOMNodeId node_id,
+                                      Array<WTF::String>& report) {
+  const Node* node;
+  if (element_nodes_.count(node_id)) {
+    node = element_nodes_.at(node_id);
+  } else if (text_nodes_.count(node_id)) {
+    node = text_nodes_.at(node_id);
+  } else {
+    return;
+  }
 
   std::set<const Node*> predecessors;
   for (const unique_ptr<const Edge>& elm : Edges()) {
@@ -935,13 +944,14 @@ void PageGraph::GenerateReportForNode(const blink::DOMNodeId node_id) {
       it != predecessors.end(); it++) {
     const Node* pred = *it;
     if (pred->IsNodeActor()) {
-      std::cout << pred->GetDescBody() << "\n";
       for (const Edge* edge : pred->out_edges_) {
         if (edge->in_node_ == node) {
-          std::cout << "  " << edge->GetDescBody() << "\n";
+          std::string reportItem(
+              pred->GetDescBody() + " : " + edge->GetDescBody()
+          );
+          report.addItem(WTF::String::FromUTF8(reportItem.data()));
         }
       }
-      std::cout << "\n";
     }
   }
 }

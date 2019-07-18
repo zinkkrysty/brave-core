@@ -15,15 +15,26 @@
 #include "brave/third_party/blink/brave_page_graph/scripts/script_tracker.h"
 
 namespace blink {
+
 class Document;
 class ExecutionContext;
+
+namespace protocol {
+
+template<typename T>
+class Array;
+
+}
+
 }
 
 namespace v8 {
+
 class Context;
 class Isolate;
 template <class T>
 class Local;
+
 }
 
 namespace brave_page_graph {
@@ -156,7 +167,8 @@ friend NodeHTMLElement;
   void RegisterScriptCompilationFromEval(const ScriptId parent_script_id,
       const ScriptId script_id);
 
-  void GenerateReportForNode(const blink::DOMNodeId node_id);
+  void GenerateReportForNode(const blink::DOMNodeId node_id,
+                             blink::protocol::Array<WTF::String>& report);
 
   GraphMLXML ToGraphML() const;
 
