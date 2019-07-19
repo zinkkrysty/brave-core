@@ -1,5 +1,5 @@
 diff --git a/src/api.cc b/src/api.cc
-index a52fadc2ee..a62f942f40 100644
+index a52fadc2eef6bcecf73c81463c3665f6313fea72..a62f942f40995fd9037fdcaef6cf4e76338e4fde 100644
 --- a/src/api.cc
 +++ b/src/api.cc
 @@ -125,6 +125,8 @@

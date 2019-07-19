@@ -1,5 +1,5 @@
 diff --git a/include/v8.h b/include/v8.h
-index b4b920555b..3c9c0c25a4 100644
+index b4b920555b2cdde1aacb8d3cd2548c1d9145effa..3c9c0c25a49676fdb1894cd892a8a86c9de0d3c6 100644
 --- a/include/v8.h
 +++ b/include/v8.h
 @@ -26,6 +26,8 @@

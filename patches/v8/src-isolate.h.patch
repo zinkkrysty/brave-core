@@ -1,5 +1,5 @@
 diff --git a/src/isolate.h b/src/isolate.h
-index 2b1612a957..290c1caa43 100644
+index 2b1612a957237d280d8d2bf88b47cdcf28f71c88..290c1caa43343f77719af4aba721c597ef1c97a8 100644
 --- a/src/isolate.h
 +++ b/src/isolate.h
 @@ -34,6 +34,8 @@

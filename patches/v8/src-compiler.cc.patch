@@ -1,5 +1,5 @@
 diff --git a/src/compiler.cc b/src/compiler.cc
-index d3cebfd58e..e66ff7b3e6 100644
+index d3cebfd58e679b9a2219e9595c1e8a279668710e..e66ff7b3e6cb97e1016db57c14d44a94045ab2b3 100644
 --- a/src/compiler.cc
 +++ b/src/compiler.cc
 @@ -42,6 +42,8 @@

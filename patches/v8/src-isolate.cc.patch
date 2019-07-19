@@ -1,5 +1,5 @@
 diff --git a/src/isolate.cc b/src/isolate.cc
-index 8e15e78109..1f7406a711 100644
+index 8e15e781091d14f0032034e2ac98d0b1c5b0339d..005832dbcc4a8d846a02a40df999ea1a50e422a9 100644
 --- a/src/isolate.cc
 +++ b/src/isolate.cc
 @@ -89,6 +89,8 @@
@@ -11,7 +11,7 @@ index 8e15e78109..1f7406a711 100644
  extern "C" const uint8_t* v8_Default_embedded_blob_;
  extern "C" uint32_t v8_Default_embedded_blob_size_;
  
-@@ -4597,6 +4599,43 @@ void Isolate::SetIdle(bool is_idle) {
+@@ -4597,6 +4599,34 @@ void Isolate::SetIdle(bool is_idle) {
    }
  }
  
@@ -26,10 +26,6 @@ index 8e15e78109..1f7406a711 100644
 +
 +    JavaScriptFrame* frame = it.javascript_frame();
 +    Handle<JSFunction> function(frame->function(), this);
-+    if (function->context()->IsEvalContext()) {
-+      it.Advance();
-+      continue;
-+    }
 +
 +    Object maybe_script = function->shared()->script();
 +    if (!maybe_script->IsScript()) {
@@ -38,11 +34,6 @@ index 8e15e78109..1f7406a711 100644
 +    }
 +
 +    Script script = Script::cast(maybe_script);
-+    if (script.has_eval_from_shared()) {
-+      it.Advance();
-+      continue;
-+    }
-+
 +    if (script->id() > 0) {
 +      return script->id();
 +    }
