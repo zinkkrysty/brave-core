@@ -47,6 +47,7 @@ source_set("brave_shields") {
 
   deps = [
     "//brave/components/brave_component_updater/browser",
+    "//brave/components/brave_shields/common",
     "//brave/content:common",
     "//brave/third_party/blink/brave_page_graph",
     "//brave/vendor/ad-block/brave:ad-block",

@@ -46,7 +46,9 @@ class EdgeNodeInsert;
 class GraphItem;
 class Node;
 class NodeActor;
-class NodeExtension;
+class NodeAdFilter;
+class NodeExtensions;
+class NodeFingerprintingFilter;
 class NodeFrame;
 class NodeHTML;
 class NodeHTMLElement;
@@ -56,9 +58,13 @@ class NodeResource;
 class NodeScript;
 class NodeScriptRemote;
 class NodeShields;
+class NodeShield;
+class NodeStorage;
 class NodeStorageCookieJar;
 class NodeStorageLocalStorage;
+class NodeStorageRoot;
 class NodeStorageSessionStorage;
+class NodeTrackerFilter;
 class NodeWebAPI;
 class RequestMetadata;
 class RequestTracker;
@@ -125,13 +131,17 @@ friend NodeHTMLElement;
   void RegisterRequestStartFromCurrentScript(const InspectorId request_id,
     const blink::KURL& url, const RequestType type);
   void RegisterRequestStartFromCSS(const InspectorId request_id,
-      const blink::KURL& url, const RequestType type);
+    const blink::KURL& url, const RequestType type);
   void RegisterRequestComplete(const InspectorId request_id,
     const blink::ResourceType type, const RequestMetadata& metadata);
   void RegisterRequestError(const InspectorId request_id,
     const RequestMetadata& metadata);
 
-  void RegisterResourceBlock(const std::string& block_type, const GURL& url);
+  void RegisterResourceBlockAd(const GURL& url, const std::string& rule);
+  void RegisterResourceBlockTracker(const GURL& url, const std::string& host);
+  void RegisterResourceBlockJavaScript(const GURL& url);
+  void RegisterResourceBlockFingerprinting(const GURL& url,
+    const FingerprintingRule& rule);
 
   void RegisterStorageRead(const WTF::String& key, const WTF::String& value,
     const StorageLocation location);
@@ -178,6 +188,9 @@ friend NodeHTMLElement;
   void AddNode(Node* const node);
   void AddEdge(const Edge* const edge);
 
+  void AddShieldNode(NodeShield* const shield_node);
+  void AddStorageNode(NodeStorage* const storage_node);
+
   const NodeUniquePtrList& Nodes() const;
   const EdgeUniquePtrList& Edges() const;
   const GraphItemList& GraphItems() const;
@@ -185,15 +198,21 @@ friend NodeHTMLElement;
   NodeHTML* GetHTMLNode(const blink::DOMNodeId node_id) const;
   NodeHTMLElement* GetHTMLElementNode(const blink::DOMNodeId node_id) const;
   NodeHTMLText* GetHTMLTextNode(const blink::DOMNodeId node_id) const;
-  NodeExtension* GetExtensionNode();
 
   NodeActor* GetCurrentActingNode() const;
   NodeActor* GetNodeActorForScriptId(const ScriptId script_id) const;
   ScriptId GetExecutingScriptId() const;
 
+  NodeResource* GetResourceNodeForUrl(const std::string& url);
+
+  NodeAdFilter* GetAdFilterNodeForRule(const std::string& rule);
+  NodeTrackerFilter* GetTrackerFilterNodeForHost(const std::string& host);
+  NodeFingerprintingFilter* GetFingerprintingFilterNodeForRule(
+    const FingerprintingRule& rule);
+
   void DoRegisterRequestStart(const InspectorId request_id,
-      Node* const requesting_node, const std::string& local_url,
-      const RequestType type);
+    Node* const requesting_node, const std::string& local_url,
+    const RequestType type);
   void PossiblyWriteRequestsIntoGraph(
     const std::shared_ptr<const TrackedRequestRecord> record);
 
@@ -212,12 +231,20 @@ friend NodeHTMLElement;
 
   // Non-owning references to singleton items in the graph. (the owning
   // references will be in the above vectors).
+
   NodeParser* const parser_node_;
+  NodeExtensions* const extensions_node_;
+
   NodeShields* const shields_node_;
+  NodeShield* const ad_shield_node_;
+  NodeShield* const tracker_shield_node_;
+  NodeShield* const js_shield_node_;
+  NodeShield* const fingerprinting_shield_node_;
+
+  NodeStorageRoot* const storage_node_;
   NodeStorageCookieJar* const cookie_jar_node_;
   NodeStorageLocalStorage* const local_storage_node_;
   NodeStorageSessionStorage* const session_storage_node_;
-  NodeExtension* extension_node_ = nullptr;
 
   // Non-owning reference to the HTML root of the document (i.e. <html>).
   NodeHTMLElement* html_root_node_;
@@ -235,6 +262,13 @@ friend NodeHTMLElement;
   // This map does not own the references.
   std::map<ScriptId, NodeScript* const> script_nodes_;
   std::map<ScriptId, NodeScriptRemote* const> remote_script_nodes_;
+
+  // Index structure for looking up filter nodes.
+  // This map does not own the references.
+  std::map<std::string, NodeAdFilter* const> ad_filter_nodes_;
+  std::map<std::string, NodeTrackerFilter* const> tracker_filter_nodes_;
+  std::map<FingerprintingRule, NodeFingerprintingFilter* const>
+    fingerprinting_filter_nodes_;
 
   // Data structure used for mapping HTML script elements (and other
   // sources of script in a document) to v8 script units.

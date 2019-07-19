@@ -40,14 +40,16 @@ namespace {
     kGraphMLAttrForTypeEdge, "edge type");
   const GraphMLAttr* const event_listener_id_attr = new GraphMLAttr(
     kGraphMLAttrForTypeEdge, "event listener id", kGraphMLAttrTypeLong);
+  const GraphMLAttr* const host_attr = new GraphMLAttr(
+    kGraphMLAttrForTypeNode, "host");
+  const GraphMLAttr* const incognito_attr = new GraphMLAttr(
+    kGraphMLAttrForTypeNode, "incognito");
   const GraphMLAttr* const is_style_attr = new GraphMLAttr(
     kGraphMLAttrForTypeEdge, "is style", kGraphMLAttrTypeBoolean);
   const GraphMLAttr* const key_attr = new GraphMLAttr(
     kGraphMLAttrForTypeEdge, "key");
   const GraphMLAttr* const method_attr = new GraphMLAttr(
     kGraphMLAttrForTypeEdge, "method");
-  const GraphMLAttr* const tag_attr = new GraphMLAttr(
-    kGraphMLAttrForTypeNode, "tag name");
   const GraphMLAttr* const node_id_attr = new GraphMLAttr(
     kGraphMLAttrForTypeNode, "node id", kGraphMLAttrTypeLong);
   const GraphMLAttr* const node_text = new GraphMLAttr(
@@ -56,31 +58,43 @@ namespace {
     kGraphMLAttrForTypeNode, "node type");
   const GraphMLAttr* const parent_node_attr = new GraphMLAttr(
     kGraphMLAttrForTypeEdge, "parent", kGraphMLAttrTypeLong);
-  const GraphMLAttr* const script_id_attr = new GraphMLAttr(
-    kGraphMLAttrForTypeEdge, "script id", kGraphMLAttrTypeLong);
-  const GraphMLAttr* const script_type = new GraphMLAttr(
-    kGraphMLAttrForTypeNode, "script type");
-  const GraphMLAttr* const status_type = new GraphMLAttr(
-    kGraphMLAttrForTypeEdge, "status");
-  const GraphMLAttr* const success_attr = new GraphMLAttr(
-    kGraphMLAttrForTypeNode, "is success", kGraphMLAttrTypeBoolean);
-  const GraphMLAttr* const url_attr = new GraphMLAttr(
-    kGraphMLAttrForTypeNode, "url");
+  const GraphMLAttr* const primary_pattern_attr = new GraphMLAttr(
+    kGraphMLAttrForTypeNode, "primary pattern");
   const GraphMLAttr* const request_id_attr = new GraphMLAttr(
     kGraphMLAttrForTypeEdge, "request id", kGraphMLAttrTypeLong);
   const GraphMLAttr* const request_type_attr = new GraphMLAttr(
     kGraphMLAttrForTypeEdge, "request type");
   const GraphMLAttr* const resource_type_attr = new GraphMLAttr(
     kGraphMLAttrForTypeEdge, "resource type");
+  const GraphMLAttr* const rule_attr = new GraphMLAttr(
+    kGraphMLAttrForTypeNode, "rule");
+  const GraphMLAttr* const script_id_attr = new GraphMLAttr(
+    kGraphMLAttrForTypeEdge, "script id", kGraphMLAttrTypeLong);
+  const GraphMLAttr* const script_type = new GraphMLAttr(
+    kGraphMLAttrForTypeNode, "script type");
+  const GraphMLAttr* const secondary_pattern_attr = new GraphMLAttr(
+    kGraphMLAttrForTypeNode, "secondary pattern");
+  const GraphMLAttr* const source_attr = new GraphMLAttr(
+    kGraphMLAttrForTypeNode, "source");
+  const GraphMLAttr* const status_type = new GraphMLAttr(
+    kGraphMLAttrForTypeEdge, "status");
+  const GraphMLAttr* const success_attr = new GraphMLAttr(
+    kGraphMLAttrForTypeNode, "is success", kGraphMLAttrTypeBoolean);
+  const GraphMLAttr* const tag_attr = new GraphMLAttr(
+    kGraphMLAttrForTypeNode, "tag name");
+  const GraphMLAttr* const url_attr = new GraphMLAttr(
+    kGraphMLAttrForTypeNode, "url");
   const GraphMLAttr* const value_attr = new GraphMLAttr(
     kGraphMLAttrForTypeEdge, "value");
 
   const vector<const GraphMLAttr* const> _all_graphml_attrs = {
     attr_name_attr, attr_value, before_node_attr, block_type_attr, call_args,
-    edge_type_attr, event_listener_id_attr, is_style_attr, key_attr,
-    method_attr, tag_attr, node_id_attr, node_text, node_type, parent_node_attr,
-    script_id_attr, script_type, status_type, success_attr, url_attr,
-    request_id_attr, request_type_attr, resource_type_attr, value_attr
+    edge_type_attr, event_listener_id_attr, host_attr, incognito_attr,
+    is_style_attr, key_attr, method_attr, node_id_attr, node_text, node_type,
+    parent_node_attr, primary_pattern_attr, request_id_attr, request_type_attr,
+    resource_type_attr, rule_attr, script_id_attr, script_type,
+    secondary_pattern_attr, source_attr, status_type, success_attr, tag_attr,
+    url_attr, value_attr
   };
 }
 
@@ -158,6 +172,10 @@ const GraphMLAttr* GraphMLAttrDefForType(const GraphMLAttrDef type) noexcept {
       return edge_type_attr;
     case kGraphMLAttrDefEventListenerId:
       return event_listener_id_attr;
+    case kGraphMLAttrDefHost:
+      return host_attr;
+    case kGraphMLAttrDefIncognito:
+      return incognito_attr;
     case kGraphMLAttrDefIsStyle:
       return is_style_attr;
     case kGraphMLAttrDefKey:
@@ -174,16 +192,24 @@ const GraphMLAttr* GraphMLAttrDefForType(const GraphMLAttrDef type) noexcept {
       return node_type;
     case kGraphMLAttrDefParentNodeId:
       return parent_node_attr;
+    case kGraphMLAttrDefPrimaryPattern:
+      return primary_pattern_attr;
     case kGraphMLAttrDefRequestId:
       return request_id_attr;
     case kGraphMLAttrDefRequestType:
       return request_type_attr;
     case kGraphMLAttrDefResourceType:
       return resource_type_attr;
+    case kGraphMLAttrDefRule:
+      return rule_attr;
     case kGraphMLAttrDefScriptId:
       return script_id_attr;
     case kGraphMLAttrDefScriptType:
       return script_type;
+    case kGraphMLAttrDefSecondaryPattern:
+      return secondary_pattern_attr;
+    case kGraphMLAttrDefSource:
+      return source_attr;
     case kGraphMLAttrDefStatus:
       return status_type;
     case kGraphMLAttrDefSuccess:

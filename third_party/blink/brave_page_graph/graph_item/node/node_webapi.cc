@@ -21,7 +21,7 @@ NodeWebAPI::NodeWebAPI(PageGraph* const graph, const MethodName method) :
 NodeWebAPI::~NodeWebAPI() {}
 
 ItemName NodeWebAPI::GetItemName() const {
-  return "NodeWebAPI#" + to_string(id_);
+  return "web API #" + to_string(id_);
 }
 
 const MethodName& NodeWebAPI::GetMethod() const {
@@ -29,7 +29,7 @@ const MethodName& NodeWebAPI::GetMethod() const {
 }
 
 ItemDesc NodeWebAPI::GetDescBody() const {
-  return GetItemName() + " [method:" + method_name_ + "]"; 
+  return GetItemName() + " (" + method_name_ + ")";
 }
 
 GraphMLXMLList NodeWebAPI::GraphMLAttributes() const {

@@ -31,7 +31,7 @@ EdgeWebAPICall::EdgeWebAPICall(PageGraph* const graph,
 EdgeWebAPICall::~EdgeWebAPICall() {}
 
 ItemName EdgeWebAPICall::GetItemName() const {
-  return "EdgeWebAPICall#" + to_string(id_);
+  return "web API call #" + to_string(id_);
 }
 
 const vector<const string>& EdgeWebAPICall::GetArguments() const {
@@ -53,7 +53,7 @@ string EdgeWebAPICall::GetArgumentsString() const {
 }
 
 ItemDesc EdgeWebAPICall::GetDescBody() const {
-  return GetItemName() + "[arguments:" + GetArgumentsString() + "]";
+  return GetItemName() + " (" + method_ + "; arguments: " + GetArgumentsString() + ")";
 }
 
 GraphMLXMLList EdgeWebAPICall::GraphMLAttributes() const {

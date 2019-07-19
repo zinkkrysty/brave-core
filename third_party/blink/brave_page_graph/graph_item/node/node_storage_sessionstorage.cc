@@ -20,7 +20,7 @@ NodeStorageSessionStorage::NodeStorageSessionStorage(PageGraph* const graph) :
 NodeStorageSessionStorage::~NodeStorageSessionStorage() {}
 
 ItemName NodeStorageSessionStorage::GetItemName() const {
-  return "NodeStorageSessionStorage#" + to_string(id_);
+  return "session storage";
 }
 
 GraphMLXMLList NodeStorageSessionStorage::GraphMLAttributes() const {

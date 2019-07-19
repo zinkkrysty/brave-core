@@ -8,8 +8,9 @@
 #include "base/logging.h"
 #include "brave/third_party/blink/brave_page_graph/graphml.h"
 #include "brave/third_party/blink/brave_page_graph/graph_item/edge/edge.h"
+#include "brave/third_party/blink/brave_page_graph/graph_item/node/node_filter.h"
 #include "brave/third_party/blink/brave_page_graph/graph_item/node/node_resource.h"
-#include "brave/third_party/blink/brave_page_graph/graph_item/node/node_shields.h"
+#include "brave/third_party/blink/brave_page_graph/graph_item/node/node_shield.h"
 #include "brave/third_party/blink/brave_page_graph/page_graph.h"
 #include "brave/third_party/blink/brave_page_graph/types.h"
 
@@ -18,27 +19,24 @@ using ::std::to_string;
 namespace brave_page_graph {
 
 EdgeResourceBlock::EdgeResourceBlock(PageGraph* const graph,
-    NodeShields* const out_node, NodeResource* const in_node,
-    const std::string& block_type) :
-      Edge(graph, out_node, in_node),
-      block_type_(block_type) {}
+    NodeFilter* const out_node, NodeResource* const in_node) :
+      Edge(graph, out_node, in_node) {}
+
+EdgeResourceBlock::EdgeResourceBlock(PageGraph* const graph,
+    NodeShield* const out_node, NodeResource* const in_node) :
+      Edge(graph, out_node, in_node) {}
 
 EdgeResourceBlock::~EdgeResourceBlock() {}
 
 ItemName EdgeResourceBlock::GetItemName() const {
-  return "EdgeResourceBlock#" + to_string(id_);
+  return "resource block #" + to_string(id_);
 }
 
 GraphMLXMLList EdgeResourceBlock::GraphMLAttributes() const {
-  GraphMLXMLList attrs;
-
-  attrs.push_back(GraphMLAttrDefForType(kGraphMLAttrDefEdgeType)
-      ->ToValue("resource block"));
-
-  attrs.push_back(GraphMLAttrDefForType(kGraphMLAttrDefBlockType)
-      ->ToValue(block_type_));
-
-  return attrs;
+  return {
+    GraphMLAttrDefForType(kGraphMLAttrDefEdgeType)
+      ->ToValue("resource block")
+  };
 }
 
 }  // namespace brave_page_graph

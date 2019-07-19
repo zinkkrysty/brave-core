@@ -21,7 +21,7 @@ EdgeEventListenerRemove::EdgeEventListenerRemove(PageGraph* const graph,
 EdgeEventListenerRemove::~EdgeEventListenerRemove() {}
 
 ItemName EdgeEventListenerRemove::GetItemName() const {
-  return "EdgeEventListenerRemove#" + to_string(id_);
+  return "remove event listener #" + to_string(id_);
 }
 
 const char* EdgeEventListenerRemove::GetEdgeType() const {

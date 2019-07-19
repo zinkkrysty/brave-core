@@ -107,8 +107,7 @@ void BraveContentSettingsObserver::DidNotAllowScript() {
         ::brave_page_graph::PageGraph::GetFromContext(
             frame->MainWorldScriptContext());
     if (page_graph) {
-      page_graph->RegisterResourceBlock(brave_shields::kJavaScript,
-                                        blocked_script_url_);
+      page_graph->RegisterResourceBlockJavaScript(blocked_script_url_);
     }
 #endif
 
@@ -166,7 +165,8 @@ GURL BraveContentSettingsObserver::GetOriginOrURL(
 ContentSetting BraveContentSettingsObserver::GetFPContentSettingFromRules(
     const ContentSettingsForOneType& rules,
     const blink::WebFrame* frame,
-    const GURL& secondary_url) {
+    const GURL& secondary_url,
+    ContentSettingPatternSource& matched_rule) {
 
   if (rules.size() == 0)
     return CONTENT_SETTING_DEFAULT;
@@ -184,6 +184,7 @@ ContentSetting BraveContentSettingsObserver::GetFPContentSettingFromRules(
     if (rule.primary_pattern.Matches(primary_url) &&
         (secondary_pattern == ContentSettingsPattern::Wildcard() ||
          secondary_pattern.Matches(secondary_url))) {
+      matched_rule = rule;
       return rule.GetContentSetting();
     }
   }
@@ -216,16 +217,19 @@ bool BraveContentSettingsObserver::AllowFingerprinting(
     bool enabled_per_settings) {
   if (!enabled_per_settings)
     return false;
+
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   const GURL secondary_url(
       url::Origin(frame->GetDocument().GetSecurityOrigin()).GetURL());
   if (IsBraveShieldsDown(frame, secondary_url)) {
     return true;
   }
+
   ContentSettingsForOneType rules;
   if (content_setting_rules_) {
       rules = content_setting_rules_->fingerprinting_rules;
   }
+
   ContentSettingPatternSource default_rule = ContentSettingPatternSource(
       ContentSettingsPattern::Wildcard(),
       ContentSettingsPattern::FromString("https://firstParty/*"),
@@ -233,9 +237,13 @@ bool BraveContentSettingsObserver::AllowFingerprinting(
           content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW)),
       std::string(), false);
   rules.push_back(default_rule);
+
+  ContentSettingPatternSource matched_rule;
   ContentSetting setting =
-      GetFPContentSettingFromRules(rules, frame, secondary_url);
+      GetFPContentSettingFromRules(rules, frame, secondary_url, matched_rule);
+
   rules.pop_back();
+
   bool allow = setting != CONTENT_SETTING_BLOCK;
   allow = allow || IsWhitelistedForContentSettings();
 
@@ -245,8 +253,13 @@ bool BraveContentSettingsObserver::AllowFingerprinting(
         ::brave_page_graph::PageGraph::GetFromContext(
             frame->MainWorldScriptContext());
     if (page_graph) {
-      page_graph->RegisterResourceBlock(brave_shields::kFingerprinting,
-                                        secondary_url);
+      page_graph->RegisterResourceBlockFingerprinting(
+          secondary_url,
+          ::brave_page_graph::FingerprintingRule(
+              matched_rule.primary_pattern.ToString(),
+              matched_rule.secondary_pattern.ToString(),
+              matched_rule.source,
+              matched_rule.incognito));
     }
 #endif
 

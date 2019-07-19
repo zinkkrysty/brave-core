@@ -27,9 +27,9 @@ EdgeEventListenerAction::EdgeEventListenerAction(
 
 ItemDesc EdgeEventListenerAction::GetDescBody() const {
   return GetItemName() +
-    " [event_type:" + event_type_ +
-    ", listener_id:" + to_string(listener_id_) +
-    ", listener_script_id:" + to_string(listener_script_id_) + "]";
+    " (event: " + event_type_ +
+    "; listener: " + to_string(listener_id_) +
+    "; script id: " + to_string(listener_script_id_) + ")";
 }
 
 GraphMLXMLList EdgeEventListenerAction::GraphMLAttributes() const {

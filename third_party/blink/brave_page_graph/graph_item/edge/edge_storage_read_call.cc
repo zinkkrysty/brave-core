@@ -26,11 +26,7 @@ EdgeStorageReadCall::EdgeStorageReadCall(PageGraph* const graph,
 EdgeStorageReadCall::~EdgeStorageReadCall() {}
 
 ItemName EdgeStorageReadCall::GetItemName() const {
-  return "EdgeStorageReadCall#" + to_string(id_);
-}
-
-ItemDesc EdgeStorageReadCall::GetDescBody() const {
-  return GetItemName() + " [key:" + key_ + "]";
+  return "read storage call #" + to_string(id_);
 }
 
 GraphMLXMLList EdgeStorageReadCall::GraphMLAttributes() const {

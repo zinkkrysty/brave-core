@@ -21,7 +21,7 @@ EdgeEventListenerAdd::EdgeEventListenerAdd(PageGraph* const graph,
 EdgeEventListenerAdd::~EdgeEventListenerAdd() {}
 
 ItemName EdgeEventListenerAdd::GetItemName() const {
-  return "EdgeEventListenerAdd#" + to_string(id_);
+  return "add event listener #" + to_string(id_);
 }
 
 const char* EdgeEventListenerAdd::GetEdgeType() const {

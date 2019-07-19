@@ -27,11 +27,11 @@ EdgeStorageReadResult::EdgeStorageReadResult(PageGraph* const graph,
 EdgeStorageReadResult::~EdgeStorageReadResult() {}
 
 ItemName EdgeStorageReadResult::GetItemName() const {
-  return "EdgeStorageReadResult#" + to_string(id_);
+  return "storage read result #" + to_string(id_);
 }
 
 ItemDesc EdgeStorageReadResult::GetDescBody() const {
-  return GetItemName() + " [key:" + key_ + ", value:" + value_ + "]";
+  return GetItemName() + " (" + key_ + "=" + value_ + ")";
 }
 
 GraphMLXMLList EdgeStorageReadResult::GraphMLAttributes() const {

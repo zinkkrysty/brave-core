@@ -12,7 +12,8 @@
 
 namespace brave_page_graph {
 
-class NodeShields;
+class NodeFilter;
+class NodeShield;
 class NodeResource;
 class PageGraph;
 
@@ -21,15 +22,16 @@ friend class PageGraph;
  public:
   EdgeResourceBlock() = delete;
   ~EdgeResourceBlock() override;
+
   ItemName GetItemName() const override;
 
  protected:
-  EdgeResourceBlock(PageGraph* const graph, NodeShields* const out_node,
-    NodeResource* const in_node, const std::string& block_type);
-  GraphMLXMLList GraphMLAttributes() const override;
+  EdgeResourceBlock(PageGraph* const graph, NodeFilter* const out_node,
+    NodeResource* const in_node);
+  EdgeResourceBlock(PageGraph* const graph, NodeShield* const out_node,
+    NodeResource* const in_node);
 
- private:
-  const std::string block_type_;
+  GraphMLXMLList GraphMLAttributes() const override;
 };
 
 }  // namespace brave_page_graph

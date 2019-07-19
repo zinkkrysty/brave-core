@@ -25,11 +25,11 @@ EdgeWebAPIResult::EdgeWebAPIResult(PageGraph* const graph,
 EdgeWebAPIResult::~EdgeWebAPIResult() {}
 
 ItemName EdgeWebAPIResult::GetItemName() const {
-  return "EdgeWebAPIResult#" + to_string(id_);
+  return "web API result #" + to_string(id_);
 }
 
 ItemDesc EdgeWebAPIResult::GetDescBody() const {
-  return GetItemName() + "[result: " + result_ + "]";
+  return GetItemName() + " (" + method_ + "; result: " + result_ + ")";
 }
 
 GraphMLXMLList EdgeWebAPIResult::GraphMLAttributes() const {

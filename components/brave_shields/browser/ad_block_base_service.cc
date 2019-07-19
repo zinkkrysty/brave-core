@@ -6,6 +6,7 @@
 #include "brave/components/brave_shields/browser/ad_block_base_service.h"
 
 #include <algorithm>
+#include <iostream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -126,7 +127,8 @@ void AdBlockBaseService::Cleanup() {
 
 bool AdBlockBaseService::ShouldStartRequest(const GURL& url,
     content::ResourceType resource_type, const std::string& tab_host,
-    bool* did_match_exception, bool* cancel_request_explicitly) {
+    bool* did_match_exception, bool* cancel_request_explicitly,
+    const BlockDecision** block_decision) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   FilterOption current_option = ResourceTypeToFilterOption(resource_type);
 
@@ -150,8 +152,17 @@ bool AdBlockBaseService::ShouldStartRequest(const GURL& url,
         (matching_filter->filterOption & FOExplicitCancel)) {
       *cancel_request_explicitly = true;
     }
-    // We'd only possibly match an exception filter if we're returning true.
-    *did_match_exception = false;
+    if (did_match_exception) {
+      // We'd only possibly match an exception filter if we're returning true.
+      *did_match_exception = false;
+    }
+    if (block_decision && matching_filter) {
+      std::string rule;
+      if (matching_filter->ruleDefinition) {
+        rule = matching_filter->ruleDefinition;
+      }
+      *block_decision = new AdBlockDecision(rule);
+    }
     // LOG(ERROR) << "AdBlockBaseService::ShouldStartRequest(), host: "
     //  << tab_host
     //  << ", resource type: " << resource_type

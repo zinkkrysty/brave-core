@@ -22,7 +22,7 @@ EdgeWebAPI::EdgeWebAPI(PageGraph* const graph, Node* const out_node,
       method_(method) {}
 
 ItemName EdgeWebAPI::GetDescBody() const {
-  return GetItemName() + " [method:" + method_ + "]";
+  return GetItemName() + " (" + method_ + ")";
 }
 
 GraphMLXMLList EdgeWebAPI::GraphMLAttributes() const {

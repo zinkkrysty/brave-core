@@ -1,5 +1,5 @@
 diff --git a/content/browser/frame_host/render_frame_host_impl.cc b/content/browser/frame_host/render_frame_host_impl.cc
-index 64bd8abb107a09c05824d5e13b9c86f52d2745ea..80693c9b5a2f5162e68d62287ef0a3a9f560fe49 100644
+index 64bd8abb107a09c05824d5e13b9c86f52d2745ea..8ad80760a752e60a6b7863f2d2ae9d7d864d8cd2 100644
 --- a/content/browser/frame_host/render_frame_host_impl.cc
 +++ b/content/browser/frame_host/render_frame_host_impl.cc
 @@ -201,6 +201,8 @@
@@ -11,14 +11,19 @@ index 64bd8abb107a09c05824d5e13b9c86f52d2745ea..80693c9b5a2f5162e68d62287ef0a3a9
  #if defined(OS_ANDROID)
  #include "content/browser/android/content_url_loader_factory.h"
  #include "content/browser/android/java_interfaces_impl.h"
-@@ -1234,6 +1236,13 @@ void RenderFrameHostImpl::AddMessageToConsole(
+@@ -1234,6 +1236,18 @@ void RenderFrameHostImpl::AddMessageToConsole(
    Send(new FrameMsg_AddMessageToConsole(routing_id_, level, message));
  }
  
 +#if BUILDFLAG(BRAVE_PAGE_GRAPH_ENABLED)
-+void RenderFrameHostImpl::RegisterResourceBlock(const std::string& block_type,
-+                                                const GURL& url) {
-+  Send(new FrameMsg_RegisterResourceBlock(routing_id_, block_type, url));
++void RenderFrameHostImpl::RegisterResourceBlockAd(const GURL& url,
++                                                  const std::string& rule) {
++  Send(new FrameMsg_RegisterResourceBlockAd(routing_id_, url, rule));
++}
++
++void RenderFrameHostImpl::RegisterResourceBlockTracker(const GURL& url,
++                                                       const std::string& host) {
++  Send(new FrameMsg_RegisterResourceBlockTracker(routing_id_, url, host));
 +}
 +#endif
 +
