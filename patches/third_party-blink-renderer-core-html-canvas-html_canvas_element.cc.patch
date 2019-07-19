@@ -1,5 +1,5 @@
 diff --git a/third_party/blink/renderer/core/html/canvas/html_canvas_element.cc b/third_party/blink/renderer/core/html/canvas/html_canvas_element.cc
-index 98176198d5cdecb09b0ed889f414b52358afa81c..98183f1ed2440d2a8fa9f3103c19bcad204ac8f0 100644
+index 98176198d5cdecb09b0ed889f414b52358afa81c..df9e2c9f34c94ef03a77b33743003f8fb342b5f8 100644
 --- a/third_party/blink/renderer/core/html/canvas/html_canvas_element.cc
 +++ b/third_party/blink/renderer/core/html/canvas/html_canvas_element.cc
 @@ -37,6 +37,7 @@
@@ -23,7 +23,7 @@ index 98176198d5cdecb09b0ed889f414b52358afa81c..98183f1ed2440d2a8fa9f3103c19bcad
  namespace blink {
  
  using namespace html_names;
-@@ -262,6 +269,64 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContext(
+@@ -262,6 +269,66 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContext(
    auto* result = GetCanvasRenderingContextInternal(type, attributes);
    if (ContentsCcLayer() != old_contents_cc_layer)
      OnContentsCcLayerChanged();
@@ -52,32 +52,34 @@ index 98176198d5cdecb09b0ed889f414b52358afa81c..98183f1ed2440d2a8fa9f3103c19bcad
 +
 +      page_graph->RegisterWebAPICall("HTMLCanvasElement.getContext", args);
 +
-+      String res;
-+      switch (result->GetContextType()) {
-+        case CanvasRenderingContext::kContext2d:
-+          res = "CanvasRenderingContext: 2d";
-+          break;
-+        case CanvasRenderingContext::kContextExperimentalWebgl:
-+          res = "CanvasRenderingContext: experimental-webgl";
-+          break;
-+        case CanvasRenderingContext::kContextWebgl:
-+          res = "CanvasRenderingContext: webgl";
-+          break;
-+        case CanvasRenderingContext::kContextWebgl2:
-+          res = "CanvasRenderingContext: webgl2";
-+          break;
-+        case CanvasRenderingContext::kContextWebgl2Compute:
-+          res = "CanvasRenderingContext: webgl2-compute";
-+          break;
-+        case CanvasRenderingContext::kContextImageBitmap:
-+          res = "CanvasRenderingContext: bitmaprenderer";
-+          break;
-+        case CanvasRenderingContext::kContextGPUPresent:
-+          res = "CanvasRenderingContext: gpupresent";
-+          break;
-+        default:
-+          res = "CanvasRenderingContext: unknown context type";
-+          break;
++      String res = "<null>";
++      if (result != nullptr) {
++        switch (result->GetContextType()) {
++          case CanvasRenderingContext::kContext2d:
++            res = "CanvasRenderingContext: 2d";
++            break;
++          case CanvasRenderingContext::kContextExperimentalWebgl:
++            res = "CanvasRenderingContext: experimental-webgl";
++            break;
++          case CanvasRenderingContext::kContextWebgl:
++            res = "CanvasRenderingContext: webgl";
++            break;
++          case CanvasRenderingContext::kContextWebgl2:
++            res = "CanvasRenderingContext: webgl2";
++            break;
++          case CanvasRenderingContext::kContextWebgl2Compute:
++            res = "CanvasRenderingContext: webgl2-compute";
++            break;
++          case CanvasRenderingContext::kContextImageBitmap:
++            res = "CanvasRenderingContext: bitmaprenderer";
++            break;
++          case CanvasRenderingContext::kContextGPUPresent:
++            res = "CanvasRenderingContext: gpupresent";
++            break;
++          default:
++            res = "CanvasRenderingContext: unknown context type";
++            break;
++        }
 +      }
 +
 +      page_graph->RegisterWebAPIResult("HTMLCanvasElement.getContext", res);
@@ -88,7 +90,7 @@ index 98176198d5cdecb09b0ed889f414b52358afa81c..98183f1ed2440d2a8fa9f3103c19bcad
    return result;
  }
  
-@@ -904,6 +969,8 @@ String HTMLCanvasElement::ToDataURLInternal(
+@@ -904,6 +971,8 @@ String HTMLCanvasElement::ToDataURLInternal(
  String HTMLCanvasElement::toDataURL(const String& mime_type,
                                      const ScriptValue& quality_argument,
                                      ExceptionState& exception_state) const {
@@ -97,7 +99,7 @@ index 98176198d5cdecb09b0ed889f414b52358afa81c..98183f1ed2440d2a8fa9f3103c19bcad
    if (!OriginClean()) {
      exception_state.ThrowSecurityError("Tainted canvases may not be exported.");
      return String();
-@@ -915,6 +982,30 @@ String HTMLCanvasElement::toDataURL(const String& mime_type,
+@@ -915,6 +984,30 @@ String HTMLCanvasElement::toDataURL(const String& mime_type,
      if (v8_value->IsNumber())
        quality = v8_value.As<v8::Number>()->Value();
    }
@@ -128,7 +130,7 @@ index 98176198d5cdecb09b0ed889f414b52358afa81c..98183f1ed2440d2a8fa9f3103c19bcad
    return ToDataURLInternal(mime_type, quality, kBackBuffer);
  }
  
-@@ -922,6 +1013,8 @@ void HTMLCanvasElement::toBlob(V8BlobCallback* callback,
+@@ -922,6 +1015,8 @@ void HTMLCanvasElement::toBlob(V8BlobCallback* callback,
                                 const String& mime_type,
                                 const ScriptValue& quality_argument,
                                 ExceptionState& exception_state) {
@@ -137,7 +139,7 @@ index 98176198d5cdecb09b0ed889f414b52358afa81c..98183f1ed2440d2a8fa9f3103c19bcad
    if (!OriginClean()) {
      exception_state.ThrowSecurityError("Tainted canvases may not be exported.");
      return;
-@@ -962,6 +1055,19 @@ void HTMLCanvasElement::toBlob(V8BlobCallback* callback,
+@@ -962,6 +1057,19 @@ void HTMLCanvasElement::toBlob(V8BlobCallback* callback,
          &GetDocument());
    }
  
