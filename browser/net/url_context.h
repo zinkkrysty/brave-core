@@ -15,6 +15,8 @@
 #include "net/url_request/url_request.h"
 #include "url/gurl.h"
 
+#include "brave/components/brave_shields/common/block_decision.h"
+
 namespace content {
 class BrowserContext;
 }
@@ -77,6 +79,8 @@ struct BraveRequestInfo {
   int frame_tree_node_id = 0;
   uint64_t request_identifier = 0;
   size_t next_url_request_index = 0;
+
+  const brave_shields::BlockDecision* block_decision = nullptr;
 
   net::HttpRequestHeaders* headers = nullptr;
   // The following two sets are populated by |OnBeforeStartTransactionCallback|.
