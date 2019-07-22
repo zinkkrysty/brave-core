@@ -857,8 +857,10 @@ void PageGraph::RegisterScriptCompilationFromAttr(
   code_node->AddInEdge(execute_edge);
 }
 
-void PageGraph::RegisterScriptCompilationFromEval(
-    const ScriptId parent_script_id, const ScriptId script_id) {
+void PageGraph::RegisterScriptCompilationFromEval(ScriptId parent_script_id,
+    const ScriptId script_id) {
+  parent_script_id = script_tracker_.ResolveScriptId(parent_script_id);
+
   if (parent_script_id == 0) {
     return;
   }
