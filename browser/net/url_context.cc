@@ -183,6 +183,7 @@ void BraveRequestInfo::FillCTX(
   // TODO(iefremov): remove tab_url. Change tab_origin from GURL to Origin.
   // ctx->tab_url = request.top_frame_origin;
   ctx->tab_origin = request.top_frame_origin.value_or(url::Origin()).GetURL();
+  request.
 
   ProfileIOData* io_data =
       ProfileIOData::FromResourceContext(resource_context);
