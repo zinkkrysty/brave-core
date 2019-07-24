@@ -1,5 +1,5 @@
 diff --git a/third_party/blink/renderer/core/dom/document.cc b/third_party/blink/renderer/core/dom/document.cc
-index 1b73cb405b753fd8ab999100f53ba184f62f3b23..f565c8383a320b3fd68cb7dcf10dcb1a303710ee 100644
+index 1b73cb405b753fd8ab999100f53ba184f62f3b23..fec63d0adc323281320a41a0c7c55b98c5f396ac 100644
 --- a/third_party/blink/renderer/core/dom/document.cc
 +++ b/third_party/blink/renderer/core/dom/document.cc
 @@ -310,6 +310,15 @@ using WeakDocumentSet = blink::HeapHashSet<blink::WeakMember<blink::Document>>;
@@ -29,18 +29,21 @@ index 1b73cb405b753fd8ab999100f53ba184f62f3b23..f565c8383a320b3fd68cb7dcf10dcb1a
        evaluate_media_queries_on_style_recalc_(false),
        pending_sheet_layout_(kNoLayoutWithPendingSheets),
        frame_(initializer.GetFrame()),
-@@ -778,7 +791,115 @@ Document::~Document() {
+@@ -778,8 +791,130 @@ Document::~Document() {
    DCHECK(!ax_object_cache_);
  
    InstanceCounters::DecrementCounter(InstanceCounters::kDocumentCounter);
 +
 +#if BUILDFLAG(BRAVE_PAGE_GRAPH_ENABLED)
-+  // These should be cleared in Document::Shutdown().
-+  LOG_ASSERT(!page_graph_);
-+  LOG_ASSERT(!page_graph_non_owning_);
-+#endif
-+}
++  page_graph_non_owning_ = nullptr;
 +
++  if (page_graph_ != nullptr) {
++    delete page_graph_;
++    page_graph_ = nullptr;
++  }
++#endif
+ }
+ 
 +#if BUILDFLAG(BRAVE_PAGE_GRAPH_ENABLED)
 +static bool IsDocumentLocal(const blink::Document* document) {
 +  // If the current document is in a different security origin than the
@@ -59,16 +62,18 @@ index 1b73cb405b753fd8ab999100f53ba184f62f3b23..f565c8383a320b3fd68cb7dcf10dcb1a
 +  //    is the main frame) to see if any document has a security origin
 +  //    different than that of the root document.
 +
-+  blink::LocalFrame* frame = document->GetFrame();
-+  if (frame == nullptr)
++  blink::LocalFrame* const frame = document->GetFrame();
++  if (!frame) {
 +    return false;
++  }
 +
 +  // Case 1 of security origin check.
-+  if (frame->LocalFrameRoot().IsMainFrame() == false)
++  if (!frame->LocalFrameRoot().IsMainFrame()) {
 +    return false;
++  }
 +
 +  // Case 2 of security origin check.
-+  const blink::Document* top_doc = &document->TopDocument();
++  const blink::Document* const top_doc = &document->TopDocument();
 +  const blink::Document* current_doc = document;
 +  while (current_doc != top_doc) {
 +    blink::SecurityOrigin::AccessResultDomainDetail detail;
@@ -76,7 +81,7 @@ index 1b73cb405b753fd8ab999100f53ba184f62f3b23..f565c8383a320b3fd68cb7dcf10dcb1a
 +        top_doc->GetSecurityOrigin(), detail)) {
 +      return false;
 +    }
-+    LOG_ASSERT(current_doc->LocalOwner() != nullptr);
++    LOG_ASSERT(current_doc->LocalOwner());
 +    current_doc = &current_doc->LocalOwner()->GetDocument();
 +  }
 +
@@ -84,11 +89,16 @@ index 1b73cb405b753fd8ab999100f53ba184f62f3b23..f565c8383a320b3fd68cb7dcf10dcb1a
 +}
 +
 +brave_page_graph::PageGraph* Document::GetPageGraph() {
-+  if (wasDiscarded() == true) {
++  Document* const context_document = ContextDocument();
++  if (!context_document) {
 +    return nullptr;
 +  }
 +
-+  if (!IsDocumentLocal(this)) {
++  if (wasDiscarded() || context_document->wasDiscarded()) {
++    return nullptr;
++  }
++
++  if (!IsDocumentLocal(context_document)) {
 +    return nullptr;
 +  }
 +
@@ -102,18 +112,20 @@ index 1b73cb405b753fd8ab999100f53ba184f62f3b23..f565c8383a320b3fd68cb7dcf10dcb1a
 +
 +  // Only instrument documents belonging to ordinary pages (and not, e.g.,
 +  // service workers).
++
 +  bool is_ordinary_document = false;
 +
-+  LocalFrame* const frame = GetFrame();
-+  if (frame) {
-+    Page* const page = frame->GetPage();
-+    if (page && page->IsOrdinary()) {
++  LocalFrame* const context_frame = context_document->GetFrame();
++  if (context_frame) {
++    Page* const context_page = context_frame->GetPage();
++    if (context_page && context_page->IsOrdinary()) {
 +      is_ordinary_document = true;
 +    }
 +  }
 +
 +  if (!is_ordinary_document) {
-+    std::cout << "(skipping PageGraph instrumentation on document " << Url().GetString() << ")"
++    std::cout << "(skipping PageGraph instrumentation on document "
++              << context_document->Url().GetString() << ")"
 +              << std::endl;
 +    return nullptr;
 +  }
@@ -122,10 +134,13 @@ index 1b73cb405b753fd8ab999100f53ba184f62f3b23..f565c8383a320b3fd68cb7dcf10dcb1a
 +  // to instantiate a page graph instance upward.  But we need to
 +  // make sure to add the page graph instance to the local isolate
 +  // if the top frame has a PageGraph.
-+  if (frame->IsMainFrame() == false) {
-+    page_graph_non_owning_ = TopDocument().GetPageGraph();
++  if (!IsInMainFrame()) {
++    page_graph_non_owning_ = context_document->TopDocument().GetPageGraph();
 +    return page_graph_non_owning_;
 +  }
++
++  LOG_ASSERT(!IsTemplateDocument());
++  LOG_ASSERT(context_document == this);
 +
 +  // Otherwise, we're the top document, and we need to decide if we should
 +  // create a page graph instance.  We do this for documents that look like
@@ -133,37 +148,19 @@ index 1b73cb405b753fd8ab999100f53ba184f62f3b23..f565c8383a320b3fd68cb7dcf10dcb1a
 +  // content pages, etc.
 +  const bool top_doc_is_html = IsHTMLDocument();
 +  const bool top_doc_is_http_delivered = Url().ProtocolIsInHTTPFamily();
-+  if (top_doc_is_html == false ||
-+      top_doc_is_http_delivered == false) {
++  if (!top_doc_is_html || !top_doc_is_http_delivered) {
 +    return nullptr;
 +  }
 +
 +  page_graph_ = new ::brave_page_graph::PageGraph(*this);
 +  return page_graph_;
- }
++}
 +#endif
- 
++
  Range* Document::CreateRangeAdjustedToTreeScope(const TreeScope& tree_scope,
                                                  const Position& position) {
-@@ -2711,6 +2832,17 @@ void Document::Shutdown() {
-   if (!IsActive())
-     return;
- 
-+#if BUILDFLAG(BRAVE_PAGE_GRAPH_ENABLED)
-+  page_graph_non_owning_ = nullptr;
-+
-+  if (page_graph_ != nullptr) {
-+    // The page graph should be owned by the top document.
-+    LOG_ASSERT(IsInMainFrame());
-+    delete page_graph_;
-+    page_graph_ = nullptr;
-+  }
-+#endif
-+
-   GetViewportData().Shutdown();
- 
-   // Frame navigation can cause a new Document to be attached. Don't allow that,
-@@ -5281,6 +5413,22 @@ String Document::cookie(ExceptionState& exception_state) const {
+   DCHECK(position.IsNotNull());
+@@ -5281,6 +5416,22 @@ String Document::cookie(ExceptionState& exception_state) const {
    if (cookie_url.IsEmpty())
      return String();
  
@@ -186,7 +183,7 @@ index 1b73cb405b753fd8ab999100f53ba184f62f3b23..f565c8383a320b3fd68cb7dcf10dcb1a
    return Cookies(this, cookie_url);
  }
  
-@@ -5312,6 +5460,21 @@ void Document::setCookie(const String& value, ExceptionState& exception_state) {
+@@ -5312,6 +5463,21 @@ void Document::setCookie(const String& value, ExceptionState& exception_state) {
    if (cookie_url.IsEmpty())
      return;
  

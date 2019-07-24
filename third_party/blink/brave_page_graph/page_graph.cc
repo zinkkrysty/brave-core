@@ -271,23 +271,40 @@ void PageGraph::RegisterDocumentRootCreated(const blink::DOMNodeId node_id,
   dom_root->AddInEdge(creation_edge);
   acting_node->AddOutEdge(creation_edge);
 
-  NodeHTMLElement* const frame_element_node =
+  NodeHTMLElement* const parent_node =
       element_nodes_.at(parent_node_id);
-  if (!frame_element_node->out_edges_.empty()) {
-    // Add the edge from the (most recently added) frame node of the
-    // parent frame element. The |out_edges_| list could be empty if
-    // the frame element doesn't have an src attribute at first (in case,
-    // blink seems to have an empty document with a URL of "about:blank"
-    // created for the frame).
-    const Edge* const last_edge = frame_element_node->out_edges_.back();
-    Node* const last_node = last_edge->in_node_;
+
+  Node* dom_link_node = nullptr;
+  // TODO: Replace NodeFrame with NodeHTMLFrameElement and move URL to
+  // NodeDOMRoot. Include some way of detecting NodeHTMLFrameElements and
+  // replace this with that.
+  if (parent_node->TagName() == "iframe"
+      || parent_node->TagName() == "object"
+      || parent_node->TagName() == "embed"
+      || parent_node->TagName() == "frame"
+      || parent_node->TagName() == "portal") {
+    if (!parent_node->out_edges_.empty()) {
+      // Add the edge from the (most recently added) frame node of the parent
+      // frame element. The |out_edges_| list could be empty if the frame
+      // element doesn't have an src attribute at first (in case, blink seems to
+      // have an empty document with a URL of "about:blank" created for the
+      // frame).
+      const Edge* const last_edge = parent_node->out_edges_.back();
+      dom_link_node = last_edge->in_node_;
+
+      // Also mark the frame node from above as representing a local frame.
+      reinterpret_cast<NodeFrame*>(dom_link_node)->SetIsLocalFrame();
+    }
+  } else {
+    dom_link_node = parent_node;
+  }
+
+  if (dom_link_node) {
     const EdgeCrossDOM* const structure_edge =
-        new EdgeCrossDOM(this, last_node, dom_root);
+        new EdgeCrossDOM(this, dom_link_node, dom_root);
     AddEdge(structure_edge);
     dom_root->AddInEdge(structure_edge);
-    last_node->AddOutEdge(structure_edge);
-    // Also mark the frame node from above as representing a local frame.
-    reinterpret_cast<NodeFrame*>(last_node)->SetIsLocalFrame();
+    dom_link_node->AddOutEdge(structure_edge);
   }
 }
 

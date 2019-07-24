@@ -1,5 +1,5 @@
 diff --git a/third_party/blink/renderer/core/dom/document.h b/third_party/blink/renderer/core/dom/document.h
-index c89f9d712e9a061cb4218c2863e058f5a62173ae..e62f6d8665b66fc9b6d34298c5519aed7d1195b5 100644
+index c89f9d712e9a061cb4218c2863e058f5a62173ae..39876d309adc5a12a275f93def368ebcb64a52c1 100644
 --- a/third_party/blink/renderer/core/dom/document.h
 +++ b/third_party/blink/renderer/core/dom/document.h
 @@ -73,6 +73,11 @@
@@ -14,6 +14,15 @@ index c89f9d712e9a061cb4218c2863e058f5a62173ae..e62f6d8665b66fc9b6d34298c5519aed
  namespace base {
  class SingleThreadTaskRunner;
  }
+@@ -1258,7 +1263,7 @@ class CORE_EXPORT Document : public ContainerNode,
+   // EnsureTemplateDocument().
+   bool IsTemplateDocument() const { return !!template_document_host_; }
+   Document& EnsureTemplateDocument();
+-  Document* TemplateDocumentHost() { return template_document_host_; }
++  Document* TemplateDocumentHost() const { return template_document_host_; }
+ 
+   // TODO(thestig): Rename these and related functions, since we can call them
+   // for controls outside of forms as well.
 @@ -1540,6 +1545,10 @@ class CORE_EXPORT Document : public ContainerNode,
    // inside a cross-process frame (MimeHandlerView).
    void SetShowBeforeUnloadDialog(bool show_dialog);
