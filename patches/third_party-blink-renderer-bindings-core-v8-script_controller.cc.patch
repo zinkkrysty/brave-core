@@ -1,5 +1,5 @@
 diff --git a/third_party/blink/renderer/bindings/core/v8/script_controller.cc b/third_party/blink/renderer/bindings/core/v8/script_controller.cc
-index 5987273c80d97900860b893d561d8466098d23c3..792c3debd67c967ab0a9e776715a28b115be4a34 100644
+index 5987273c80d97900860b893d561d8466098d23c3..4fe7c5d360d62b62dbbec6af9854c23804ab9ac9 100644
 --- a/third_party/blink/renderer/bindings/core/v8/script_controller.cc
 +++ b/third_party/blink/renderer/bindings/core/v8/script_controller.cc
 @@ -71,6 +71,13 @@
@@ -16,7 +16,7 @@ index 5987273c80d97900860b893d561d8466098d23c3..792c3debd67c967ab0a9e776715a28b1
  namespace blink {
  
  void ScriptController::Trace(blink::Visitor* visitor) {
-@@ -130,6 +137,28 @@ v8::Local<v8::Value> ScriptController::ExecuteScriptAndReturnValue(
+@@ -130,6 +137,56 @@ v8::Local<v8::Value> ScriptController::ExecuteScriptAndReturnValue(
               .ToLocal(&script))
        return result;
  
@@ -33,9 +33,37 @@ index 5987273c80d97900860b893d561d8466098d23c3..792c3debd67c967ab0a9e776715a28b1
 +            page_graph->RegisterScriptCompilationFromEval(
 +                source.ParentScriptId(), script_id);
 +          } else {
-+            page_graph->RegisterScriptCompilation(
-+                source, script_id,
-+                ::brave_page_graph::ScriptType::kScriptTypeUnknown);
++            ::brave_page_graph::ScriptType type;
++            switch (script_location) {
++              case ScriptSourceLocationType::kExternalFile:
++                type = ::brave_page_graph::ScriptType::kExternalFile;
++                break;
++              case ScriptSourceLocationType::kInline:
++                type = ::brave_page_graph::ScriptType::kInline;
++                break;
++              case ScriptSourceLocationType::kInlineInsideDocumentWrite:
++                type =
++                  ::brave_page_graph::ScriptType::kInlineInsideDocumentWrite;
++                break;
++              case ScriptSourceLocationType::kInlineInsideGeneratedElement:
++                type =
++                  ::brave_page_graph::ScriptType::kInlineInsideGeneratedElement;
++                break;
++              case ScriptSourceLocationType::kInternal:
++                type = ::brave_page_graph::ScriptType::kInternal;
++                break;
++              case ScriptSourceLocationType::kJavascriptUrl:
++                type = ::brave_page_graph::ScriptType::kJavascriptUrl;
++                break;
++              case ScriptSourceLocationType::kEvalForScheduledAction:
++                type = ::brave_page_graph::ScriptType::kEvalForScheduledAction;
++                break;
++              case ScriptSourceLocationType::kInspector:
++              default:
++                type = ::brave_page_graph::ScriptType::kInspector;
++                break;
++            }
++            page_graph->RegisterScriptCompilation(source, script_id, type);
 +          }
 +        }
 +      }
