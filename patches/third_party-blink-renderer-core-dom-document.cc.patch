@@ -1,5 +1,5 @@
 diff --git a/third_party/blink/renderer/core/dom/document.cc b/third_party/blink/renderer/core/dom/document.cc
-index 1b73cb405b753fd8ab999100f53ba184f62f3b23..fec63d0adc323281320a41a0c7c55b98c5f396ac 100644
+index 1b73cb405b753fd8ab999100f53ba184f62f3b23..861c2e890ec2577bd8141757a74c6b9e1017de11 100644
 --- a/third_party/blink/renderer/core/dom/document.cc
 +++ b/third_party/blink/renderer/core/dom/document.cc
 @@ -310,6 +310,15 @@ using WeakDocumentSet = blink::HeapHashSet<blink::WeakMember<blink::Document>>;
@@ -29,7 +29,7 @@ index 1b73cb405b753fd8ab999100f53ba184f62f3b23..fec63d0adc323281320a41a0c7c55b98
        evaluate_media_queries_on_style_recalc_(false),
        pending_sheet_layout_(kNoLayoutWithPendingSheets),
        frame_(initializer.GetFrame()),
-@@ -778,8 +791,130 @@ Document::~Document() {
+@@ -778,8 +791,132 @@ Document::~Document() {
    DCHECK(!ax_object_cache_);
  
    InstanceCounters::DecrementCounter(InstanceCounters::kDocumentCounter);
@@ -152,7 +152,9 @@ index 1b73cb405b753fd8ab999100f53ba184f62f3b23..fec63d0adc323281320a41a0c7c55b98
 +    return nullptr;
 +  }
 +
-+  page_graph_ = new ::brave_page_graph::PageGraph(*this);
++  page_graph_ = new ::brave_page_graph::PageGraph(*this,
++                                                  DOMNodeIds::IdForNode(this),
++                                                  nodeName(), Url());
 +  return page_graph_;
 +}
 +#endif
@@ -160,7 +162,7 @@ index 1b73cb405b753fd8ab999100f53ba184f62f3b23..fec63d0adc323281320a41a0c7c55b98
  Range* Document::CreateRangeAdjustedToTreeScope(const TreeScope& tree_scope,
                                                  const Position& position) {
    DCHECK(position.IsNotNull());
-@@ -5281,6 +5416,22 @@ String Document::cookie(ExceptionState& exception_state) const {
+@@ -5281,6 +5418,22 @@ String Document::cookie(ExceptionState& exception_state) const {
    if (cookie_url.IsEmpty())
      return String();
  
@@ -183,7 +185,7 @@ index 1b73cb405b753fd8ab999100f53ba184f62f3b23..fec63d0adc323281320a41a0c7c55b98
    return Cookies(this, cookie_url);
  }
  
-@@ -5312,6 +5463,21 @@ void Document::setCookie(const String& value, ExceptionState& exception_state) {
+@@ -5312,6 +5465,21 @@ void Document::setCookie(const String& value, ExceptionState& exception_state) {
    if (cookie_url.IsEmpty())
      return;
  

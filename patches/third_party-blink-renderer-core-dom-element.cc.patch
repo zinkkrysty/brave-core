@@ -1,5 +1,5 @@
 diff --git a/third_party/blink/renderer/core/dom/element.cc b/third_party/blink/renderer/core/dom/element.cc
-index d86329b115ae842fac8218a9d7f175b888576ae5..6775e2aaf04f5c76c703392f10bcf77084f87dea 100644
+index d86329b115ae842fac8218a9d7f175b888576ae5..bd188cb115228fb8b04b49601f6b62b9cc01a00a 100644
 --- a/third_party/blink/renderer/core/dom/element.cc
 +++ b/third_party/blink/renderer/core/dom/element.cc
 @@ -162,6 +162,15 @@
@@ -18,7 +18,7 @@ index d86329b115ae842fac8218a9d7f175b888576ae5..6775e2aaf04f5c76c703392f10bcf770
  namespace blink {
  
  using namespace html_names;
-@@ -329,7 +338,14 @@ Element* Element::Create(const QualifiedName& tag_name, Document* document) {
+@@ -329,7 +338,25 @@ Element* Element::Create(const QualifiedName& tag_name, Document* document) {
  Element::Element(const QualifiedName& tag_name,
                   Document* document,
                   ConstructionType type)
@@ -26,15 +26,26 @@ index d86329b115ae842fac8218a9d7f175b888576ae5..6775e2aaf04f5c76c703392f10bcf770
 +    : ContainerNode(document, type), tag_name_(tag_name) {
 +#if BUILDFLAG(BRAVE_PAGE_GRAPH_ENABLED)
 +  if (GetDocument().GetPageGraph() != nullptr) {
++    ::brave_page_graph::ElementType element_type =
++        ::brave_page_graph::kElementTypeDefault;
++
++    if (HasTagName(kIFrameTag)
++        || HasTagName(kObjectTag)
++        || HasTagName(kEmbedTag)
++        || HasTagName(kFrameTag)
++        || HasTagName(kPortalTag)) {
++      element_type = ::brave_page_graph::kElementTypeFrameOwner;
++    }
++
 +    GetDocument().GetPageGraph()->RegisterHTMLElementNodeCreated(
-+      DOMNodeIds::IdForNode(this), tag_name_.ToString());
++      DOMNodeIds::IdForNode(this), tag_name_.ToString(), element_type);
 +  }
 +#endif
 +}
  
  inline ElementRareData* Element::GetElementRareData() const {
    DCHECK(HasRareData());
-@@ -1729,6 +1745,14 @@ static inline AtomicString MakeIdForStyleResolution(const AtomicString& value,
+@@ -1729,6 +1756,14 @@ static inline AtomicString MakeIdForStyleResolution(const AtomicString& value,
  
  DISABLE_CFI_PERF
  void Element::AttributeChanged(const AttributeModificationParams& params) {
