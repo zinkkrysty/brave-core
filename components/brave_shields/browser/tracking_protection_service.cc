@@ -225,7 +225,7 @@ bool TrackingProtectionService::ShouldStartRequest(
   }
 
   if (block_decision) {
-    *block_decision = new TrackerBlockDecision(host);
+    *block_decision = new TrackerBlockDecision(url.host());
   }
   return false;
 }

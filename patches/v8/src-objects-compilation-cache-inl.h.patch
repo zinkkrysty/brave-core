@@ -1,5 +1,5 @@
 diff --git a/src/objects/compilation-cache-inl.h b/src/objects/compilation-cache-inl.h
-index 81b953a5892844e8ef6ecc7a1ebf36426be09be0..c7fc2a9936defe1581b9bbeebdf1875f4f33ba5b 100644
+index 81b953a5892844e8ef6ecc7a1ebf36426be09be0..7ec542910ed546314ca70e3481d5ea297e72ee24 100644
 --- a/src/objects/compilation-cache-inl.h
 +++ b/src/objects/compilation-cache-inl.h
 @@ -16,6 +16,8 @@
@@ -38,11 +38,10 @@ index 81b953a5892844e8ef6ecc7a1ebf36426be09be0..c7fc2a9936defe1581b9bbeebdf1875f
  
    FixedArray val = FixedArray::cast(object);
    if (val.map() == roots.fixed_cow_array_map()) {
--    DCHECK_EQ(4, val.length());
 +#if BUILDFLAG(BRAVE_PAGE_GRAPH_ENABLED)
-+    DCHECK_EQ(5, val->length());
++    DCHECK_EQ(5, val.length());
 +#else
-+    DCHECK_EQ(4, val->length());
+     DCHECK_EQ(4, val.length());
 +#endif
      SharedFunctionInfo shared = SharedFunctionInfo::cast(val.get(0));
      String source = String::cast(val.get(1));
@@ -52,7 +51,7 @@ index 81b953a5892844e8ef6ecc7a1ebf36426be09be0..c7fc2a9936defe1581b9bbeebdf1875f
      int position = Smi::ToInt(val.get(3));
 -    return StringSharedHash(source, shared, language_mode, position);
 +#if BUILDFLAG(BRAVE_PAGE_GRAPH_ENABLED)
-+    int parent_script_id = Smi::ToInt(val->get(4));
++    int parent_script_id = Smi::ToInt(val.get(4));
 +#endif
 +    return StringSharedHash(source, shared, language_mode, position
 +#if BUILDFLAG(BRAVE_PAGE_GRAPH_ENABLED)
