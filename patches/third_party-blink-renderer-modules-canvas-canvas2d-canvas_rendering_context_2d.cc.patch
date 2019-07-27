@@ -1,5 +1,5 @@
 diff --git a/third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d.cc b/third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d.cc
-index 904f5dd231dec422684528e8f8bc2b5e7f6e348e..ea4d3f55e94f0f448605b3a3bb874c2d178621b4 100644
+index 904f5dd231dec422684528e8f8bc2b5e7f6e348e..c5438770346d380c4c59bb1f48a3d8c4cd5daef5 100644
 --- a/third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d.cc
 +++ b/third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d.cc
 @@ -33,6 +33,7 @@
@@ -10,7 +10,20 @@ index 904f5dd231dec422684528e8f8bc2b5e7f6e348e..ea4d3f55e94f0f448605b3a3bb874c2d
  #include "third_party/blink/public/common/features.h"
  #include "third_party/blink/public/platform/platform.h"
  #include "third_party/blink/public/platform/task_type.h"
-@@ -793,6 +794,9 @@ TextMetrics* CanvasRenderingContext2D::measureText(const String& text) {
+@@ -74,6 +75,12 @@
+ #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+ #include "third_party/blink/renderer/platform/wtf/typed_arrays/array_buffer_contents.h"
+ 
++#include "brave/third_party/blink/brave_page_graph/buildflags/buildflags.h"
++#if BUILDFLAG(BRAVE_PAGE_GRAPH_ENABLED)
++#include "brave/third_party/blink/brave_page_graph/page_graph.h"
++#include <sstream>
++#endif
++
+ namespace blink {
+ 
+ static const TimeDelta kTryRestoreContextInterval =
+@@ -793,6 +800,9 @@ TextMetrics* CanvasRenderingContext2D::measureText(const String& text) {
    if (!canvas()->GetDocument().GetFrame())
      return MakeGarbageCollected<TextMetrics>();
  
@@ -20,3 +33,48 @@ index 904f5dd231dec422684528e8f8bc2b5e7f6e348e..ea4d3f55e94f0f448605b3a3bb874c2d
    canvas()->GetDocument().UpdateStyleAndLayoutTreeForNode(canvas());
  
    const Font& font = AccessFont();
+@@ -804,6 +814,44 @@ TextMetrics* CanvasRenderingContext2D::measureText(const String& text) {
+   else
+     direction = ToTextDirection(GetState().GetDirection(), canvas());
+ 
++#if BUILDFLAG(BRAVE_PAGE_GRAPH_ENABLED)
++  {
++    TextMetrics* result = TextMetrics::Create(font, direction,
++      GetState().GetTextBaseline(), GetState().GetTextAlign(), text);
++
++    brave_page_graph::PageGraph* page_graph =
++      canvas()->GetDocument().GetPageGraph();
++    if (page_graph != nullptr) {
++      std::vector<const String> args;
++      args.push_back(text);
++      page_graph->RegisterWebAPICall("CanvasRenderingContext2D.measureText",
++        args);
++
++      std::stringstream result_buffer;
++      result_buffer << "width: " << result->width()
++        << ", actualBoundingBoxLeft: " << result->actualBoundingBoxLeft()
++        << ", actualBoundingBoxRight: " << result->actualBoundingBoxRight()
++        << ", fontBoundingBoxAscent: " << result->fontBoundingBoxAscent()
++        << ", fontBoundingBoxDescent: " << result->fontBoundingBoxDescent()
++        << ", actualBoundingBoxAscent: " << result->actualBoundingBoxAscent()
++        << ", actualBoundingBoxDescent: " << result->actualBoundingBoxDescent()
++        << ", emHeightAscent: " << result->emHeightAscent()
++        << ", emHeightDescent: " << result->emHeightDescent();
++
++      Baselines* baselines = result->getBaselines();
++      result_buffer << ", hangingBaseline: " << baselines->hanging()
++        << ", alphabeticBaseline: " << baselines->alphabetic()
++        << ", ideographicBaseline: " << baselines->ideographic();
++
++      String page_graph_result(result_buffer.str().c_str());
++      page_graph->RegisterWebAPIResult("CanvasRenderingContext2D.measureText",
++        page_graph_result);
++    }
++
++    return result;
++  }
++#endif
++
+   return MakeGarbageCollected<TextMetrics>(font, direction,
+                                            GetState().GetTextBaseline(),
+                                            GetState().GetTextAlign(), text);
