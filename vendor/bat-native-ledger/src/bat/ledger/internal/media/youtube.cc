@@ -330,6 +330,7 @@ void YouTube::ProcessMedia(const std::map<std::string, std::string>& parts,
 
   std::string media_key = braveledger_media::GetMediaKey(media_id,
                                                          YOUTUBE_MEDIA_TYPE);
+
   uint64_t duration = GetMediaDurationFromParts(parts, media_key);
 
   BLOG(ledger_, ledger::LogLevel::LOG_DEBUG) << "Media key: " << media_key;
@@ -438,6 +439,38 @@ void YouTube::OnMediaPublisherInfo(
                             callback);
   }
 }
+
+void YouTube::OnMediaPublisherInfoForInlineTip(
+    const std::string& media_id,
+    const std::string& media_key,
+    const uint64_t duration,
+    const ledger::VisitData& visit_data,
+    uint64_t window_id,
+    const std::string fav_icon,
+    const std::string channel_id,
+    ledger::PublisherInfoCallback callback,
+    ledger::Result result,
+    ledger::PublisherInfoPtr publisher_info) {
+  if (result != ledger::Result::LEDGER_OK &&
+    result != ledger::Result::NOT_FOUND) {
+    callback(ledger::Result::LEDGER_ERROR, nullptr);
+    return;
+  }
+
+  if (!publisher_info || result == ledger::Result::NOT_FOUND) {
+    SavePublisherInfo(duration,
+                      media_key,
+                      publisher_info->url,
+                      publisher_info->name,
+                      visit_data,
+                      window_id,
+                      fav_icon,
+                      channel_id);
+  } else {
+    callback(result, std::move(publisher_info));
+  }
+}
+
 
 void YouTube::OnEmbedResponse(
     const uint64_t duration,
@@ -818,5 +851,58 @@ void YouTube::OnChannelIdForUser(
   }
 }
 
+void YouTube::OnMetaDataGet(
+      ledger::PublisherInfoCallback callback,
+      int response_status_code,
+      const std::string& response,
+      const std::map<std::string, std::string>& headers,
+      const std::string& url) {
+  if (response_status_code != net::HTTP_OK) {
+    callback(ledger::Result::TIP_ERROR, nullptr);
+    return;
+  }
 
+  ledger::VisitData visit_data;
+  visit_data.url = url;
+
+  const std::string media_id = GetMediaIdFromUrl(visit_data.url);
+  const std::string media_key = braveledger_media::GetMediaKey(media_id,
+      YOUTUBE_MEDIA_TYPE);
+
+  const std::string fav_icon = GetFavIconUrl(response);
+  const std::string channel_id = GetChannelId(response);
+
+  ledger_->GetMediaPublisherInfo(
+          media_key,
+          std::bind(&YouTube::OnMediaPublisherInfoForInlineTip,
+                    this,
+                    media_id,
+                    media_key,
+                    0,
+                    visit_data,
+                    0,
+                    fav_icon,
+                    channel_id,
+                    callback,
+                    _1,
+                    _2));
+}
+
+void YouTube::SaveMediaInfo(
+    const std::map<std::string, std::string>& data,
+    ledger::PublisherInfoCallback callback) {
+  std::string url = data.find("url")->second;
+  ledger_->LoadURL(url,
+                   std::vector<std::string>(),
+                   "",
+                   "",
+                   ledger::URL_METHOD::GET,
+                   std::bind(&YouTube::OnMetaDataGet,
+                              this,
+                              std::move(callback),
+                              _1,
+                              _2,
+                              _3,
+                              url));
+}
 }  // namespace braveledger_media

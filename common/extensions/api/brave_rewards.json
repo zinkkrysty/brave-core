@@ -512,6 +512,35 @@
         ]
       },
       {
+        "name": "tipYoutubeUser",
+        "type": "function",
+        "description": "Allow the user to perform a donation to a Youtube user",
+        "parameters": [
+          {
+            "name": "tabID",
+            "type": "integer"
+          },
+          {
+            "name": "mediaMetaData",
+            "type": "object",
+            "properties": {
+              "mediaType": {
+                "type": "string",
+                "description": "description used in UI to identify the media type"
+              },
+              "userName": {
+                "type": "string",
+                "description": "User name of the Youtube post/comment author"
+              },
+              "url": {
+                "type": "string",
+                "description": "URL of Youtube video"
+              }
+            }
+          }
+        ]
+      },
+      {
         "name": "getPublisherData",
         "type": "function",
         "description": "Get publisher data",

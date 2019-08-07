@@ -87,6 +87,22 @@ class BraveRewardsTipRedditUserFunction : public UIThreadExtensionFunction {
       std::unique_ptr<brave_rewards::ContentSite> publisher_info);
 };
 
+class BraveRewardsTipYoutubeUserFunction : public UIThreadExtensionFunction {
+ public:
+  BraveRewardsTipYoutubeUserFunction();
+  DECLARE_EXTENSION_FUNCTION("braveRewards.tipYoutubeUser", UNKNOWN)
+
+ protected:
+  ~BraveRewardsTipYoutubeUserFunction() override;
+
+  ResponseAction Run() override;
+
+ private:
+  base::WeakPtrFactory<BraveRewardsTipYoutubeUserFunction> weak_factory_;
+  void OnYoutubePublisherInfoSaved(
+      std::unique_ptr<brave_rewards::ContentSite> publisher_info);
+};
+
 class BraveRewardsGetPublisherDataFunction : public UIThreadExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("braveRewards.getPublisherData", UNKNOWN)

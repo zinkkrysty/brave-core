@@ -130,6 +130,8 @@ class Banner extends React.Component<Props, State> {
       return `u/${mediaMetaData.userName}`
     } else if (mediaMetaData.mediaType === 'github') {
       return `@${mediaMetaData.userName}`
+    } else if (mediaMetaData.mediaType === 'youtube') {
+      return `${mediaMetaData.userName}`
     }
     return ''
   }

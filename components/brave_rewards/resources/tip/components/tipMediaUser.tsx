@@ -42,6 +42,9 @@ class TipMediaUser extends React.Component<Props, {}> {
     } else if (mediaMetaData.mediaType === 'github') {
       let name = this.props.publisher.name
       this.actions.onTweet(name, '')
+    } else if (mediaMetaData.mediaType === 'youtube') {
+      let name = this.props.publisher.name
+      this.actions.onTweet(name, '')
     }
     this.actions.onCloseDialog()
   }
@@ -72,6 +75,9 @@ class TipMediaUser extends React.Component<Props, {}> {
     } else if (mediaMetaData.mediaType === 'github') {
       const key = mediaMetaData.userName ? 'githubTipTitle' : 'githubTipTitleEmpty'
       publisher.title = getLocale(key, { user: '@' + mediaMetaData.userName })
+    } else if (mediaMetaData.mediaType === 'youtube') {
+      const key = mediaMetaData.userName ? 'youtubeTipTitle' : 'youtubeTipTitleEmpty'
+      publisher.title = getLocale(key, { user: mediaMetaData.userName })
     }
 
     return (

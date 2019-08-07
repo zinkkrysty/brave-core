@@ -49,10 +49,19 @@ declare namespace RewardsTip {
   } | {
     mediaType: 'github'
     userName: string
+  } | {
+    mediaType: 'youtube'
+    userName: string
+    url: string
   }
 
   interface GitHubMetaData {
     userName: string
+  }
+
+  interface YoutubeMetaData {
+    userName: string
+    url: string
   }
 
   interface RedditMetaData {

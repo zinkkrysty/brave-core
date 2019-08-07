@@ -31,6 +31,10 @@ class YouTube : public ledger::LedgerCallbackHandler {
 
   static std::string GetLinkType(const std::string& url);
 
+  void SaveMediaInfo(
+      const std::map<std::string, std::string>& data,
+      ledger::PublisherInfoCallback callback);
+
   void ProcessActivityFromUrl(uint64_t window_id,
                               const ledger::VisitData& visit_data);
 
@@ -71,6 +75,13 @@ class YouTube : public ledger::LedgerCallbackHandler {
   void OnMediaActivityError(const ledger::VisitData& visit_data,
                             uint64_t window_id);
 
+  void OnMetaDataGet(
+      ledger::PublisherInfoCallback callback,
+      int response_status_code,
+      const std::string& response,
+      const std::map<std::string, std::string>& headers,
+      const std::string& url);
+
   void OnSaveMediaVisit(ledger::Result result,
                         ledger::PublisherInfoPtr info);
 
@@ -80,6 +91,18 @@ class YouTube : public ledger::LedgerCallbackHandler {
       const uint64_t duration,
       const ledger::VisitData& visit_data,
       uint64_t window_id,
+      ledger::Result result,
+      ledger::PublisherInfoPtr publisher_info);
+
+  void OnMediaPublisherInfoForInlineTip(
+      const std::string& media_id,
+      const std::string& media_key,
+      const uint64_t duration,
+      const ledger::VisitData& visit_data,
+      uint64_t window_id,
+      const std::string fav_icon,
+      const std::string channel_id,
+      ledger::PublisherInfoCallback callback,
       ledger::Result result,
       ledger::PublisherInfoPtr publisher_info);
 

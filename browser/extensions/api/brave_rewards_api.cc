@@ -202,6 +202,42 @@ void BraveRewardsTipRedditUserFunction::OnRedditPublisherInfoSaved(
   Release();
 }
 
+BraveRewardsTipYoutubeUserFunction::BraveRewardsTipYoutubeUserFunction()
+    : weak_factory_(this) {
+}
+
+BraveRewardsTipYoutubeUserFunction::~BraveRewardsTipYoutubeUserFunction() {
+}
+
+ExtensionFunction::ResponseAction BraveRewardsTipYoutubeUserFunction::Run() {
+  std::unique_ptr<brave_rewards::TipYoutubeUser::Params> params(
+      brave_rewards::TipYoutubeUser::Params::Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params.get());
+
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  if (profile->IsOffTheRecord()) {
+    return RespondNow(
+        Error("Cannot tip Youtube user in a private context"));
+  }
+
+  RewardsService* rewards_service = RewardsServiceFactory::GetForProfile(
+      profile);
+
+  if (rewards_service) {
+    AddRef();
+    std::map<std::string, std::string> args;
+    args["url"] = params->media_meta_data.url;
+    rewards_service->SaveInlineMediaInfo(
+        params->media_meta_data.media_type,
+        args,
+        base::Bind(
+            &BraveRewardsTipYoutubeUserFunction::OnYoutubePublisherInfoSaved,
+            weak_factory_.GetWeakPtr()));
+  }
+
+  return RespondNow(NoArguments());
+}
+
 void BraveRewardsTipTwitterUserFunction::OnTwitterPublisherInfoSaved(
     std::unique_ptr<::brave_rewards::ContentSite> publisher_info) {
   std::unique_ptr<brave_rewards::TipTwitterUser::Params> params(
@@ -333,6 +369,43 @@ void BraveRewardsTipGitHubUserFunction::OnGitHubPublisherInfoSaved(
   Release();
 }
 //////////////////
+
+void BraveRewardsTipYoutubeUserFunction::OnYoutubePublisherInfoSaved(
+    std::unique_ptr<::brave_rewards::ContentSite> publisher_info) {
+  std::unique_ptr<brave_rewards::TipYoutubeUser::Params> params(
+      brave_rewards::TipYoutubeUser::Params::Create(*args_));
+
+  if (!publisher_info) {
+    Release();
+    return;
+  }
+
+  content::WebContents* contents = nullptr;
+  if (!ExtensionTabUtil::GetTabById(
+        params->tab_id,
+        Profile::FromBrowserContext(browser_context()),
+        false,
+        nullptr,
+        nullptr,
+        &contents,
+        nullptr)) {
+    return;
+  }
+
+  auto params_dict = std::make_unique<base::DictionaryValue>();
+  params_dict->SetString("publisherKey", publisher_info->id);
+  params_dict->SetString("url", publisher_info->url);
+
+  base::Value media_meta_data_dict(base::Value::Type::DICTIONARY);
+  media_meta_data_dict.SetStringKey("url",
+                                  params->media_meta_data.url);
+  params_dict->SetPath("mediaMetaData", std::move(media_meta_data_dict));
+
+  ::brave_rewards::OpenTipDialog(
+      contents, std::move(params_dict));
+
+  Release();
+}
 
 BraveRewardsGetPublisherDataFunction::~BraveRewardsGetPublisherDataFunction() {
 }

@@ -61,7 +61,8 @@ export const defaultState: Rewards.State = {
   inlineTip: {
     twitter: true,
     reddit: true,
-    github: true
+    github: true,
+    youtube: true
   },
   pendingContributions: [],
   excludedList: [],

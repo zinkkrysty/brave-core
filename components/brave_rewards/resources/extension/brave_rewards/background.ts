@@ -131,6 +131,23 @@ const tipRedditMedia = (mediaMetaData: RewardsTip.MediaMetaData) => {
   })
 }
 
+const tipYoutubeMedia = (mediaMetaData: RewardsTip.MediaMetaData) => {
+  mediaMetaData.mediaType = 'youtube'
+  chrome.tabs.query({
+    active: true,
+    windowId: chrome.windows.WINDOW_ID_CURRENT
+  }, (tabs) => {
+    if (!tabs || tabs.length === 0) {
+      return
+    }
+    const tabId = tabs[0].id
+    if (tabId === undefined) {
+      return
+    }
+    chrome.braveRewards.tipYoutubeUser(tabId, mediaMetaData)
+  })
+}
+
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   const action = typeof msg === 'string' ? msg : msg.type
   switch (action) {
@@ -144,6 +161,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           break
         case 'github':
           tipGitHubMedia(msg.mediaMetaData)
+          break
+        case 'youtube':
+          tipYoutubeMedia(msg.mediaMetaData)
           break
       }
       return false
