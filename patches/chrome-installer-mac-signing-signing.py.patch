@@ -1,12 +1,12 @@
 diff --git a/chrome/installer/mac/signing/signing.py b/chrome/installer/mac/signing/signing.py
-index 9a425e757229484755a2f656f8a7758c7538b676..e46ebea95c8d005b5a6f9a7afcd390f1599265c8 100644
+index 9a425e757229484755a2f656f8a7758c7538b676..a908eb7e4e2f5b38240e953627f02bc7ff867b82 100644
 --- a/chrome/installer/mac/signing/signing.py
 +++ b/chrome/installer/mac/signing/signing.py
 @@ -11,6 +11,7 @@ import os.path
  
  from . import commands
  from .model import CodeSignOptions, CodeSignedProduct, VerifyOptions
-+from signing_helper import AddBravePartsForSigning
++from signing_helper import AddBravePartsForSigning, GenerateBraveWidevineSigFile
  
  _PROVISIONPROFILE_EXT = '.provisionprofile'
  _PROVISIONPROFILE_DEST = 'embedded.provisionprofile'
@@ -45,3 +45,11 @@ index 9a425e757229484755a2f656f8a7758c7538b676..e46ebea95c8d005b5a6f9a7afcd390f1
      if config.notary_user:
          # Assume if the config has notary authentication information that the
          # products will be notarized, which requires a secure timestamp.
+@@ -272,6 +274,7 @@ def sign_chrome(paths, config, sign_framework=False):
+                 continue
+             sign_part(paths, config, part)
+ 
++        GenerateBraveWidevineSigFile(paths, config, parts['framework'])
+         # Sign the framework bundle.
+         sign_part(paths, config, parts['framework'])
+ 
