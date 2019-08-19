@@ -1,0 +1,13 @@
+diff --git a/chrome/android/java/src/org/chromium/chrome/browser/preferences/website/SiteSettingsPreferences.java b/chrome/android/java/src/org/chromium/chrome/browser/preferences/website/SiteSettingsPreferences.java
+index 2716cb92fd5bc1f056796da36da5bc6d40ed6e88..fa68a86cc3318dffce9a03f52bd13eb58f4f3bf4 100644
+--- a/chrome/android/java/src/org/chromium/chrome/browser/preferences/website/SiteSettingsPreferences.java
++++ b/chrome/android/java/src/org/chromium/chrome/browser/preferences/website/SiteSettingsPreferences.java
+@@ -31,7 +31,7 @@ import java.util.List;
+  * version/experiment so the organization of this menu should be simplified, probably by moving
+  * Media to its own dedicated PreferenceFragment rather than sharing this one.
+  */
+-public class SiteSettingsPreferences extends PreferenceFragment
++public class SiteSettingsPreferences extends org.chromium.chrome.browser.preferences.BravePreferenceFragment
+         implements OnPreferenceClickListener {
+     // The keys for each category shown on the Site Settings page
+     // are defined in the SiteSettingsCategory, additional keys
