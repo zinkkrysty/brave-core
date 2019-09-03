@@ -118,15 +118,19 @@ void AdsImpl::InitializeStep4(const Result result) {
 
   BLOG(INFO) << "Successfully initialized ads";
 
-  initialize_callback_(SUCCESS);
-
   is_foreground_ = ads_client_->IsForeground();
 
   ads_client_->SetIdleThreshold(kIdleThresholdInSeconds);
 
+  initialize_callback_(SUCCESS);
+
   NotificationAllowedCheck(false);
 
   client_->UpdateAdUUID();
+
+  if (IsMobile()) {
+    StartDeliveringNotifications();
+  }
 
   if (_is_debug) {
     StartCollectingActivity(kDebugOneHourInSeconds);
@@ -215,6 +219,10 @@ bool AdsImpl::GetNotificationForId(
 }
 
 void AdsImpl::OnForeground() {
+  if (!IsInitialized()) {
+    return;
+  }
+
   is_foreground_ = true;
   GenerateAdReportingForegroundEvent();
 
@@ -224,6 +232,10 @@ void AdsImpl::OnForeground() {
 }
 
 void AdsImpl::OnBackground() {
+  if (!IsInitialized()) {
+    return;
+  }
+
   is_foreground_ = false;
   GenerateAdReportingBackgroundEvent();
 
