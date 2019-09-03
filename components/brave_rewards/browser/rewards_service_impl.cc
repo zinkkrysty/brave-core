@@ -571,7 +571,8 @@ void RewardsServiceImpl::CreateWallet(CreateWalletCallback callback) {
 #else
       safetynet_check::ClientAttestationCallback attest_callback =
           base::BindOnce(&RewardsServiceImpl::CreateWalletAttestationResult,
-              AsWeakPtr());
+              AsWeakPtr(),
+              std::move(callback));
       safetynet_check_runner_.performSafetynetCheck("",
           std::move(attest_callback));
 #endif
@@ -586,7 +587,8 @@ void RewardsServiceImpl::CreateWallet(CreateWalletCallback callback) {
 }
 
 #if defined(OS_ANDROID)
-void RewardsServiceImpl::CreateWalletAttestationResult(bool result,
+void RewardsServiceImpl::CreateWalletAttestationResult(CreateWalletCallback callback,
+  bool result,
   const std::string& result_string) {
   if (result) {
     auto on_create = base::BindOnce(
