@@ -1556,7 +1556,7 @@ void LedgerImpl::ClearState(const std::string& name) {
 }
 
 void LedgerImpl::GetGrantViaSafetynetCheck(const std::string& promotion_id) const {
-  bat_client_->getGrantViaSafetynetCheck(promotion_id);
+  bat_wallet_->GetGrantViaSafetynetCheck(promotion_id);
 }
 
 void LedgerImpl::OnGrantViaSafetynetCheck(const std::string& promotion_id, const std::string& nonce) {
