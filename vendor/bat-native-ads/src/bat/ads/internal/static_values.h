@@ -17,25 +17,30 @@ namespace ads {
 
 #define CATALOG_PATH "/v1/catalog"
 
-static const int kIdleThresholdInSeconds = 15;
+const int kIdleThresholdInSeconds = 15;
 
-static const uint64_t kMaximumEntriesInPageScoreHistory = 5;
-static const uint64_t kMaximumEntriesInAdsShownHistory = 99;
+const uint64_t kMaximumEntriesInPageScoreHistory = 5;
+const uint64_t kMaximumEntriesInAdsShownHistory = 99;
 
-static const uint64_t kDebugOneHourInSeconds = 25;
+const uint64_t kDebugOneHourInSeconds = 25;
 
-static char kEasterEggUrl[] = "https://iab.com";
-static const uint64_t kNextEasterEggStartsInSeconds = 30;
+const char kEasterEggUrl[] = "https://iab.com";
+const uint64_t kNextEasterEggStartsInSeconds = 30;
 
-static char kShoppingStateUrl[] = "https://amazon.com";
+const char kShoppingStateUrl[] = "https://amazon.com";
 
-static const uint64_t kSustainAdInteractionAfterSeconds = 10;
+const uint64_t kSustainAdInteractionAfterSeconds = 10;
 
-static const uint64_t kDefaultCatalogPing = 2 * base::Time::kSecondsPerHour;
-static const uint64_t kDebugCatalogPing = 15 * base::Time::kSecondsPerMinute;
+const uint64_t kDefaultCatalogPing = 2 * base::Time::kSecondsPerHour;
+const uint64_t kDebugCatalogPing = 15 * base::Time::kSecondsPerMinute;
 
-static char kDefaultLanguageCode[] = "en";
-static char kDefaultCountryCode[] = "US";
+const char kDefaultLanguageCode[] = "en";
+const char kDefaultCountryCode[] = "US";
+
+
+#if defined(OS_ANDROID)
+const int kMaximumAdNotifications = 3;
+#endif
 
 }  // namespace ads
 

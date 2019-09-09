@@ -31,6 +31,11 @@
 #include "base/time/time.h"
 #include "base/guid.h"
 
+#if defined(OS_ANDROID)
+#include "base/system/sys_info.h"
+#include "base/android/build_info.h"
+#endif
+
 #include "url/gurl.h"
 
 using std::placeholders::_1;
@@ -126,6 +131,11 @@ void AdsImpl::InitializeStep4(const Result result) {
 
   NotificationAllowedCheck(false);
 
+#if defined(OS_ANDROID)
+    RemoveAllNotificationsAfterReboot();
+    RemoveAllNotificationsAfterUpdate();
+#endif
+
   client_->UpdateAdUUID();
 
   if (IsMobile()) {
@@ -140,6 +150,34 @@ void AdsImpl::InitializeStep4(const Result result) {
 
   ads_serve_->DownloadCatalog();
 }
+
+#if defined(OS_ANDROID)
+void AdsImpl::RemoveAllNotificationsAfterReboot() {
+  //ads notifications don't sustain reboot, so remove all
+  auto ads_shown_history = client_->GetAdsShownHistory();
+  if (!ads_shown_history.empty()) {
+    uint64_t ad_shown_timestamp = ads_shown_history.front();
+    uint64_t boot_timestamp = Time::NowInSeconds() -
+        static_cast<uint64_t>(base::SysInfo::Uptime().InSeconds());
+    if (ad_shown_timestamp <= boot_timestamp) {
+      notifications_->RemoveAll(false);
+    }
+  }
+}
+
+void AdsImpl::RemoveAllNotificationsAfterUpdate() {
+  std::string current_version_code (base::android::BuildInfo::GetInstance()->package_version_code());
+  std::string last_version_code = client_->GetVersionCode();
+  if (last_version_code.empty()) {
+    //initial update of version_code
+    client_->SetVersionCode(current_version_code);
+  }
+  else if (last_version_code != current_version_code){
+    //ads notifications don't sustain app update, so remove them
+    notifications_->RemoveAll(false);
+  }
+}
+#endif
 
 bool AdsImpl::IsInitialized() {
   if (!is_initialized_ ||
@@ -159,7 +197,7 @@ void AdsImpl::Shutdown(ShutdownCallback callback) {
     return;
   }
 
-  notifications_->CloseAll();
+  notifications_->RemoveAll(true);
 
   callback(SUCCESS);
 }
@@ -346,7 +384,7 @@ void AdsImpl::NotificationEventViewed(
 void AdsImpl::NotificationEventClicked(
     const std::string& id,
     const NotificationInfo& notification) {
-  notifications_->Remove(id);
+  notifications_->Remove(id, true);
 
   GenerateAdReportingNotificationResultEvent(notification,
       NotificationResultInfoResultType::CLICKED);
@@ -357,7 +395,7 @@ void AdsImpl::NotificationEventClicked(
 void AdsImpl::NotificationEventDismissed(
     const std::string& id,
     const NotificationInfo& notification) {
-  notifications_->Remove(id);
+  notifications_->Remove(id, false);
 
   GenerateAdReportingNotificationResultEvent(notification,
       NotificationResultInfoResultType::DISMISSED);
@@ -368,7 +406,7 @@ void AdsImpl::NotificationEventDismissed(
 void AdsImpl::NotificationEventTimedOut(
     const std::string& id,
     const NotificationInfo& notification) {
-  notifications_->Remove(id);
+  notifications_->Remove(id, false);
 
   GenerateAdReportingNotificationResultEvent(notification,
       NotificationResultInfoResultType::TIMEOUT);
@@ -943,8 +981,14 @@ bool AdsImpl::ShowAd(
       << std::endl << "  url: " << notification_info->url
       << std::endl << "  uuid: " << notification_info->uuid;
 
-  notifications_->Add(*notification_info);
-  ads_client_->ShowNotification(std::move(notification_info));
+  notifications_->PushBack(*notification_info);
+
+#if defined(OS_ANDROID)
+  if (notifications_->Count() > kMaximumAdNotifications) {
+    notifications_->PopFront(true);
+  }
+#endif
+
 
   client_->AppendCurrentTimeToAdsShownHistory();
   client_->AppendCurrentTimeToCreativeSetHistory(ad_info.creative_set_id);
