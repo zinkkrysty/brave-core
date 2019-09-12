@@ -25,6 +25,7 @@ using brave_component_updater::BraveComponent;
 
 namespace brave_shields {
 
+const char kAdBlockResourcesFilename [] = "resources.txt";
 const char kAdBlockComponentName[] = "Brave Ad Block Updater";
 const char kAdBlockComponentId[] = "cffkpbalmllkdoenhmdmpbkajipdjfam";
 const char kAdBlockComponentBase64PublicKey[] =

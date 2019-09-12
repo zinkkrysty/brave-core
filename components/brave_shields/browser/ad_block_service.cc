@@ -71,6 +71,28 @@ void AdBlockService::OnComponentReady(const std::string& component_id,
                                       const std::string& manifest) {
   base::FilePath dat_file_path = install_dir.AppendASCII(DAT_FILE);
   GetDATFileData(dat_file_path);
+
+  install_dir_ = install_dir;
+  base::FilePath dat_file_path =
+      install_dir.AppendASCII(kAdBlockResourcesFilename);
+  base::PostTaskAndReplyWithResult(
+      GetTaskRunner().get(), FROM_HERE,
+      base::BindOnce(&brave_component_updater::GetDATFileAsString,
+                     dat_file_path),
+      base::BindOnce(&AdBlockService::OnResourcesFileDataReady,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void AdBlockService::OnResourcesFileDataReady(std::string resources) {
+  AddResources(resources);
+
+  g_brave_browser_process->ad_block_service()->EnableTag(resources);
+  g_brave_browser_process->ad_block_regional_service_manager()->AddResources(
+      resources);
+  g_brave_browser_process->ad_block_custom_filters_service()->AddResources(
+      resources);
+}
+
 }
 
 // static

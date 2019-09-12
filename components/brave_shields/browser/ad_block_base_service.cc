@@ -122,7 +122,8 @@ void AdBlockBaseService::Cleanup() {
 
 bool AdBlockBaseService::ShouldStartRequest(const GURL& url,
     content::ResourceType resource_type, const std::string& tab_host,
-    bool* did_match_exception, bool* cancel_request_explicitly) {
+    bool* did_match_exception, bool* cancel_request_explicitly,
+    std::string* redirect) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   // Determine third-party here so the library doesn't need to figure it out.
@@ -133,11 +134,10 @@ bool AdBlockBaseService::ShouldStartRequest(const GURL& url,
       INCLUDE_PRIVATE_REGISTRIES);
   bool explicit_cancel;
   bool saved_from_exception;
-  // TODO(bbondy): Use redirect if it is provided.
-  std::string redirect;
   if (ad_block_client_->matches(url.spec(), url.host(),
         tab_host, is_third_party, ResourceTypeToString(resource_type),
-        &explicit_cancel, &saved_from_exception, &redirect)) {
+        &explicit_cancel, &saved_from_exception, redirect)) {
+    LOG(ERROR) << "===Matches: " << url.spec();
     if (cancel_request_explicitly) {
       *cancel_request_explicitly = explicit_cancel;
     }
@@ -184,6 +184,21 @@ void AdBlockBaseService::EnableTagOnIOThread(
   }
 }
 
+void AdBlockBaseService::AddResources(const std::string& resources) {
+  base::PostTaskWithTraits(
+      FROM_HERE, {BrowserThread::IO},
+      base::BindOnce(&AdBlockBaseService::AddResourcesOnIOThread,
+                     weak_factory_io_thread_.GetWeakPtr(),
+                     resources));
+}
+
+void AdBlockBaseService::AddResourcesOnIOThread(
+    const std::string& resources) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  ad_block_client_->addResources(resources);
+  resources_ = resources;
+}
+
 bool AdBlockBaseService::TagExists(const std::string& tag) {
   return std::find(tags_.begin(), tags_.end(), tag) != tags_.end();
 }
@@ -223,6 +238,7 @@ void AdBlockBaseService::UpdateAdBlockClient(
   ad_block_client_ = std::move(ad_block_client);
   buffer_ = std::move(buffer);
   AddKnownTagsToAdBlockInstance();
+  AddKnownResourcesToAdBlockInstance();
 }
 
 void AdBlockBaseService::AddKnownTagsToAdBlockInstance() {
@@ -231,6 +247,9 @@ void AdBlockBaseService::AddKnownTagsToAdBlockInstance() {
   });
 }
 
+void AdBlockBaseService::AddKnownResourcesToAdBlockInstance() {
+  ad_block_client_->addResources(resources_);
+}
 
 bool AdBlockBaseService::Init() {
   return true;
@@ -243,6 +262,7 @@ void AdBlockBaseService::ResetForTest(const std::string& rules) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   ad_block_client_.reset(new adblock::Engine(rules));
   AddKnownTagsToAdBlockInstance();
+  AddKnownResourcesToAdBlockInstance();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
