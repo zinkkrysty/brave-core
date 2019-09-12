@@ -119,6 +119,7 @@ class AdsServiceImpl : public AdsService,
   const std::string GetAdsLocale() const override;
   void GetClientInfo(ads::ClientInfo* info) const override;
   const std::vector<std::string> GetLocales() const override;
+  bool CanShowBackgroundNotifications() const override;
   void ShowNotification(std::unique_ptr<ads::NotificationInfo> info) override;
   void CloseNotification(const std::string& id) override;
   void SetCatalogIssuers(std::unique_ptr<ads::IssuersInfo> info) override;

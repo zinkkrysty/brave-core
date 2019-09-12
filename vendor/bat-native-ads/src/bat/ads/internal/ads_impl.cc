@@ -264,7 +264,7 @@ void AdsImpl::OnForeground() {
   is_foreground_ = true;
   GenerateAdReportingForegroundEvent();
 
-  if (IsMobile()) {
+  if (IsMobile() && !ads_client_->CanShowBackgroundNotifications()) {
     StartDeliveringNotifications();
   }
 }
@@ -277,7 +277,7 @@ void AdsImpl::OnBackground() {
   is_foreground_ = false;
   GenerateAdReportingBackgroundEvent();
 
-  if (IsMobile()) {
+  if (IsMobile() && !ads_client_->CanShowBackgroundNotifications()) {
     StopDeliveringNotifications();
   }
 }
@@ -410,6 +410,34 @@ void AdsImpl::NotificationEventTimedOut(
 
   GenerateAdReportingNotificationResultEvent(notification,
       NotificationResultInfoResultType::TIMEOUT);
+}
+
+bool AdsImpl::IsDoNotDisturb() const {
+  if (!IsAndroid()) {
+    return false;
+  }
+
+  auto now = base::Time::Now();
+  base::Time::Exploded now_exploded;
+  now.LocalExplode(&now_exploded);
+
+  if (now_exploded.hour >= kDoNotDisturbToHour &&
+      now_exploded.hour <= kDoNotDisturbFromHour) {
+    return false;
+  }
+
+  return true;
+}
+
+bool AdsImpl::IsAndroid() const {
+  ClientInfo client_info;
+  ads_client_->GetClientInfo(&client_info);
+
+  if (client_info.platform != ANDROID_OS) {
+    return false;
+  }
+
+  return true;
 }
 
 void AdsImpl::OnTabUpdated(
@@ -740,7 +768,7 @@ void AdsImpl::CheckReadyAdServe(const bool forced) {
       return;
     }
 
-    if (!IsForeground()) {
+    if (!IsAndroid() && !IsForeground()) {
       // TODO(Terry Mancey): Implement Log (#44)
       // 'Notification not made', { reason: 'not in foreground' }
 
@@ -754,6 +782,17 @@ void AdsImpl::CheckReadyAdServe(const bool forced) {
       // 'Notification not made', { reason: 'media playing in browser' }
 
       BLOG(INFO) << "Notification not made: Media playing in browser";
+
+      return;
+    }
+
+    if (IsDoNotDisturb() && !IsForeground()) {
+      // TODO(Terry Mancey): Implement Log (#44)
+      // 'Notification not made', { reason: 'do not disturb while not in
+      // foreground' }
+
+      BLOG(INFO)
+          << "Notification not made: Do not disturb while not in foreground";
 
       return;
     }

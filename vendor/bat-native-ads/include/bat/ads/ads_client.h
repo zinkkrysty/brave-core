@@ -101,6 +101,9 @@ class ADS_EXPORT AdsClient {
   // returns false
   virtual bool IsNotificationsAvailable() const = 0;
 
+  //Should return true if background notifications are allowed
+  virtual bool CanShowBackgroundNotifications() const = 0;
+
   // Should show a notification
   virtual void ShowNotification(std::unique_ptr<NotificationInfo> info) = 0;
 

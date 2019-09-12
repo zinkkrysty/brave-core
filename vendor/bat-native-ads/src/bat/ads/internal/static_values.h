@@ -34,6 +34,9 @@ const uint64_t kSustainAdInteractionAfterSeconds = 10;
 const uint64_t kDefaultCatalogPing = 2 * base::Time::kSecondsPerHour;
 const uint64_t kDebugCatalogPing = 15 * base::Time::kSecondsPerMinute;
 
+static const int kDoNotDisturbFromHour = 21;  // 9pm
+static const int kDoNotDisturbToHour = 6;     // 6am
+
 const char kDefaultLanguageCode[] = "en";
 const char kDefaultCountryCode[] = "US";
 

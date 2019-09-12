@@ -29,6 +29,8 @@ class AdsClientMojoBridge : public mojom::BatAdsClient,
   void IsAdsEnabled(IsAdsEnabledCallback callback) override;
   bool IsForeground(bool* out_is_foreground) override;
   void IsForeground(IsForegroundCallback callback) override;
+  bool CanShowBackgroundNotifications(bool* out_can_show) override;
+  void CanShowBackgroundNotifications(CanShowBackgroundNotificationsCallback callback) override;
   bool GetAdsLocale(std::string* out_locale) override;
   void GetAdsLocale(GetAdsLocaleCallback callback) override;
   bool GetLocales(std::vector<std::string>* out_locales) override;

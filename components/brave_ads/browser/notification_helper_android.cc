@@ -6,6 +6,7 @@
 #include <string>
 
 #include "brave/components/brave_ads/browser/notification_helper_android.h"
+#include "brave/components/brave_ads/browser/background_helper.h"
 #include "jni/NotificationSystemStatusUtil_jni.h"
 #include "jni/BraveAds_jni.h"
 #include "jni/BraveAdsSignupDialog_jni.h"
@@ -35,7 +36,10 @@ bool NotificationHelperAndroid::IsNotificationsAvailable() const {
 
   bool is_notification_channel_enabled = IsBraveAdsNotificationChannelEnabled();
 
-  return is_notifications_enabled && is_notification_channel_enabled;
+  auto is_foreground = BackgroundHelper::GetInstance()->IsForeground();
+  auto should_show_notifications = CanShowBackgroundNotifications() || is_foreground;
+
+  return is_notifications_enabled && is_notification_channel_enabled && should_show_notifications;
 }
 
 bool NotificationHelperAndroid::ShowMyFirstAdNotification() const {
@@ -47,6 +51,11 @@ bool NotificationHelperAndroid::ShowMyFirstAdNotification() const {
   Java_BraveAdsSignupDialog_enqueueOobeNotificationNative(env);
 
   return true;
+}
+
+bool NotificationHelperAndroid::CanShowBackgroundNotifications() const {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_BraveAdsSignupDialog_showAdsInBackground(env);
 }
 
 bool NotificationHelperAndroid::IsBraveAdsNotificationChannelEnabled() const {

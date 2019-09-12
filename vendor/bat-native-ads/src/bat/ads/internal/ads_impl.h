@@ -58,6 +58,7 @@ class AdsImpl : public Ads {
   void InitializeUserModel(const std::string& json, const std::string& region);
 
   bool IsMobile() const;
+  bool IsAndroid() const;
 
   bool is_foreground_;
   void OnForeground() override;
@@ -91,6 +92,8 @@ class AdsImpl : public Ads {
   void NotificationEventTimedOut(
       const std::string& id,
       const NotificationInfo& notification);
+
+  bool IsDoNotDisturb() const;
 
   int32_t last_shown_tab_id_;
   std::string last_shown_tab_url_;

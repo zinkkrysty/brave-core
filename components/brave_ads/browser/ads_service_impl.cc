@@ -1114,6 +1114,10 @@ void AdsServiceImpl::OnMediaStop(SessionID tab_id) {
   bat_ads_->OnMediaStopped(tab_id.id());
 }
 
+bool AdsServiceImpl::CanShowBackgroundNotifications() const {
+  return NotificationHelper::GetInstance()->CanShowBackgroundNotifications();
+}
+
 void AdsServiceImpl::ShowNotification(
     std::unique_ptr<ads::NotificationInfo> info) {
   auto notification = CreateAdNotification(*info);
