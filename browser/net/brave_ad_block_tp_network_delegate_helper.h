@@ -13,9 +13,6 @@ int OnBeforeURLRequest_AdBlockTPPreWork(
     const ResponseCallback& next_callback,
     std::shared_ptr<BraveRequestInfo> ctx);
 
-bool GetPolyfillForAdBlock(bool allow_brave_shields, bool allow_ads,
-    const GURL& tab_origin, const GURL& gurl, std::string* new_url_spec);
-
 }  // namespace brave
 
 #endif  // BRAVE_BROWSER_NET_BRAVE_AD_BLOCK_TP_NETWORK_DELEGATE_H_

@@ -84,11 +84,6 @@ int OnBeforeURLRequest_AdBlockTPPreWork(
     return net::OK;
   }
 
-  if (GetPolyfillForAdBlock(ctx->allow_brave_shields, ctx->allow_ads,
-        ctx->tab_origin, ctx->request_url, &ctx->new_url_spec)) {
-    return net::OK;
-  }
-
   // Most blocked resources have been moved to our ad block lists.
   // This is only for special cases like the PDFjs ping which can
   // occur before the ad block lists are fully loaded.

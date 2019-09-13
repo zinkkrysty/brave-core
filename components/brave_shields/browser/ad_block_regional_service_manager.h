@@ -49,6 +49,7 @@ class AdBlockRegionalServiceManager {
                           bool* cancel_request_explicitly,
                           std::string* redirect);
   void EnableTag(const std::string& tag, bool enabled);
+  void AddResources(const std::string& resources);
   void EnableFilterList(const std::string& uuid, bool enabled);
 
  private:
