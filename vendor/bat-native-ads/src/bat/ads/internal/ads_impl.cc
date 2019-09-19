@@ -180,13 +180,12 @@ void AdsImpl::RemoveAllNotificationsAfterUpdate() {
 #endif
 
 bool AdsImpl::IsInitialized() {
-  if (!is_initialized_ ||
-      !ads_client_->IsAdsEnabled() ||
-      !user_model_->IsInitialized()) {
-    return false;
+  bool initialized = false;
+  if (is_initialized_ && ads_client_ && ads_client_->IsAdsEnabled() &&
+      user_model_ && user_model_->IsInitialized()) {
+    initialized = true;
   }
-
-  return true;
+  return initialized;
 }
 
 void AdsImpl::Shutdown(ShutdownCallback callback) {
