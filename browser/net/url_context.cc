@@ -3,7 +3,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
 #include "brave/browser/net/url_context.h"
 
 #include <memory>
@@ -43,13 +42,12 @@ BraveRequestInfo::BraveRequestInfo(const GURL& url) : request_url(url) {}
 BraveRequestInfo::~BraveRequestInfo() = default;
 
 // static
-void BraveRequestInfo::FillCTX(
-    const network::ResourceRequest& request,
-    int render_process_id,
-    int frame_tree_node_id,
-    uint64_t request_identifier,
-    content::BrowserContext* browser_context,
-    std::shared_ptr<brave::BraveRequestInfo> ctx) {
+void BraveRequestInfo::FillCTX(const network::ResourceRequest& request,
+                               int render_process_id,
+                               int frame_tree_node_id,
+                               uint64_t request_identifier,
+                               content::BrowserContext* browser_context,
+                               std::shared_ptr<brave::BraveRequestInfo> ctx) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ctx->request_identifier = request_identifier;
   ctx->request_url = request.url;
@@ -84,17 +82,17 @@ void BraveRequestInfo::FillCTX(
   // (See |BraveProxyingWebSocket|).
   if (ctx->tab_origin.is_empty()) {
     ctx->tab_origin = brave_shields::BraveShieldsWebContentsObserver::
-        GetTabURLFromRenderFrameInfo(ctx->render_process_id,
-                                     ctx->render_frame_id,
-                                     ctx->frame_tree_node_id).GetOrigin();
+                          GetTabURLFromRenderFrameInfo(ctx->render_process_id,
+                                                       ctx->render_frame_id,
+                                                       ctx->frame_tree_node_id)
+                              .GetOrigin();
   }
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
   ctx->allow_brave_shields =
       brave_shields::GetBraveShieldsEnabled(profile, ctx->tab_origin);
-  ctx->allow_ads =
-      brave_shields::GetAdControlType(profile, ctx->tab_origin) ==
-          brave_shields::ControlType::ALLOW;
+  ctx->allow_ads = brave_shields::GetAdControlType(profile, ctx->tab_origin) ==
+                   brave_shields::ControlType::ALLOW;
   ctx->allow_http_upgradable_resource =
       !brave_shields::GetHTTPSEverywhereEnabled(profile, ctx->tab_origin);
   ctx->allow_referrers =
