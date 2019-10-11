@@ -240,6 +240,7 @@ void PlaylistsController::DownloadThumbnail(base::Value&& playlist_value) {
   DCHECK(thumbnail_url);
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = GURL(*thumbnail_url);
+  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   auto loader = network::SimpleURLLoader::Create(
       std::move(request), GetNetworkTrafficAnnotationTagForURLLoad());
   loader->SetRetryOptions(
