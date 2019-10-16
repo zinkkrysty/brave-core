@@ -128,29 +128,45 @@ base::Value GetPlaylistValueFromPlaylistInfoJSON(
 
   base::Optional<base::Value> playlist_info =
       base::JSONReader::Read(playlist_info_json);
-  if (playlist_info) {
-    playlist.SetStringKey(
-        kPlaylistsIDKey,
-        std::move(*playlist_info->FindStringKey(kPlaylistsIDKey)));
-    playlist.SetStringKey(
-        kPlaylistsPlaylistNameKey,
-        std::move(*playlist_info->FindStringKey(kPlaylistsPlaylistNameKey)));
-    playlist.SetKey(
-        kPlaylistsTitlesKey,
-        std::move(*playlist_info->FindListKey(kPlaylistsTitlesKey)));
-    playlist.SetStringKey(
-        kPlaylistsThumbnailPathKey,
-        std::move(*playlist_info->FindStringKey(kPlaylistsThumbnailPathKey)));
+  if (!playlist_info)
+    return playlist;
+
+  const std::string* id = playlist_info->FindStringKey(kPlaylistsIDKey);
+  if (!id)
+    return playlist;
+  playlist.SetStringKey(kPlaylistsIDKey, std::move(*id));
+
+  const std::string* name =
+      playlist_info->FindStringKey(kPlaylistsPlaylistNameKey);
+  if (name)
+    playlist.SetStringKey(kPlaylistsPlaylistNameKey, std::move(*name));
+
+  base::Value* title = playlist_info->FindListKey(kPlaylistsTitlesKey);
+  if (title)
+    playlist.SetKey(kPlaylistsTitlesKey, std::move(*title));
+
+  const std::string* thumbnail =
+      playlist_info->FindStringKey(kPlaylistsThumbnailPathKey);
+  if (thumbnail)
+    playlist.SetStringKey(kPlaylistsThumbnailPathKey, std::move(*thumbnail));
+
+  const std::string* video_media_files =
+      playlist_info->FindStringKey(kPlaylistsVideoMediaFilePathKey);
+  if (video_media_files)
     playlist.SetStringKey(kPlaylistsVideoMediaFilePathKey,
-                          std::move(*playlist_info->FindStringKey(
-                              kPlaylistsVideoMediaFilePathKey)));
+                          std::move(*video_media_files));
+
+  const std::string* audio_media_files =
+      playlist_info->FindStringKey(kPlaylistsAudioMediaFilePathKey);
+  if (audio_media_files)
     playlist.SetStringKey(kPlaylistsAudioMediaFilePathKey,
-                          std::move(*playlist_info->FindStringKey(
-                              kPlaylistsAudioMediaFilePathKey)));
-    playlist.SetBoolKey(
-        kPlaylistsPartialReadyKey,
-        std::move(*playlist_info->FindBoolKey(kPlaylistsPartialReadyKey)));
-  }
+                          std::move(*audio_media_files));
+
+  base::Optional<bool> partial_ready =
+      playlist_info->FindBoolKey(kPlaylistsPartialReadyKey);
+  if (partial_ready != base::nullopt)
+    playlist.SetBoolKey(kPlaylistsPartialReadyKey, partial_ready.value());
+
   return playlist;
 }
 
@@ -249,10 +265,11 @@ void PlaylistsController::DownloadThumbnail(base::Value&& playlist_value) {
 
   auto iter = url_loaders_.insert(url_loaders_.begin(), std::move(loader));
 
-  const std::string playlist_id =
-      *playlist_value.FindStringKey(kPlaylistsIDKey);
+  const std::string* playlist_id =
+      playlist_value.FindStringKey(kPlaylistsIDKey);
+  DCHECK(playlist_id);
   base::FilePath thumbnail_path =
-      base_dir_.Append(GetPlaylistIDDirName(playlist_id))
+      base_dir_.Append(GetPlaylistIDDirName(*playlist_id))
           .Append(kThumbnailFileName);
   iter->get()->DownloadToFile(
       url_loader_factory_.get(),
@@ -273,8 +290,9 @@ void PlaylistsController::OnThumbnailDownloaded(
 
   url_loaders_.erase(it);
 
-  const std::string playlist_id =
-      *playlist_value.FindStringKey(kPlaylistsIDKey);
+  const std::string* playlist_id =
+      playlist_value.FindStringKey(kPlaylistsIDKey);
+  DCHECK(playlist_id);
 
   // When fetching thumbnail fails, go to generate media file step.
   if (path.empty()) {
@@ -283,7 +301,7 @@ void PlaylistsController::OnThumbnailDownloaded(
 
     NotifyPlaylistChanged(
         {PlaylistsChangeParams::ChangeType::CHANGE_TYPE_THUMBNAIL_FAILED,
-         playlist_id});
+         *playlist_id});
 
     MoveToMediaFileGenerationStep(std::move(playlist_value));
     return;
@@ -299,7 +317,8 @@ void PlaylistsController::OnThumbnailDownloaded(
 
   std::string output;
   base::JSONWriter::Write(playlist_value, &output);
-  PutThumbnailReadyPlaylistToDB(playlist_id, output, std::move(playlist_value));
+  PutThumbnailReadyPlaylistToDB(*playlist_id, output,
+                                std::move(playlist_value));
 }
 
 void PlaylistsController::PutThumbnailReadyPlaylistToDB(
@@ -318,17 +337,18 @@ void PlaylistsController::OnPutThumbnailReadyPlaylist(
     base::Value&& playlist_value,
     bool result) {
   VLOG(2) << __func__;
-  const std::string playlist_id =
-      *playlist_value.FindStringKey(kPlaylistsIDKey);
+  const std::string* playlist_id =
+      playlist_value.FindStringKey(kPlaylistsIDKey);
+  DCHECK(playlist_id);
   if (!result) {
     NotifyPlaylistChanged(
-        {PlaylistsChangeParams::ChangeType::CHANGE_TYPE_ABORTED, playlist_id});
+        {PlaylistsChangeParams::ChangeType::CHANGE_TYPE_ABORTED, *playlist_id});
     return;
   }
 
   NotifyPlaylistChanged(
       {PlaylistsChangeParams::ChangeType::CHANGE_TYPE_THUMBNAIL_READY,
-       playlist_id});
+       *playlist_id});
 
   MoveToMediaFileGenerationStep(std::move(playlist_value));
 }
@@ -393,19 +413,19 @@ void PlaylistsController::PutInitialPlaylistToDB(const std::string& key,
 
 void PlaylistsController::OnPutInitialPlaylist(base::Value&& playlist_value,
                                                bool result) {
-  const std::string playlist_id =
-      *playlist_value.FindStringKey(kPlaylistsIDKey);
+  const std::string* playlist_id =
+      playlist_value.FindStringKey(kPlaylistsIDKey);
   if (!result) {
     NotifyPlaylistChanged(
-        {PlaylistsChangeParams::ChangeType::CHANGE_TYPE_ABORTED, playlist_id});
+        {PlaylistsChangeParams::ChangeType::CHANGE_TYPE_ABORTED, *playlist_id});
     return;
   }
 
   NotifyPlaylistChanged(
-      {PlaylistsChangeParams::ChangeType::CHANGE_TYPE_ADDED, playlist_id});
+      {PlaylistsChangeParams::ChangeType::CHANGE_TYPE_ADDED, *playlist_id});
 
   const base::FilePath playlist_dir =
-      base_dir_.Append(GetPlaylistIDDirName(playlist_id));
+      base_dir_.Append(GetPlaylistIDDirName(*playlist_id));
   base::PostTaskAndReplyWithResult(
       io_task_runner(), FROM_HERE,
       base::BindOnce(&base::CreateDirectory, playlist_dir),
@@ -417,10 +437,10 @@ void PlaylistsController::OnPlaylistDirCreated(base::Value&& playlist_value,
                                                bool directory_ready) {
   VLOG(2) << __func__;
   if (!directory_ready) {
-    const std::string playlist_id =
-        *playlist_value.FindStringKey(kPlaylistsIDKey);
+    const std::string* playlist_id =
+        playlist_value.FindStringKey(kPlaylistsIDKey);
     NotifyPlaylistChanged(
-        {PlaylistsChangeParams::ChangeType::CHANGE_TYPE_ABORTED, playlist_id});
+        {PlaylistsChangeParams::ChangeType::CHANGE_TYPE_ABORTED, *playlist_id});
     return;
   }
 
@@ -455,6 +475,7 @@ void PlaylistsController::OnGetAllPlaylists(
 
   base::Value playlists(base::Value::Type::LIST);
   for (const std::string& playlist_info_json : playlist_info_jsons) {
+    LOG(ERROR) << playlist_info_json;
     playlists.GetList().push_back(
         GetPlaylistValueFromPlaylistInfoJSON(playlist_info_json));
   }
@@ -500,7 +521,8 @@ void PlaylistsController::DoRecoverPlaylist(
     const std::string* audio_media_file_path =
         playlist_info->FindStringPath(kPlaylistsAudioMediaFilePathKey);
     // Only try to regenerate if partial ready or there is no media file.
-    if (video_media_file_path->empty() || audio_media_file_path->empty() ||
+    if (!video_media_file_path || video_media_file_path->empty() ||
+        !audio_media_file_path || audio_media_file_path->empty() ||
         *partial_ready) {
       VLOG(2) << __func__ << ": "
               << "Regenerate media file";
@@ -631,10 +653,10 @@ void PlaylistsController::OnMediaFileReady(base::Value&& playlist_value,
 
   std::string output;
   base::JSONWriter::Write(playlist_value, &output);
-  const std::string playlist_id =
-      *playlist_value.FindStringKey(kPlaylistsIDKey);
-
-  PutPlayReadyPlaylistToDB(playlist_id, output, partial,
+  const std::string* playlist_id =
+      playlist_value.FindStringKey(kPlaylistsIDKey);
+  DCHECK(playlist_id);
+  PutPlayReadyPlaylistToDB(*playlist_id, output, partial,
                            std::move(playlist_value));
 
   if (partial)
@@ -651,8 +673,11 @@ void PlaylistsController::OnMediaFileGenerationFailed(
 
   video_media_file_controller_->RequestCancelCurrentPlaylistGeneration();
   audio_media_file_controller_->RequestCancelCurrentPlaylistGeneration();
-  NotifyPlaylistChanged({PlaylistsChangeParams::ChangeType::CHANGE_TYPE_ABORTED,
-                         *playlist_value.FindStringKey(kPlaylistsIDKey)});
+  const std::string* playlist_id =
+      playlist_value.FindStringKey(kPlaylistsIDKey);
+  DCHECK(playlist_id);
+  NotifyPlaylistChanged(
+      {PlaylistsChangeParams::ChangeType::CHANGE_TYPE_ABORTED, *playlist_id});
 
   if (!pending_media_file_creation_jobs_.empty())
     GenerateMediaFiles();
@@ -678,11 +703,14 @@ void PlaylistsController::OnPutPlayReadyPlaylist(base::Value&& playlist_value,
   if (!result)
     return;
 
+  const std::string* playlist_id =
+      playlist_value.FindStringKey(kPlaylistsIDKey);
+  DCHECK(playlist_id);
   NotifyPlaylistChanged(
       {partial
            ? PlaylistsChangeParams::ChangeType::CHANGE_TYPE_PLAY_READY_PARTIAL
            : PlaylistsChangeParams::ChangeType::CHANGE_TYPE_PLAY_READY,
-       *playlist_value.FindStringKey(kPlaylistsIDKey)});
+       *playlist_id});
 }
 
 void PlaylistsController::OnGetAllPlaylistsForCleanUp(base::Value playlists) {
@@ -690,10 +718,13 @@ void PlaylistsController::OnGetAllPlaylistsForCleanUp(base::Value playlists) {
   if (playlists.is_none()) {
     VLOG(2) << __func__ << ": "
             << "Empty playlists";
-  } else {
-    for (const auto& item : playlists.GetList()) {
-      ids.insert(*item.FindStringKey(kPlaylistsIDKey));
-    }
+    return;
+  }
+
+  for (const auto& item : playlists.GetList()) {
+    const std::string* id = item.FindStringKey(kPlaylistsIDKey);
+    if (id)
+      ids.insert(*id);
   }
 
   base::PostTaskAndReplyWithResult(

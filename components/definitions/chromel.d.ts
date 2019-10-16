@@ -224,6 +224,18 @@ declare namespace chrome.bravePlaylists {
   type PlaylistType = { id: string, playlistName: string, titles: string[], thumbnailPath: string, mediaFilePath: string, partialReady: boolean }
   type PlaylistsChangeType = 'added' | 'deleted' | 'all_deleted' | 'aborted' | 'thumbnail_ready' | 'thumbnail_failed' | 'play_ready' | 'play_ready_partial'
 
+  type YTDSingleMuxedItem = { url: string, w: number, h: number, abr: number, size: number, file: string }
+  type YTDSegmentedMuxedItem = { url: string[], w: number, h: number, abr: number, size: number, file: string }
+  type YTDMuxedItem = YTDSingleMuxedItem | YTDSegmentedMuxedItem
+  type YTDSingleVideo = { url: string, w: number, h: number, size: number, file: string }
+  type YTDSingleAudio = { url: string, abr: number, size: number, file: string }
+  type YTDSegmentedVideo = { url: string[], w: number, h: number, size: number, file: string }
+  type YTDSegmentedAudio = { url: string[], abr: number, size: number, file: string }
+  type YTDUnmuxedItem = YTDSingleVideo | YTDSegmentedVideo | YTDSingleAudio | YTDSegmentedAudio
+  type YTDMediaItem = YTDMuxedItem | YTDUnmuxedItem
+
+  type CreateParamsMediaItem = { url: string, title: string}
+
   const onPlaylistsChanged: {
     addListener: (callback: (changeType: PlaylistsChangeType, id: string) => void) => void
   }
@@ -235,7 +247,7 @@ declare namespace chrome.bravePlaylists {
   }
   const isInitialized: (callback: (initialized: boolean) => void) => void
   const initialize: () => void
-  const createPlaylist: (createParams: { mediaFiles: { url: string, title: string }[], thumbnailUrl: string, playlistName: string }) => void
+  const createPlaylist: (createParams: { videoMediaFiles: CreateParamsMediaItem[], audioMediaFiles: CreateParamsMediaItem[], thumbnailUrl: string, playlistName: string }) => void
   const getAllPlaylists: (callback: (playlists: PlaylistType[]) => void) => void
   const getPlaylist: (id: string, callback: (playlist: PlaylistType) => void) => void
   const recoverPlaylist: (id: string) => void
