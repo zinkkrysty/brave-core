@@ -5,7 +5,7 @@
    the above copyright notice appear in all copies and that both that
    copyright notice and this permission notice appear in supporting
    documentation.  No representations are made about the suitability of this
-   software for any purpose.  It is provided "as is" without express or 
+   software for any purpose.  It is provided "as is" without express or
    implied warranty.
 
    A JavaScript program to download youtube videos from within your browser.
@@ -119,7 +119,7 @@ function errorI (err) {
 
 
 // Convert any HTML entities to Unicode characters.
-// 
+//
 function html_unquote (str) {
   str = str.replace(/<[^<>]+>/g, '');
   var div = document.createElement('div');
@@ -307,7 +307,7 @@ async function download_url (filename, url, progress_p) {
   a.setAttribute ("download", filename);
   a.setAttribute ("target", "_blank");
 
-  // Getting "The download attribute on anchor was ignored because its 
+  // Getting "The download attribute on anchor was ignored because its
   // href URL has a different security origin."
   // Maybe the cross-origin is that 'document' is on youtube.com but
   // HREF points to googlevideo.com?
@@ -1532,7 +1532,7 @@ function load_youtube_formats_video_info (id, url, fmts) {
   if (!title && !err)
     errorI (id + ": no title in " + info_url_1);
   if (title)
-    title = decodeURIComponent(title) 
+    title = decodeURIComponent(title)
 
   if (!err) {
     err = (body.match(/reason=([^&]+)/s) ? RegExp.$1 : '');
@@ -1573,7 +1573,7 @@ function load_youtube_formats (id, url, size_p) {
   var err = null;
   var err2 = null;
 
-  // Scrape the HTML page before loading get_video_info because the 
+  // Scrape the HTML page before loading get_video_info because the
   // DASH URL in the HTML page is more likely to work than the one
   // returned by get_video_info.
 
@@ -1774,7 +1774,7 @@ function load_vimeo_formats (id, url, size_p) {
 //
 function load_tumblr_formats (id, url, size_p) {
 
-  // The old code doesn't work any more: I guess they locked down the 
+  // The old code doesn't work any more: I guess they locked down the
   // video info URL to require an API key.  So we can just grab the
   // "400" version, I guess...
 
@@ -2791,14 +2791,14 @@ window.youtubedown               = youtubedown;
 ;; Yo dawg, we heard you liked regexps, so we put regexps in your regexps
 ;; so you can regexp while you sexpr.
 
-(defun ytre() 
+(defun ytre()
   (query-replace-regexp
    (concat "\\$\\([_a-z\d]+\\)"
            "[ \t\n]*=~[ \t\n]*"
            "s\\(.\\)\\(.*?\\)\\2\\(.*?\\)\\2\\([a-z]*\\);")
    "\\1 = \\1.replace(/\\3/\\5, '\\4');"))
 
-(defun ytre2() 
+(defun ytre2()
   (query-replace-regexp
    (concat "\\$\\([_a-z\d]+\\)"
            "[ \t\n]*=~[ \t\n]*"
