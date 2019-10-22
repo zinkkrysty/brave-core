@@ -52,6 +52,9 @@ const welcomeReducer: Reducer<Welcome.State | undefined> = (state: Welcome.State
         details.skipped
       ])
       break
+    case types.CREATE_WALLET:
+      chrome.braveRewards.createWallet()
+      break
   }
 
   if (state !== startingState) {
