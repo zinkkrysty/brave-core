@@ -14,7 +14,8 @@ import {
   App,
   PosterBackground,
   Gradient,
-  RewardsWidget as Rewards
+  RewardsWidget as Rewards,
+  BinanceWidget as Binance
 } from '../../components/default'
 
 // Components
@@ -31,6 +32,7 @@ interface Props {
   saveShowTopSites: (value: boolean) => void
   saveShowStats: (value: boolean) => void
   saveShowRewards: (value: boolean) => void
+  saveShowBinance: (value: boolean) => void
 }
 
 interface State {
@@ -138,6 +140,32 @@ class NewTabPage extends React.Component<Props, State> {
     )
   }
 
+  toggleShowBinance = () => {
+    this.props.saveShowBinance(
+      !this.props.newTabData.showBinance
+    )
+  }
+
+  connectBinance = () => {
+    this.props.actions.connectToBinance()
+    window.open('https://www.binance.us/en/login', '_blank')
+    setTimeout(() => {
+      this.props.actions.onBinanceConnectComplete()
+    }, 12000)
+  }
+
+  depositBinance = () => {
+    window.open('https://www.binance.us/en/usercenter/wallet/deposit/BTC', '_blank')
+  }
+
+  tradeBinance = () => {
+    window.open('https://www.binance.us/en/usercenter/wallet/balances', '_blank')
+  }
+
+  binanceDetails = () => {
+    window.open('https://www.binance.us/en/usercenter/dashboard/overview', '_blank')
+  }
+
   enableAds = () => {
     chrome.braveRewards.saveAdsSetting('adsEnabled', 'true')
   }
@@ -165,7 +193,7 @@ class NewTabPage extends React.Component<Props, State> {
   render () {
     const { newTabData, actions } = this.props
     const { showSettingsMenu } = this.state
-    const { rewardsState } = newTabData
+    const { rewardsState, binanceState } = newTabData
 
     if (!newTabData) {
       return null
@@ -211,6 +239,17 @@ class NewTabPage extends React.Component<Props, State> {
               hideWidget={this.toggleShowRewards}
               onDismissNotification={this.dismissNotification}
               menuPosition={'left'}
+            />
+            <Binance
+              {...binanceState}
+              menuPosition={'left'}
+              showWidget={newTabData.showBinance}
+              hideWidget={this.toggleShowBinance}
+              connectBinance={this.connectBinance}
+              onBinanceDetails={this.binanceDetails}
+              onBinanceDeposit={this.depositBinance}
+              onBinanceTrade={this.tradeBinance}
+              textDirection={newTabData.textDirection}
             />
             {this.props.newTabData.gridSites.length ? <List
               blockNumber={this.props.newTabData.gridSites.length}
@@ -263,6 +302,8 @@ class NewTabPage extends React.Component<Props, State> {
               showTopSites={newTabData.showTopSites}
               showRewards={newTabData.showRewards}
               toggleShowRewards={this.toggleShowRewards}
+              showBinance={newTabData.showBinance}
+              toggleShowBinance={this.toggleShowBinance}
             />
           </Footer>
         </Page>

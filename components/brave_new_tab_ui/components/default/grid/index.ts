@@ -14,7 +14,7 @@ export const Header = styled<{}, 'header'>('header')`
     "stats . clock"
     ". . clock"
     "topsites . rewards"
-    ". . ."
+    ". . binance"
     "notification notification notification";
 
   > *:nth-child(1) {
@@ -32,13 +32,17 @@ export const Header = styled<{}, 'header'>('header')`
   }
 
   > *:nth-child(4) {
+    grid-area: binance;
+  }
+
+  > *:nth-child(5) {
     grid-area: topsites;
     margin: 0 46px 0 46px;
     justify-self: start;
     align-items: normal;
   }
 
-  > *:nth-child(5) {
+  > *:nth-child(6) {
     grid-area: notification;
     justify-self: center;
   }
@@ -50,6 +54,7 @@ export const Header = styled<{}, 'header'>('header')`
     "stats stats stats"
     "topsites topsites topsites"
     "rewards rewards rewards"
+    "binance binance binance"
     "notification notification notification";
 
 
@@ -69,6 +74,11 @@ export const Header = styled<{}, 'header'>('header')`
     }
 
     > *:nth-child(4) {
+      margin: auto;
+      justify-content: center;
+    }
+
+    > *:nth-child(5) {
       margin: auto;
       justify-content: center;
     }

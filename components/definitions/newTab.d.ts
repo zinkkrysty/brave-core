@@ -47,6 +47,7 @@ declare namespace NewTab {
     showEmptyPage: boolean
     bookmarks: Record<string, Bookmark>
     rewardsState: RewardsWidgetState
+    binanceState: BinanceWidgetState
   }
 
   export interface EphemeralState {
@@ -64,6 +65,7 @@ declare namespace NewTab {
     showClock: boolean
     showTopSites: boolean
     showRewards: boolean
+    showBinance: boolean
     stats: Stats
   }
 
@@ -81,6 +83,13 @@ declare namespace NewTab {
     walletCreating: boolean
     walletCreateFailed: boolean
     walletCorrupted: boolean
+  }
+
+  export interface BinanceWidgetState {
+    authInProgress: boolean
+    authFailed: boolean
+    userAuthed: boolean
+    btcBalance: string
   }
 
   export const enum RewardsResult {

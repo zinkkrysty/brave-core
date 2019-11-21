@@ -48,6 +48,10 @@ export function saveShowRewards (value: boolean): void {
   sendSavePref('showRewards', value)
 }
 
+export function saveShowBinance (value: boolean): void {
+  sendSavePref('showBinance', value)
+}
+
 export function addChangeListener (listener: PreferencesUpdatedHandler): void {
   window.cr.addWebUIListener('preferences-changed', listener)
 }

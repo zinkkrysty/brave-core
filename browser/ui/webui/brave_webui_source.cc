@@ -156,6 +156,7 @@ void CustomizeWebUIHTMLSource(const std::string &name,
         { "showClock", IDS_BRAVE_NEW_TAB_SHOW_CLOCK },
         { "showTopSites", IDS_BRAVE_NEW_TAB_SHOW_TOP_SITES },
         { "showRewards", IDS_BRAVE_NEW_TAB_SHOW_REWARDS },
+        { "showBinance", IDS_BRAVE_NEW_TAB_SHOW_BINANCE },
 
         // Private Tab - General
         { "learnMore", IDS_BRAVE_PRIVATE_NEW_TAB_LEARN_MORE },
@@ -215,7 +216,20 @@ void CustomizeWebUIHTMLSource(const std::string &name,
         { "rewardsWidgetAdsNotSupported", IDS_BRAVE_REWARDS_LOCAL_ADS_NOT_SUPPORTED_REGION },    // NOLINT
         { "rewardsWidgetNotificationTitle", IDS_REWARDS_WIDGET_NOTIFICATION_TITLE },      // NOLINT
         { "rewardsWidgetNotificationTextAds", IDS_REWARDS_WIDGET_NOTIFICATION_TEXT_ADS }, // NOLINT
-        { "rewardsWidgetNotificationTextUGP", IDS_REWARDS_WIDGET_NOTIFICATION_TEXT_UGP }  // NOLINT
+        { "rewardsWidgetNotificationTextUGP", IDS_REWARDS_WIDGET_NOTIFICATION_TEXT_UGP }, // NOLINT
+
+        // Binance Widget
+        { "binanceWidgetWelcomeTitle", IDS_BINANCE_WIDGET_WELCOME_TITLE },
+        { "binanceWidgetSubText", IDS_BINANCE_WIDGET_SUB_TEXT },
+        { "binanceWidgetConnectText", IDS_BINANCE_WIDGET_CONNECT_TEXT },
+        { "binanceWidgetDismissText", IDS_BINANCE_WIDGET_DISMISS_TEXT },
+        { "binanceWidgetConnectingOne", IDS_BINANCE_WIDGET_CONNECTING_MESSAGE_ONE },  // NOLINT
+        { "binanceWidgetConnectingTwo", IDS_BINANCE_WIDGET_CONNECTING_MESSAGE_TWO },  // NOLINT
+        { "binanceWidgetValueText", IDS_BINANCE_WIDGET_VALUE_TEXT },
+        { "binanceWidgetBTCTickerText" , IDS_BINANCE_BTC_TICKER_TEXT },
+        { "binanceWidgetViewDetails", IDS_BRAVE_UI_VIEW_DETAILS },
+        { "binanceWidgetDepositLabel", IDS_BINANCE_WIDGET_DEPOSIT_LABEL },
+        { "binanceWidgetTradeLabel", IDS_BINANCE_WIDGET_TRADE_LABEL },
       }
     }, {
       std::string("welcome"), {

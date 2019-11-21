@@ -26,11 +26,13 @@ interface Props {
   toggleShowStats: () => void
   toggleShowTopSites: () => void
   toggleShowRewards: () => void
+  toggleShowBinance: () => void
   showBackgroundImage: boolean
   showClock: boolean
   showStats: boolean
   showTopSites: boolean
   showRewards: boolean
+  showBinance: boolean
 }
 
 export default class FooterInfo extends React.PureComponent<Props, {}> {
@@ -48,11 +50,13 @@ export default class FooterInfo extends React.PureComponent<Props, {}> {
       toggleShowStats,
       toggleShowTopSites,
       toggleShowRewards,
+      toggleShowBinance,
       showBackgroundImage,
       showClock,
       showStats,
       showTopSites,
-      showRewards
+      showRewards,
+      showBinance
     } = this.props
 
     return (
@@ -77,11 +81,13 @@ export default class FooterInfo extends React.PureComponent<Props, {}> {
             toggleShowStats={toggleShowStats}
             toggleShowTopSites={toggleShowTopSites}
             toggleShowRewards={toggleShowRewards}
+            toggleShowBinance={toggleShowBinance}
             showBackgroundImage={showBackgroundImage}
             showClock={showClock}
             showStats={showStats}
             showTopSites={showTopSites}
             showRewards={showRewards}
+            showBinance={showBinance}
           />
           <IconLink><SettingsAdvancedIcon /></IconLink>
           <IconLink><BookmarkBook /></IconLink>

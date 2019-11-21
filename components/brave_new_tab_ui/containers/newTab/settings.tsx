@@ -21,11 +21,13 @@ export interface Props {
   toggleShowStats: () => void
   toggleShowTopSites: () => void
   toggleShowRewards: () => void
+  toggleShowBinance: () => void
   showBackgroundImage: boolean
   showStats: boolean
   showClock: boolean
   showTopSites: boolean
   showRewards: boolean
+  showBinance: boolean
 }
 
 export default class Settings extends React.PureComponent<Props, {}> {
@@ -64,11 +66,13 @@ export default class Settings extends React.PureComponent<Props, {}> {
       toggleShowStats,
       toggleShowTopSites,
       toggleShowRewards,
+      toggleShowBinance,
       showBackgroundImage,
       showStats,
       showClock,
       showTopSites,
       showRewards,
+      showBinance,
       onClick
     } = this.props
     return (
@@ -82,6 +86,14 @@ export default class Settings extends React.PureComponent<Props, {}> {
               <Toggle
                 onChange={toggleShowBackgroundImage}
                 checked={showBackgroundImage}
+                size='small'
+              />
+            </SettingsRow>
+            <SettingsRow>
+              <SettingsText>{getLocale('showBinance')}</SettingsText>
+              <Toggle
+                onChange={toggleShowBinance}
+                checked={showBinance}
                 size='small'
               />
             </SettingsRow>

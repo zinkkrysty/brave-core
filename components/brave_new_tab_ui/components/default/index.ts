@@ -10,6 +10,7 @@ import { ListWidget, Tile, TileActionsContainer, TileAction, TileFavicon } from 
 import { SiteRemovalNotification, SiteRemovalText, SiteRemovalAction } from './notification'
 import { ClockWidget } from './clock'
 import { RewardsWidget } from './rewards'
+import { BinanceWidget } from './binance'
 import createWidget from './widget'
 
 export * from './page'
@@ -35,5 +36,6 @@ export {
   SettingsTitle,
   SettingsWrapper,
   RewardsWidget,
+  BinanceWidget,
   createWidget
 }
