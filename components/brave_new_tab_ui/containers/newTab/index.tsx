@@ -166,6 +166,10 @@ class NewTabPage extends React.Component<Props, State> {
     window.open('https://www.binance.us/en/usercenter/dashboard/overview', '_blank')
   }
 
+  setHideBalance = (hide: boolean) => {
+    this.props.actions.setHideBalance(hide)
+  }
+
   enableAds = () => {
     chrome.braveRewards.saveAdsSetting('adsEnabled', 'true')
   }
@@ -249,6 +253,7 @@ class NewTabPage extends React.Component<Props, State> {
               onBinanceDetails={this.binanceDetails}
               onBinanceDeposit={this.depositBinance}
               onBinanceTrade={this.tradeBinance}
+              onSetHideBalance={this.setHideBalance}
               textDirection={newTabData.textDirection}
             />
             {this.props.newTabData.gridSites.length ? <List

@@ -90,6 +90,7 @@ declare namespace NewTab {
     authFailed: boolean
     userAuthed: boolean
     btcBalance: string
+    hideBalance: boolean
   }
 
   export const enum RewardsResult {
