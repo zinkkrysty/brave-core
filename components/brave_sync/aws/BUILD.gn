@@ -1,0 +1,42 @@
+# clone git@github.com:aws/aws-sdk-cpp.git and run 
+# `python scripts/build_3rdparty.py --configs="ReleaseStatic" --parallel=8
+# --sourcedir=".." --installdir="../install" --generateClients="0"
+# --cmake_params=-DBUILD_ONLY="s3\;sqs"` to generate static aws libraries
+
+config("aws_config") {
+  include_dirs = [ "../../../../../../aws/libs/include" ]
+  libs = []
+  build_configuration = "Release"
+  if (!is_official_build) {
+    build_configuration = "Debug"
+  }
+  if (is_linux) {
+    libs += [
+      "../../../../../../aws/libs/linux/$build_configuration/lib/linux/intel64/$build_configuration/libaws-cpp-sdk-core.a",
+      "../../../../../../aws/libs/linux/$build_configuration/lib/linux/intel64/$build_configuration/libaws-cpp-sdk-s3.a",
+      "../../../../../../aws/libs/linux/$build_configuration/lib/linux/intel64/$build_configuration/libaws-cpp-sdk-sqs.a",
+      "../../../../../../aws/libs/linux/$build_configuration/lib/linux/intel64/$build_configuration/libaws-cpp-sdk-access-management.a",
+      "../../../../../../aws/libs/linux/$build_configuration/lib/linux/intel64/$build_configuration/libaws-cpp-sdk-cognito-identity.a",
+      "../../../../../../aws/libs/linux/$build_configuration/lib/linux/intel64/$build_configuration/libaws-cpp-sdk-iam.a",
+      "../../../../../../aws/libs/linux/$build_configuration/lib/libaws-c-common.a",
+      "../../../../../../aws/libs/linux/$build_configuration/lib/libaws-c-event-stream.a",
+      "../../../../../../aws/libs/linux/$build_configuration/lib/libaws-checksums.a",
+    ]
+  }
+}
+
+source_set("aws") {
+  sources = [
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs -= [ "//build/config/clang:extra_warnings" ]
+  configs -= [ "//build/config/clang:find_bad_constructs" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  deps = [
+    "//components/sync",
+  ]
+
+  public_configs = [ ":aws_config" ]
+}
