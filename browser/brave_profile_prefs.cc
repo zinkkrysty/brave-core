@@ -178,6 +178,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(kBraveWalletEncryptedSeed, "");
   registry->RegisterBooleanPref(kBraveWalletEnabled, true);
 
+  // Binance widget
+  registry->RegisterStringPref(kBinanceWidgetAPIKey, "");
+  registry->RegisterStringPref(kBinanceWidgetSecretKey, "");
   RegisterProfilePrefsForMigration(registry);
 }
 
