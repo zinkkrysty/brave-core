@@ -29,6 +29,18 @@
 
 @end
 
+@interface V1ModelDataController : TempTestDataController
+@end
+
+@implementation V1ModelDataController
+
+- (NSURL *)modelURL
+{
+  return [[super modelURL] URLByAppendingPathComponent:@"Model.mom"];
+}
+
+@end
+
 @interface LedgerDatabaseTest : XCTestCase
 @property (nonatomic, copy, nullable) void (^contextSaveCompletion)();
 @end
@@ -1454,6 +1466,42 @@
   
   const auto lastQuery = [BATLedgerDatabase allUnblindedTokens];
   XCTAssertEqual(lastQuery.count, 0);
+}
+
+#pragma mark - Migration
+
+- (void)testContributionInfoMigration
+{
+  const auto pubId = @"brave.com";
+  
+  // Setup v1
+  DataController.shared = [[V1ModelDataController alloc] init];
+  
+  const auto probi = @"1500000000000000000";
+  const BATRewardsType type = BATRewardsTypeOneTimeTip;
+  const auto now = [[NSDate date] timeIntervalSince1970];
+  
+  [self createBATPublisherInfo:pubId reconcileStamp:100 percent:30 createActivityInfo:YES];
+  
+  [self waitForCompletion:^(XCTestExpectation *expectation) {
+    [BATLedgerDatabase insertContributionInfo:probi
+                                        month:BATActivityMonthOctober
+                                         year:2020
+                                         date:now
+                                 publisherKey:pubId
+                                         type:type completion:^(BOOL success) {
+      XCTAssert(success);
+      [expectation fulfill];
+    }];
+  }];
+  
+  // Migrate
+  DataController.shared = [[TempTestDataController alloc] init];
+  
+  // TODO: TOMORROW
+  // - Add updated BATLedgerDatabase methods for new DB
+  // - Deprecate old ones for migration testing only
+  // - Test Migration
 }
 
 #pragma mark -

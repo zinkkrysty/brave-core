@@ -17,6 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSURL *storeDirectoryURL;
 /// File URL to the SQLite store
 @property (nonatomic, readonly) NSURL *storeURL;
+/// File URL to the Core Data model (Defaults to path to Model.momd, which picks
+/// most recent version of the Model)
+@property (nonatomic, readonly) NSURL *modelURL;
 
 - (void)addPersistentStoreForContainer:(NSPersistentContainer *)container;
 

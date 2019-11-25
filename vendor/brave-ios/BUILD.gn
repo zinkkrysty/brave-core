@@ -61,6 +61,7 @@ ios_framework_bundle("brave_rewards_ios_framework") {
     "//url",
     ":resources",
     ":coredata",
+    ":coredata_mapping",
     ":mojo_gen_wrappers",
   ]
 
@@ -183,6 +184,8 @@ bundle_data("resources") {
 bundle_data("coredata") {
   sources = [
     "$root_gen_dir/Model.momd/Model.mom",
+    "$root_gen_dir/Model.momd/Model2.mom",
+    "$root_gen_dir/Model.momd/Model2.omo",
     "$root_gen_dir/Model.momd/VersionInfo.plist",
   ]
 
@@ -195,6 +198,20 @@ bundle_data("coredata") {
   ]
 }
 
+bundle_data("coredata_mapping") {
+  sources = [
+    "$target_gen_dir/Model_to_Model2.cdm",
+  ]
+
+  outputs = [
+    "{{bundle_resources_dir}}/{{source_file_part}}",
+  ]
+
+  public_deps = [
+    ":compile_coredata_mapping"
+  ]
+}
+
 action("compile_coredata") {
   script = "scripts/compile-model.py"
 
@@ -204,6 +221,8 @@ action("compile_coredata") {
 
   outputs = [
     "$root_gen_dir/Model.momd/Model.mom",
+    "$root_gen_dir/Model.momd/Model2.mom",
+    "$root_gen_dir/Model.momd/Model2.omo",
     "$root_gen_dir/Model.momd/VersionInfo.plist",
   ]
 
@@ -212,6 +231,26 @@ action("compile_coredata") {
 
   args = [
     "--model=$model",
+    "--output=$out_dir",
+  ]
+}
+
+action("compile_coredata_mapping") {
+  script = "scripts/compile-mapping.py"
+
+  inputs = [
+    "Ledger/Data/Model_to_Model2.xcmappingmodel",
+  ]
+
+  outputs = [
+    "$target_gen_dir/Model_to_Model2.cdm",
+  ]
+
+  mapping = rebase_path("Ledger/Data/Model_to_Model2.xcmappingmodel")
+  out_dir = rebase_path("$target_gen_dir/Model_to_Model2.cdm")
+
+  args = [
+    "--mapping=$mapping",
     "--output=$out_dir",
   ]
 }

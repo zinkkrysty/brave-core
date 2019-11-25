@@ -45,6 +45,12 @@ static DataController *_dataController = nil;
   return [[self storeDirectoryURL] URLByAppendingPathComponent:@"BraveRewards.sqlite"];
 }
 
+- (NSURL *)modelURL
+{
+  const auto bundle = [NSBundle bundleForClass:DataController.class];
+  return [bundle URLForResource:@"Model" withExtension:@"momd"];
+}
+
 - (instancetype)init
 {
   if ((self = [super init])) {
@@ -57,9 +63,8 @@ static DataController *_dataController = nil;
                                                    error:nil];
 
     // Setup container
-    const auto bundle = [NSBundle bundleForClass:DataController.class];
-    const auto modelURL = [bundle URLForResource:@"Model" withExtension:@"momd"];
     NSAssert(modelURL != nil, @"Error loading model from bundle");
+    const auto modelURL = [self modelURL];
     const auto model = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
     NSAssert(model != nil, @"Error initializing managed object model from: %@", modelURL);
     self.container = [[NSPersistentContainer alloc] initWithName:@"Model"
