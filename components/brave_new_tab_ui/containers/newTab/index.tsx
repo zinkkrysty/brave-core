@@ -148,10 +148,10 @@ class NewTabPage extends React.Component<Props, State> {
 
   connectBinance = () => {
     this.props.actions.connectToBinance()
-    window.open('https://www.binance.us/en/login', '_blank')
-    setTimeout(() => {
-      this.props.actions.onBinanceConnectComplete()
-    }, 12000)
+  }
+
+  binanceConnected = () => {
+    this.props.actions.onBinanceConnectComplete()
   }
 
   depositBinance = () => {
@@ -164,6 +164,10 @@ class NewTabPage extends React.Component<Props, State> {
 
   binanceDetails = () => {
     window.open('https://www.binance.us/en/usercenter/dashboard/overview', '_blank')
+  }
+
+  generateNewKey = () => {
+    window.open('https://www.binance.us/en/usercenter/settings/api-management', '_blank')
   }
 
   setHideBalance = (hide: boolean) => {
@@ -254,6 +258,8 @@ class NewTabPage extends React.Component<Props, State> {
               onBinanceDeposit={this.depositBinance}
               onBinanceTrade={this.tradeBinance}
               onSetHideBalance={this.setHideBalance}
+              onGenerateNewKey={this.generateNewKey}
+              onBinanceConnected={this.binanceConnected}
               textDirection={newTabData.textDirection}
             />
             {this.props.newTabData.gridSites.length ? <List
