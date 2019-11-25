@@ -150,8 +150,12 @@ class NewTabPage extends React.Component<Props, State> {
     this.props.actions.connectToBinance()
   }
 
-  binanceConnected = () => {
-    this.props.actions.onBinanceConnectComplete()
+  setApiKeys = (apiKey: string, apiSecret: string) => {
+    this.props.actions.setApiKeys(apiKey, apiSecret)
+  }
+
+  setBinanceBalance = (balance: string) => {
+    this.props.actions.onBinanceBalance(balance)
   }
 
   depositBinance = () => {
@@ -259,7 +263,8 @@ class NewTabPage extends React.Component<Props, State> {
               onBinanceTrade={this.tradeBinance}
               onSetHideBalance={this.setHideBalance}
               onGenerateNewKey={this.generateNewKey}
-              onBinanceConnected={this.binanceConnected}
+              onBinanceBalance={this.setBinanceBalance}
+              onSetApiKeys={this.setApiKeys}
               textDirection={newTabData.textDirection}
             />
             {this.props.newTabData.gridSites.length ? <List
