@@ -56,7 +56,8 @@ const defaultState: NewTab.State = {
     authFailed: false,
     userAuthed: false,
     btcBalance: '0.00',
-    hideBalance: false
+    hideBalance: false,
+    userTLD: 'com'
   }
 }
 
