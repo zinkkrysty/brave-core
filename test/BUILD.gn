@@ -575,6 +575,7 @@ test("brave_browser_tests") {
 
   if (binance_widget_enabled) {
     sources += [
+      "//brave/browser/extensions/binance_widget_apitest.cc",
       "//brave/components/binance_widget/browser/binance_widget_service_browsertest.cc",
     ]
   }
