@@ -18,6 +18,7 @@ import * as bookmarksAPI from '../api/topSites/bookmarks'
 import * as dndAPI from '../api/topSites/dnd'
 import * as storage from '../storage'
 import { getTotalContributions } from '../rewards-utils'
+import { getUSDValue } from '../binance-utils'
 
 const initialState = storage.load()
 
@@ -470,6 +471,16 @@ export const newTabReducer: Reducer<NewTab.State | undefined> = (state: NewTab.S
       state.binanceState.userAuthed = true
       state.binanceState.authInProgress = false
       state.binanceState.validationInProgress = false
+      break
+
+    case types.ON_BTC_USD_VALUE:
+      if (!payload.value) {
+        break
+      }
+
+      state = { ...state }
+      const accountBTCBalance = state.binanceState.btcBalance
+      state.binanceState.btcBalanceValue = getUSDValue(accountBTCBalance, payload.value)
       break
 
     default:

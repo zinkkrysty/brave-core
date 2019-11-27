@@ -167,6 +167,10 @@ class NewTabPage extends React.Component<Props, State> {
     this.props.actions.onBinanceBalance(balance)
   }
 
+  setBTCUSDValue = (value: string) => {
+    this.props.actions.onBTCUSDValue(value)
+  }
+
   onBinanceUserTLD = (userTLD: NewTab.BinanceTLD) => {
     this.props.actions.onBinanceUserTLD(userTLD)
   }
@@ -300,6 +304,7 @@ class NewTabPage extends React.Component<Props, State> {
               onGenerateNewKey={this.generateNewKey}
               onBinanceBalance={this.setBinanceBalance}
               onBinanceUserTLD={this.onBinanceUserTLD}
+              onBTCUSDValue={this.setBTCUSDValue}
               onSetApiKeys={this.setApiKeys}
               textDirection={newTabData.textDirection}
             />
