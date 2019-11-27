@@ -104,6 +104,12 @@ test("brave_unit_tests") {
     "../../components/domain_reliability/test_util.h",
   ]
 
+  if (binance_widget_enabled) {
+    sources += [
+      "//brave/components/binance_widget/browser/binance_json_parser_unittest.cc",
+    ]
+  }
+
   if (enable_extensions) {
     sources += [
       "//brave/chromium_src/extensions/browser/sandboxed_unpacker_unittest.cc",
