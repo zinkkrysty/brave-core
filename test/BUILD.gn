@@ -107,6 +107,7 @@ test("brave_unit_tests") {
   if (binance_widget_enabled) {
     sources += [
       "//brave/components/binance_widget/browser/binance_json_parser_unittest.cc",
+      "//brave/components/binance_widget/browser/binance_crypto_unittest.cc",
     ]
   }
 
