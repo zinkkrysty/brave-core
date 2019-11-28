@@ -217,6 +217,10 @@ class NewTabPage extends React.Component<Props, State> {
     this.props.actions.setHideBalance(hide)
   }
 
+  disconnectBinance = () => {
+    this.props.actions.disconnectBinance()
+  }
+
   enableAds = () => {
     chrome.braveRewards.saveAdsSetting('adsEnabled', 'true')
   }
@@ -306,6 +310,7 @@ class NewTabPage extends React.Component<Props, State> {
               onBinanceUserTLD={this.onBinanceUserTLD}
               onBTCUSDPrice={this.setBTCUSDPrice}
               onSetApiKeys={this.setApiKeys}
+              onDisconnectBinance={this.disconnectBinance}
               textDirection={newTabData.textDirection}
             />
             {this.props.newTabData.gridSites.length ? <List
