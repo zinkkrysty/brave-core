@@ -1,7 +1,7 @@
 import("//brave/build/config.gni")
 import("//brave/browser/tor/buildflags/buildflags.gni")
 import("//brave/browser/translate/buildflags/buildflags.gni")
-import("//brave/components/binance_widget/buildflags.gni")
+import("//brave/components/binance/buildflags.gni")
 import("//brave/components/brave_ads/browser/buildflags/buildflags.gni")
 import("//brave/components/brave_referrals/buildflags/buildflags.gni")
 import("//brave/components/brave_rewards/browser/buildflags/buildflags.gni")
@@ -104,10 +104,10 @@ test("brave_unit_tests") {
     "../../components/domain_reliability/test_util.h",
   ]
 
-  if (binance_widget_enabled) {
+  if (binance_enabled) {
     sources += [
-      "//brave/components/binance_widget/browser/binance_json_parser_unittest.cc",
-      "//brave/components/binance_widget/browser/binance_crypto_unittest.cc",
+      "//brave/components/binance/browser/binance_json_parser_unittest.cc",
+      "//brave/components/binance/browser/binance_crypto_unittest.cc",
     ]
   }
 
@@ -573,10 +573,10 @@ test("brave_browser_tests") {
     ]
   }
 
-  if (binance_widget_enabled) {
+  if (binance_enabled) {
     sources += [
-      "//brave/browser/extensions/binance_widget_apitest.cc",
-      "//brave/components/binance_widget/browser/binance_widget_service_browsertest.cc",
+      "//brave/browser/extensions/binance_apitest.cc",
+      "//brave/components/binance/browser/binance_service_browsertest.cc",
     ]
   }
 
