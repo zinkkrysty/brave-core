@@ -150,6 +150,10 @@ class NewTabPage extends React.Component<Props, State> {
     this.props.actions.connectToBinance()
   }
 
+  onApiKeysInvalid = () => {
+    this.props.actions.onApiKeysInvalid()
+  }
+
   setApiKeys = (apiKey: string, apiSecret: string) => {
     this.props.actions.setApiKeys(apiKey, apiSecret)
     setTimeout(() => {
@@ -310,6 +314,7 @@ class NewTabPage extends React.Component<Props, State> {
               onBinanceUserTLD={this.onBinanceUserTLD}
               onBTCUSDPrice={this.setBTCUSDPrice}
               onSetApiKeys={this.setApiKeys}
+              onApiKeysInvalid={this.onApiKeysInvalid}
               onDisconnectBinance={this.disconnectBinance}
               textDirection={newTabData.textDirection}
             />

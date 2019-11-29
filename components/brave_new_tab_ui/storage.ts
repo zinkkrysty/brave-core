@@ -60,6 +60,7 @@ export const defaultState: NewTab.State = {
     hideBalance: false,
     userTLD: 'com',
     apiCredError: false,
+    apiCredsInvalid: false,
     validationInProgress: false
   }
 }
