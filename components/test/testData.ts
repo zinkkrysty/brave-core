@@ -68,6 +68,7 @@ export const newTabInitialState: NewTab.ApplicationState = {
       hideBalance: false,
       userTLD: 'com',
       apiCredError: false,
+      apiCredsInvalid: false,
       validationInProgress: false
     }
   }
@@ -286,6 +287,11 @@ export const getMockChrome = () => {
     topSites: {
       get: function (cb) {
         cb([])
+      }
+    },
+    binance: {
+      setAPIKey: function (_key: string, _secret: string) {
+        return
       }
     },
     bookmarks: {
