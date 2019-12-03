@@ -32,6 +32,8 @@ NS_SWIFT_NAME(BraveAdsNotificationHandler)
 NS_SWIFT_NAME(BraveAds)
 @interface BATBraveAds : NSObject
 
+- (void)testTaskRunner:(void (^)())callback;
+
 @property (nonatomic, weak) BATBraveLedger *ledger;
 
 /// The notifications handler.

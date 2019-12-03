@@ -19,6 +19,57 @@
 
 #import "base/strings/sys_string_conversions.h"
 
+#include "base/task/post_task.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/task_runner_util.h"
+#include "base/task/single_thread_task_executor.h"
+#include "base/task/thread_pool/initialization_util.h"
+
+class TestBasePostTask {
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  
+public:
+  TestBasePostTask() {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+      base::ThreadPoolInstance::Create("Browser");
+      
+      constexpr int kMinForegroundThreads = 6;
+      constexpr int kMaxForegroundThreads = 16;
+      constexpr double kCoreMultiplierForegroundThreads = 0.6;
+      constexpr int kOffsetForegroundThreads = 0;
+      base::ThreadPoolInstance::Get()->Start({base::RecommendedMaxNumberOfThreadsInThreadGroup(kMinForegroundThreads, kMaxForegroundThreads,
+                                                                                               kCoreMultiplierForegroundThreads, kOffsetForegroundThreads)});
+    });
+    
+    task_runner_ = base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT, base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+  }
+  
+  ~TestBasePostTask() {
+    NSLog(@"bye bye");
+  }
+  
+  void Begin(std::function<void()> callback) {
+//    base::PostTaskAndReplyWithResult(task_runner_.get(),
+//                                     FROM_HERE,
+//                                     base::BindOnce(&TestBasePostTask::DoTask),
+//                                     base::BindOnce(&TestBasePostTask::CompletedTask, base::Unretained(this), callback));
+    task_runner_->PostTaskAndReply(FROM_HERE,
+                                   base::BindOnce(&TestBasePostTask::DoTask, base::Unretained(this)),
+                                   base::BindOnce(&TestBasePostTask::CompletedTask, base::Unretained(this), callback));
+  }
+  
+  void DoTask() {
+    NSLog(@"%s", __PRETTY_FUNCTION__);
+  }
+  
+  void CompletedTask(std::function<void()> callback) {
+    NSLog(@"%s", __PRETTY_FUNCTION__);
+    callback();
+  }
+};
+
+
 #define BATClassAdsBridge(__type, __objc_getter, __objc_setter, __cpp_var) \
   + (__type)__objc_getter { return ads::__cpp_var; } \
   + (void)__objc_setter:(__type)newValue { ads::__cpp_var = newValue; }
@@ -50,6 +101,17 @@ static NSString * const kNumberOfAdsPerHourKey = @"BATNumberOfAdsPerHour";
 @end
 
 @implementation BATBraveAds
+
+- (void)testTaskRunner:(void (^)())callback
+{
+  auto taskRunner = TestBasePostTask();
+//  auto expectation = [self expectationWithDescription:@"Task Runner"];
+  taskRunner.Begin(^{
+    callback();
+  });
+//  [self waitForExpectations:@[expectation] timeout: 4.0];
+}
+
 
 - (instancetype)initWithStateStoragePath:(NSString *)path
 {

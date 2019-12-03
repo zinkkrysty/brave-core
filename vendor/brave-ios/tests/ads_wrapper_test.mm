@@ -57,6 +57,15 @@
   self.ads = nil;
 }
 
+- (void)testTaskRunner
+{
+  auto expectation = [self expectationWithDescription:@"Task Runner"];
+  [self.ads testTaskRunner:^{
+    [expectation fulfill];
+  }];
+  [self waitForExpectations:@[expectation] timeout: 4.0];
+}
+
 - (void)testPreferencePersistance
 {
   const auto expect = [self expectationWithDescription:@"File IO"];
