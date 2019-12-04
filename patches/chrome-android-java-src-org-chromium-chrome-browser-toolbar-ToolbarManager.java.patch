@@ -1,24 +1,26 @@
 diff --git a/chrome/android/java/src/org/chromium/chrome/browser/toolbar/ToolbarManager.java b/chrome/android/java/src/org/chromium/chrome/browser/toolbar/ToolbarManager.java
-index d685d69cd3b481df9f8910e2cf2eb371a5a8a5f3..107212073138e6dec0faafe573b18e5e191c394e 100644
+index 833129c7c2647efb26f9c60d1b993a24a36bbc98..695aeaa8584f0545d3b094b4aacc1072f405f946 100644
 --- a/chrome/android/java/src/org/chromium/chrome/browser/toolbar/ToolbarManager.java
 +++ b/chrome/android/java/src/org/chromium/chrome/browser/toolbar/ToolbarManager.java
-@@ -760,6 +760,7 @@ public class ToolbarManager implements ScrimObserver, ToolbarTabController, UrlF
-         };
- 
+@@ -837,6 +837,7 @@ public class ToolbarManager implements ScrimObserver, ToolbarTabController, UrlF
+     // TODO(crbug.com/1026020): Move this logic to BottomToolbar class.
+     private void onShareDelegateAvailable(ShareDelegate shareDelegate) {
          final OnClickListener shareButtonListener = v -> {
 +/*
              recordBottomToolbarUseForIPH();
              RecordUserAction.record("MobileBottomToolbarShareButton");
-             boolean isIncognito = false;
-@@ -767,6 +768,7 @@ public class ToolbarManager implements ScrimObserver, ToolbarTabController, UrlF
-                 isIncognito = mTabModelSelector.getCurrentTab().isIncognito();
+             Tab tab = null;
+@@ -847,7 +848,8 @@ public class ToolbarManager implements ScrimObserver, ToolbarTabController, UrlF
+                 activity = ((TabImpl) tab).getActivity();
+                 isIncognito = tab.isIncognito();
              }
-             mActivity.onShareMenuItemSelected(false, isIncognito);
-+*/          mActivity.addOrEditBookmark(mActivity.getActivityTab());
+-            shareDelegate.share(tab, /*shareDirectly=*/false);
++*///        shareDelegate.share(tab, /*shareDirectly=*/false);
++          mActivity.addOrEditBookmark(mActivity.getActivityTab());
          };
- 
-         if (FeatureUtilities.isDuetTabStripIntegrationAndroidEnabled()
-@@ -1811,6 +1813,7 @@ public class ToolbarManager implements ScrimObserver, ToolbarTabController, UrlF
+         mShareButtonListenerSupplier.set(shareButtonListener);
+     }
+@@ -1862,6 +1864,7 @@ public class ToolbarManager implements ScrimObserver, ToolbarTabController, UrlF
          boolean editingAllowed = currentTab == null || mBookmarkBridge == null
                  || mBookmarkBridge.isEditBookmarksEnabled();
          mToolbar.updateBookmarkButton(isBookmarked, editingAllowed);
