@@ -222,8 +222,8 @@ function dynamicallyLoadScript(url) {
 }
 
 function LoadJsLibScript() {
-  var sync_bundle_url = chrome.runtime.getURL('extension/brave-sync/bundles/bundle.js');
-  dynamicallyLoadScript(sync_bundle_url);
+  //var sync_bundle_url = chrome.runtime.getURL('extension/brave-sync/bundles/bundle.js');
+  //dynamicallyLoadScript(sync_bundle_url);
 }
 
 var callbackList = {}; /* message name to callback function */

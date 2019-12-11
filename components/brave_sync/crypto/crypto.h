@@ -16,6 +16,9 @@ namespace crypto {
 // Generates a random seed
 std::vector<uint8_t> GetSeed(size_t size = DEFAULT_SEED_SIZE);
 
+// Gets an initial device_id. That will be redone to UUID instead of uint_8t
+std::string GetDeviceId();
+
 // Returns HKDF output according to rfc5869 using sha512
 // salt and info are optional
 std::vector<uint8_t> HKDFSha512(const std::vector<uint8_t>& ikm,

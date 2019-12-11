@@ -24,6 +24,10 @@ std::vector<uint8_t> GetSeed(size_t size) {
   return bytes;
 }
 
+std::string GetDeviceId() {
+  return "0";
+}
+
 std::vector<uint8_t> HKDFSha512(const std::vector<uint8_t>& ikm,
                                 const std::vector<uint8_t>* salt,
                                 const std::vector<uint8_t>* info,

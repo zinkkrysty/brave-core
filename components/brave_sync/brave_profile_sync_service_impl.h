@@ -13,6 +13,7 @@
 #include "brave/components/brave_sync/brave_sync_service.h"
 #include "brave/components/brave_sync/client/brave_sync_client.h"
 #include "brave/components/brave_sync/jslib_messages_fwd.h"
+#include "brave/components/brave_sync/aws_based/requests_helper.h"
 #include "brave/components/brave_sync/public/brave_profile_sync_service.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -235,6 +236,8 @@ class BraveProfileSyncServiceImpl
   base::Time chain_created_time_;
   std::vector<RecordsListPtr> pending_send_records_;
   std::unique_ptr<RecordsList> pending_received_records_;
+  std::unique_ptr<RequestsHelper> aws_requests_helper;
+  Profile* profile_;  // not owned
 
   // Used to ensure that certain operations are performed on the sequence that
   // this object was created on.

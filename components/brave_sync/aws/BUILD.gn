@@ -27,6 +27,11 @@ config("aws_config") {
 
 source_set("aws") {
   sources = [
+    "../aws_based/requests_helper.cc",
+    "../aws_based/requests_helper.h",
+    "../aws_based/client_url_loader.h",
+    "../aws_based/client_url_loader_impl.cc",
+    "../aws_based/client_url_loader_impl.h",
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -35,6 +40,7 @@ source_set("aws") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
 
   deps = [
+    "//chrome/common",
     "//components/sync",
   ]
 

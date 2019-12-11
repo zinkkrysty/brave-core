@@ -166,7 +166,8 @@ SyncRecordPtr PrepareResolvedDevice(SyncDevice* device,
 BraveProfileSyncServiceImpl::BraveProfileSyncServiceImpl(Profile* profile,
                                                          InitParams init_params)
     : BraveProfileSyncService(std::move(init_params)),
-      brave_sync_client_(BraveSyncClient::Create(this, profile)) {
+      brave_sync_client_(BraveSyncClient::Create(this, profile)),
+      profile_(profile) {
   brave_sync_words_ = std::string();
   brave_sync_prefs_ =
       std::make_unique<prefs::Prefs>(sync_client_->GetPrefService());
@@ -268,6 +269,7 @@ void BraveProfileSyncServiceImpl::OnSetupSyncNewToSync(
     const std::string& device_name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  LOG(ERROR) << "!!!here1";
   if (brave_sync_initializing_) {
     NotifyLogMessage("currently initializing");
     return;
@@ -290,7 +292,22 @@ void BraveProfileSyncServiceImpl::OnSetupSyncNewToSync(
   else
     brave_sync_prefs_->SetThisDeviceName(device_name);
 
-  brave_sync_initializing_ = true;
+  // TODO(sergz): I don't think we need this at all
+  //brave_sync_initializing_ = true;
+
+  brave_sync_prefs_->SetSeed(StrFromUint8Array(crypto::GetSeed()));
+  brave_sync_prefs_->SetThisDeviceId(crypto::GetDeviceId());
+  // Create AWS requests handler
+  DCHECK(!aws_requests_helper);
+  aws_requests_helper = std::make_unique<RequestsHelper>(profile_);
+
+  brave_sync_configured_ = true;
+
+  LOG(ERROR) << "!!!deviceId == " << brave_sync_prefs_->GetThisDeviceId();
+  LOG(ERROR) << "!!!seed == " << brave_sync_prefs_->GetSeed();
+
+  // TODO(sergz): I don't think we need this at all
+  //brave_sync_initializing_ = false;
 
   brave_sync_prefs_->SetSyncEnabled(true);
 }
@@ -460,6 +477,7 @@ void BraveProfileSyncServiceImpl::OnSaveInitData(const Uint8Array& seed,
     // bookmark_change_processor_->Reset(true);
   }
 
+  DCHECK(false);
   brave_sync_prefs_->SetSeed(seed_str);
   brave_sync_prefs_->SetThisDeviceId(device_id_str);
 
