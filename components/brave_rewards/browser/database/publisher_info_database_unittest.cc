@@ -1268,6 +1268,59 @@ TEST_F(PublisherInfoDatabaseTest, Migrationv10tov11_ContributionInfo) {
   EXPECT_EQ(ac_sql.ColumnDouble(6), 0.0);
 }
 
+TEST_F(PublisherInfoDatabaseTest, Migrationv11tov12) {
+  base::ScopedTempDir temp_dir;
+  base::FilePath db_file;
+  CreateMigrationDatabase(&temp_dir, &db_file, 11, 12);
+  EXPECT_TRUE(publisher_info_database_->Init());
+
+  ASSERT_EQ(publisher_info_database_->GetTableVersionNumber(), 12);
+
+  const std::string schema = publisher_info_database_->GetSchema();
+  EXPECT_EQ(schema, GetSchemaString(12));
+}
+
+TEST_F(PublisherInfoDatabaseTest, Migrationv11tov12_ContributionInfo) {
+  base::ScopedTempDir temp_dir;
+  base::FilePath db_file;
+  CreateMigrationDatabase(&temp_dir, &db_file, 11, 12);
+  EXPECT_TRUE(publisher_info_database_->Init());
+  EXPECT_EQ(CountTableRows("pending_contribution"), 4);
+
+  ledger::PendingContributionInfoList list;
+  publisher_info_database_->GetPendingContributions(&list);
+  EXPECT_EQ(static_cast<int>(list.size()), 4);
+
+  EXPECT_EQ(list.at(0)->id, 1ull);
+  EXPECT_EQ(list.at(0)->publisher_key, "reddit.com");
+  EXPECT_EQ(list.at(1)->id, 2ull);
+  EXPECT_EQ(list.at(1)->publisher_key, "slo-tech.com");
+  EXPECT_EQ(list.at(2)->id, 3ull);
+  EXPECT_EQ(list.at(2)->publisher_key, "slo-tech.com");
+  EXPECT_EQ(list.at(3)->id, 4ull);
+  EXPECT_EQ(list.at(3)->publisher_key, "reddit.com");
+}
+
+TEST_F(PublisherInfoDatabaseTest, Migrationv12tov13) {
+  base::ScopedTempDir temp_dir;
+  base::FilePath db_file;
+  CreateMigrationDatabase(&temp_dir, &db_file, 12, 13);
+  EXPECT_TRUE(publisher_info_database_->Init());
+
+  ASSERT_EQ(publisher_info_database_->GetTableVersionNumber(), 13);
+
+  const std::string schema = publisher_info_database_->GetSchema();
+  EXPECT_EQ(schema, GetSchemaString(13));
+}
+
+TEST_F(PublisherInfoDatabaseTest, Migrationv12tov13_Promotion) {
+  base::ScopedTempDir temp_dir;
+  base::FilePath db_file;
+  CreateMigrationDatabase(&temp_dir, &db_file, 12, 13);
+  EXPECT_TRUE(publisher_info_database_->Init());
+  EXPECT_EQ(CountTableRows("promotion"), 1);
+}
+
 TEST_F(PublisherInfoDatabaseTest, DeleteActivityInfo) {
   base::ScopedTempDir temp_dir;
   base::FilePath db_file;
