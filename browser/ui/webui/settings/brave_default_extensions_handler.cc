@@ -300,10 +300,15 @@ void BraveDefaultExtensionsHandler::SetBraveWalletEnabled(
   extensions::ExtensionService* service =
   extensions::ExtensionSystem::Get(profile_)->extension_service();
   if (enabled) {
+    LOG(ERROR) << "Enabling the extension!!!!!!! for CW2";
+    extensions::ComponentLoader* loader = service->component_loader();
+    if (!loader->Exists(brave_webtorrent_extension_id)) {
+      static_cast<extensions::BraveComponentLoader*>(loader)->
+          ForceAddEthereumRemoteClientExtension();
+    }
     service->EnableExtension(ethereum_remote_client_extension_id);
   } else {
-    service->DisableExtension(
-        ethereum_remote_client_extension_id,
-        extensions::disable_reason::DisableReason::DISABLE_USER_ACTION);
+    extensions::ComponentLoader* loader = service->component_loader();
+    loader->Remove(ethereum_remote_client_extension_id);
   }
 }

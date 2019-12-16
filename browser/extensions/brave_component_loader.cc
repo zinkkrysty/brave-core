@@ -138,10 +138,14 @@ void BraveComponentLoader::HandleRewardsEnabledStatus() {
 #if BUILDFLAG(BRAVE_WALLET_ENABLED)
 void BraveComponentLoader::AddEthereumRemoteClientExtension() {
   if (profile_prefs_->GetBoolean(kBraveWalletEnabled)) {
-    AddExtension(ethereum_remote_client_extension_id,
-        ethereum_remote_client_extension_name,
-        ethereum_remote_client_extension_public_key);
+    ForceAddEthereumRemoteClientExtension();
   }
+}
+
+void BraveComponentLoader::ForceAddEthereumRemoteClientExtension() {
+  AddExtension(ethereum_remote_client_extension_id,
+      ethereum_remote_client_extension_name,
+      ethereum_remote_client_extension_public_key);
 }
 #endif
 

@@ -8,11 +8,13 @@
 #include <memory>
 #include <utility>
 
+#include "brave/browser/extensions/brave_component_loader.h"
 #include "brave/browser/ui/brave_pages.h"
 #include "brave/common/extensions/extension_constants.h"
 #include "brave/common/pref_names.h"
 #include "brave/common/url_constants.h"
 #include "brave/grit/brave_generated_resources.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/grit/chromium_strings.h"
@@ -21,6 +23,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/browser/extension_system.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/vector_icons.h"
 
@@ -91,6 +94,19 @@ bool CryptoWalletsInfoBarDelegate::Accept() {
     if (web_contents) {
       Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
       brave::ShowBraveWallet(browser);
+      /*
+      auto* context = web_contents->GetBrowserContext();
+      Profile* profile = Profile::FromBrowserContext(context);
+      extensions::ExtensionService* service =
+        extensions::ExtensionSystem::Get(profile)->extension_service();
+      service->DisableExtension(
+        metamask_extension_id,
+        extensions::disable_reason::DisableReason::DISABLE_USER_ACTION);
+        */
+      /*
+      service->UnloadExtension(metamask_extension_id,
+        extensions::UnloadedExtensionReason::DISABLE);
+        */
     }
   }
   return true;
@@ -100,8 +116,17 @@ bool CryptoWalletsInfoBarDelegate::Cancel() {
   content::WebContents* web_contents =
       InfoBarService::WebContentsFromInfoBar(infobar());
   if (web_contents) {
-    user_prefs::UserPrefs::Get(web_contents->GetBrowserContext())->
+    auto* context = web_contents->GetBrowserContext();
+    user_prefs::UserPrefs::Get(context)->
         SetBoolean(kBraveWalletEnabled, false);
+    Profile* profile = Profile::FromBrowserContext(context);
+    extensions::ExtensionService* service =
+        extensions::ExtensionSystem::Get(profile)->extension_service();
+    extensions::ComponentLoader* loader = service->component_loader();
+    if (loader->Exists(ethereum_remote_client_extension_id)) {
+      loader->Remove(ethereum_remote_client_extension_id);
+    }
   }
+
   return true;
 }
