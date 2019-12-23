@@ -646,9 +646,9 @@ void AdsServiceImpl::OnInitialize(
     // OnBraveAdsServiceReady is implemented for Android for now
     #if defined(OS_ANDROID)
 // TODO(jocelyn): FIXME
-//      auto* display_service_impl =
-//          static_cast<NotificationDisplayServiceImpl*>(display_service_);
-//      display_service_impl->OnBraveAdsServiceReady(is_initialized_);
+      auto* display_service_impl =
+          static_cast<NotificationDisplayServiceImpl*>(display_service_);
+      display_service_impl->OnBraveAdsServiceReady(is_initialized_);
     #endif
 
     MaybeViewAd();
