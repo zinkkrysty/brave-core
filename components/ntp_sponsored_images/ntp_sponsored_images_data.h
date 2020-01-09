@@ -16,6 +16,7 @@ struct NTPSponsoredImagesInternalData;
 
 struct COMPONENT_EXPORT(BRAVE_COMPONENTS_NTP_SPONSORED_IMAGES)
 NTPSponsoredImagesData {
+  NTPSponsoredImagesData();
   NTPSponsoredImagesData(const NTPSponsoredImagesInternalData& internal_data);
   NTPSponsoredImagesData(const NTPSponsoredImagesData& data);
   ~NTPSponsoredImagesData();
