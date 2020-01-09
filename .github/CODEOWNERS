@@ -42,6 +42,7 @@ browser/ui/views/infobars/brave_wayback_machine_* @simonhong
 components/brave_wayback_machine @simonhong
 
 # NTP sponsored images
+browser/ntp_sponsored_images @simonhong
 components/ntp_sponsored_images @simonhong
 
 # Licensing of third-party components
