@@ -41,10 +41,15 @@ base::Optional<RegionalComponentData> GetRegionalComponentData(
         "jfmhfclplhdedolodknnpdpjedaojkgj" },
   };
 
+#if 0
   for (const auto& data : regional_data) {
     if (data.locale == locale)
       return data;
   }
+#else
+  // Return en-US component as a demo component.
+  return regional_data[0];
+#endif
 
   return base::nullopt;
 }
