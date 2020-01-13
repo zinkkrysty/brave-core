@@ -1,5 +1,5 @@
 diff --git a/chrome/android/java/src/org/chromium/chrome/browser/flags/FeatureUtilities.java b/chrome/android/java/src/org/chromium/chrome/browser/flags/FeatureUtilities.java
-index 91b1a249b08f5e7e9427f8c7b643f1364e592646..eeb31a2350e519d956243552109f7ad46b4c5dc7 100644
+index 37960126b4ddf1c6e1d6b72956b3e39f1ce799f3..18cc9992ff377752ffeb3c28c302440e89587831 100644
 --- a/chrome/android/java/src/org/chromium/chrome/browser/flags/FeatureUtilities.java
 +++ b/chrome/android/java/src/org/chromium/chrome/browser/flags/FeatureUtilities.java
 @@ -260,7 +260,7 @@ public class FeatureUtilities {
@@ -7,7 +7,7 @@ index 91b1a249b08f5e7e9427f8c7b643f1364e592646..eeb31a2350e519d956243552109f7ad4
      public static boolean isBottomToolbarEnabled() {
          // TODO(crbug.com/944228): TabGroupsAndroid and ChromeDuet are incompatible for now.
 -        return isFlagEnabled(ChromePreferenceKeys.BOTTOM_TOOLBAR_ENABLED_KEY, false)
-+        return ChromePreferenceManager.getInstance().isBottomToolbarEnabled()
++        return BraveFeatureUtilities.isBottomToolbarEnabled()
                  && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(
                          ContextUtils.getApplicationContext())
                  && (isDuetTabStripIntegrationAndroidEnabled() || !isTabGroupsAndroidEnabled());
