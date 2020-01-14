@@ -626,6 +626,13 @@ class LedgerImpl : public ledger::Ledger,
       ledger::ResultCallback callback);
 
  private:
+  void InitializeConfirmations(
+    ledger::InitializeCallback callback);
+
+  void OnConfirmationsInitialized(
+      const bool success,
+      ledger::InitializeCallback callback);
+
   void OnLoad(ledger::VisitDataPtr visit_data,
               const uint64_t& current_time) override;
 
