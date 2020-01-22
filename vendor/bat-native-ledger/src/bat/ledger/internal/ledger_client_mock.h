@@ -374,6 +374,36 @@ class MockLedgerClient : public LedgerClient {
 
   MOCK_METHOD2(DeleteUnblindedTokensForPromotion,
       void(const std::string& promotion_id, ledger::ResultCallback));
+
+  MOCK_METHOD3(GetTransactionReport, void(
+      const ledger::ActivityMonth month,
+      const int year,
+      ledger::GetTransactionReportCallback callback));
+
+  MOCK_METHOD3(GetContributionReport, void(
+      const ledger::ActivityMonth month,
+      const int year,
+      ledger::GetContributionReportCallback callback));
+
+  MOCK_METHOD1(GetIncompleteContributions, void(
+      ledger::GetIncompleteContributionsCallback callback));
+
+  MOCK_METHOD2(GetContributionInfo, void(
+      const std::string& contribution_id,
+      GetContributionInfoCallback callback));
+
+  MOCK_METHOD4(UpdateContributionInfoStepAndCount, void(
+      const std::string& contribution_id,
+      const ledger::ContributionStep step,
+      const int32_t retry_count,
+      ResultCallback callback));
+
+  MOCK_METHOD3(UpdateContributionInfoContributedAmount, void(
+      const std::string& contribution_id,
+      const std::string& publisher_key,
+      ResultCallback callback));
+
+  MOCK_METHOD0(ReconcileStampReset, void());
 };
 
 }  // namespace ledger

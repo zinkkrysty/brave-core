@@ -251,6 +251,8 @@ class RewardsDOMHandler : public WebUIMessageHandler,
   void OnUnblindedTokensReady(
     brave_rewards::RewardsService* rewards_service) override;
 
+  void ReconcileStampReset() override;
+
   // RewardsNotificationsServiceObserver implementation
   void OnNotificationAdded(
       brave_rewards::RewardsNotificationService* rewards_notification_service,
@@ -1699,6 +1701,141 @@ void RewardsDOMHandler::OnUnblindedTokensReady(
 
   web_ui()->CallJavascriptFunctionUnsafe("brave_rewards.unblindedTokensReady");
 }
+
+void RewardsDOMHandler::ReconcileStampReset() {
+  if (!web_ui()->CanCallJavascript()) {
+    return;
+  }
+
+  web_ui()->CallJavascriptFunctionUnsafe("brave_rewards.reconcileStampReset");
+}
+
+void RewardsDOMHandler::OnGetBalanceReport(
+    const uint32_t month,
+    const uint32_t year,
+    const int32_t result,
+    const brave_rewards::BalanceReport& report) {
+  if (!web_ui()->CanCallJavascript()) {
+    return;
+  }
+
+  base::Value report_base(base::Value::Type::DICTIONARY);
+  report_base.SetDoubleKey("grant", report.grants);
+  report_base.SetDoubleKey("ads", report.earning_from_ads);
+  report_base.SetDoubleKey("contribute", report.auto_contribute);
+  report_base.SetDoubleKey("donation", report.recurring_donation);
+  report_base.SetDoubleKey("tips", report.one_time_donation);
+
+  base::Value data(base::Value::Type::DICTIONARY);
+  data.SetIntKey("month", month);
+  data.SetIntKey("year", year);
+  data.SetKey("report", std::move(report_base));
+
+  web_ui()->CallJavascriptFunctionUnsafe(
+      "brave_rewards.balanceReport",
+      data);
+}
+
+void RewardsDOMHandler::GetBalanceReport(const base::ListValue* args) {
+  CHECK_EQ(2U, args->GetSize());
+  if (!rewards_service_) {
+    return;
+  }
+
+  const uint32_t month = args->GetList()[0].GetInt();
+  const uint32_t year = args->GetList()[1].GetInt();
+  rewards_service_->GetBalanceReport(
+      month,
+      year,
+      base::BindOnce(&RewardsDOMHandler::OnGetBalanceReport,
+                     weak_factory_.GetWeakPtr(),
+                     month,
+                     year));
+}
+
+void RewardsDOMHandler::OnGetMonthlyReport(
+    const uint32_t month,
+    const uint32_t year,
+    const brave_rewards::MonthlyReport& report) {
+  if (!web_ui()->CanCallJavascript()) {
+    return;
+  }
+
+  base::Value data(base::Value::Type::DICTIONARY);
+  data.SetIntKey("month", month);
+  data.SetIntKey("year", year);
+
+  base::Value balance_report(base::Value::Type::DICTIONARY);
+  balance_report.SetDoubleKey("grant", report.balance.grants);
+  balance_report.SetDoubleKey("ads", report.balance.earning_from_ads);
+  balance_report.SetDoubleKey("contribute", report.balance.auto_contribute);
+  balance_report.SetDoubleKey("donation", report.balance.recurring_donation);
+  balance_report.SetDoubleKey("tips", report.balance.one_time_donation);
+
+  base::Value transactions(base::Value::Type::LIST);
+  for (const auto& item : report.transactions) {
+    base::Value transaction_report(base::Value::Type::DICTIONARY);
+    transaction_report.SetDoubleKey("amount", item.amount);
+    transaction_report.SetIntKey("type", item.type);
+    transaction_report.SetIntKey("created_at", item.created_at);
+
+    transactions.Append(std::move(transaction_report));
+  }
+
+  base::Value contributions(base::Value::Type::LIST);
+  for (const auto& item : report.contributions) {
+    base::Value publishers(base::Value::Type::LIST);
+    for (const auto& item : item.publishers) {
+      base::Value publisher(base::Value::Type::DICTIONARY);
+      publisher.SetStringKey("id", item.id);
+      publisher.SetDoubleKey("percentage", item.percentage);
+      publisher.SetStringKey("publisherKey", item.id);
+      publisher.SetIntKey("status", item.status);
+      publisher.SetStringKey("name", item.name);
+      publisher.SetStringKey("provider", item.provider);
+      publisher.SetStringKey("url", item.url);
+      publisher.SetStringKey("favIcon", item.favicon_url);
+      publishers.Append(std::move(publisher));
+    }
+
+    base::Value contribution_report(base::Value::Type::DICTIONARY);
+    contribution_report.SetDoubleKey("amount", item.amount);
+    contribution_report.SetIntKey("type", item.type);
+    contribution_report.SetIntKey("created_at", item.created_at);
+    contribution_report.SetKey("publishers", std::move(publishers));
+    contributions.Append(std::move(contribution_report));
+  }
+
+  base::Value report_base(base::Value::Type::DICTIONARY);
+  report_base.SetKey("balance", std::move(balance_report));
+  report_base.SetKey("transactions", std::move(transactions));
+  report_base.SetKey("contributions", std::move(contributions));
+
+  data.SetKey("report", std::move(report_base));
+
+  web_ui()->CallJavascriptFunctionUnsafe(
+    "brave_rewards.monthlyReport",
+    data);
+}
+
+void RewardsDOMHandler::GetMonthlyReport(const base::ListValue* args) {
+  CHECK_EQ(2U, args->GetSize());
+  if (!rewards_service_) {
+    return;
+  }
+
+  const uint32_t month = args->GetList()[0].GetInt();
+  const uint32_t year = args->GetList()[1].GetInt();
+
+  rewards_service_->GetMonthlyReport(
+      month,
+      year,
+      base::BindOnce(&RewardsDOMHandler::OnGetMonthlyReport,
+          weak_factory_.GetWeakPtr(),
+          month,
+          year));
+}
+
 
 }  // namespace
 
