@@ -143,14 +143,11 @@ bool BraveMainDelegate::BasicStartupComplete(int* exit_code) {
   // Setting these to default values in Chromium to maintain parity
   // See: ChromeContentVerifierDelegate::GetDefaultMode for ContentVerification
   // See: GetStatus in install_verifier.cc for InstallVerification
-  command_line.AppendSwitchASCII(switches::kExtensionContentVerification,
-      switches::kExtensionContentVerificationEnforceStrict);
-  command_line.AppendSwitchASCII(switches::kExtensionsInstallVerification,
-      "enforce");
+  command_line.AppendSwitchASCII(switches::kExtensionContentVerification, switches::kExtensionContentVerificationEnforceStrict);
+  command_line.AppendSwitchASCII(switches::kExtensionsInstallVerification, "enforce");
 
   // Brave's sync protocol does not use the sync service url
-  command_line.AppendSwitchASCII(switches::kSyncServiceURL,
-                                 "https://no-thanks.invalid");
+  command_line.AppendSwitchASCII(switches::kSyncServiceURL, "https://no-thanks.invalid");
 
   command_line.AppendSwitch(switches::kDisableDatabases);
 
@@ -172,9 +169,9 @@ bool BraveMainDelegate::BasicStartupComplete(int* exit_code) {
 
   // Disabled features.
   const std::unordered_set<const char*> disabled_features = {
-      autofill::features::kAutofillServerCommunication.name,
-      features::kAllowPopupsDuringPageUnload.name,
-      features::kAudioServiceOutOfProcess.name,
+autofill::features::kAutofillServerCommunication.name,
+  features::kAllowPopupsDuringPageUnload.name,
+  features::kAudioServiceOutOfProcess.name,
       features::kLookalikeUrlNavigationSuggestionsUI.name,
       features::kNotificationTriggers.name,
       features::kSmsReceiver.name,
