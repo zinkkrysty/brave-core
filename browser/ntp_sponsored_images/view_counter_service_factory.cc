@@ -6,30 +6,28 @@
 #include "brave/browser/ntp_sponsored_images/view_counter_service_factory.h"
 
 #include "brave/browser/brave_browser_process_impl.h"
+#include "brave/browser/profiles/profile_util.h"
 #include "brave/common/pref_names.h"
 #include "brave/components/brave_ads/browser/ads_service.h"
 #include "brave/components/brave_ads/browser/ads_service_factory.h"
-#include "brave/components/ntp_sponsored_images/browser/features.h"
 #include "brave/components/ntp_sponsored_images/browser/ntp_sponsored_images_service.h"
+#include "brave/components/ntp_sponsored_images/browser/ntp_sponsored_image_source.h"
 #include "brave/components/ntp_sponsored_images/browser/view_counter_service.h"
 #include "brave/components/ntp_sponsored_images/common/pref_names.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_context.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/url_data_source.h"
 
 namespace ntp_sponsored_images {
 
 // static
 ViewCounterService* ViewCounterServiceFactory::GetForProfile(Profile* profile) {
-  if (base::FeatureList::IsEnabled(features::kBraveNTPBrandedWallpaper))
-    return static_cast<ViewCounterService*>(
-        GetInstance()->GetServiceForBrowserContext(profile, true));
-
-  return nullptr;
+  return static_cast<ViewCounterService*>(
+      GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
 // static
@@ -48,8 +46,11 @@ ViewCounterServiceFactory::~ViewCounterServiceFactory() {}
 
 KeyedService* ViewCounterServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* browser_context) const {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
+  // Only NTP in normal profile uses sponsored services.
+  if (browser_context->IsOffTheRecord())
+    return nullptr;
 
+  Profile* profile = Profile::FromBrowserContext(browser_context);
   bool is_supported_locale = false;
   auto* ads_service = brave_ads::AdsServiceFactory::GetForProfile(profile);
   if (!ads_service) {
@@ -57,15 +58,14 @@ KeyedService* ViewCounterServiceFactory::BuildServiceInstanceFor(
   } else {
     is_supported_locale = ads_service->IsSupportedLocale();
   }
-
   auto* service = g_brave_browser_process->ntp_sponsored_images_service();
-  service->AddDataSource(browser_context);
+  content::URLDataSource::Add(
+      browser_context,
+      std::make_unique<NTPSponsoredImageSource>(service));
 
-  ViewCounterService* instance = new ViewCounterService(
-      service,
-      profile->GetPrefs(),
-      is_supported_locale);
-  return instance;
+  return new ViewCounterService(service,
+                                profile->GetPrefs(),
+                                is_supported_locale);
 }
 
 void ViewCounterServiceFactory::RegisterProfilePrefs(
