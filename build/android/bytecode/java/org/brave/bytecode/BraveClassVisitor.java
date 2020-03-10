@@ -44,6 +44,7 @@ class BraveClassVisitor extends ClassVisitor {
     protected String mSuperName = "";
 
     private Map<String, String> mSuperNames = new HashMap<String, String>();
+    private Map<String, String> mClassNames = new HashMap<String, String>();
     private Map<String, ArrayList<String>> mDeleteMethods =
             new HashMap<String, ArrayList<String>>();
     private Map<String, ArrayList<String>> mMakePublicMethods =
@@ -51,6 +52,10 @@ class BraveClassVisitor extends ClassVisitor {
 
     public BraveClassVisitor(ClassVisitor visitor) {
         super(ASM5, visitor);
+    }
+
+    protected void changeClassName(String className, String newClassName) {
+        mClassNames.put(className, newClassName);
     }
 
     protected void changeSuperName(String className, String superName) {
@@ -107,6 +112,10 @@ class BraveClassVisitor extends ClassVisitor {
                       String superName,
                       String[] interfaces) {
         mName = name;
+        if (mClassNames.containsKey(name)) {
+            System.out.println("change class name of " + name + " to " + mClassNames.get(name));
+            name = mClassNames.get(name);
+        }
         if (mSuperNames.containsKey(name)) {
             superName = mSuperNames.get(name);
             System.out.println("change superclass of " + name + " to " + superName);

@@ -10,6 +10,8 @@ public class BraveClassAdapter {
     public static ClassVisitor createAdapter(ClassVisitor chain) {
         chain = new BraveBookmarkModelClassAdapter(chain);
         chain = new BraveMainPreferenceBaseClassAdapter(chain);
+        chain = new BraveAppMenuPropertiesDelegateImplClassAdapter(chain);
+        chain = new TabbedAppMenuPropertiesDelegateClassAdapter(chain);
         return chain;
     }
 }
