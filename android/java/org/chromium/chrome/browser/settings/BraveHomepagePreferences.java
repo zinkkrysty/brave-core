@@ -8,8 +8,9 @@ package org.chromium.chrome.browser.settings;
 import android.os.Bundle;
 
 import org.chromium.chrome.browser.partnercustomizations.HomepageManager;
+import org.chromium.chrome.browser.settings.homepage.HomepageSettings;
 
-public class BraveHomepagePreferences extends HomepagePreferences {
+public class BraveHomepagePreferences extends HomepageSettings {
     private HomepageManager mHomepageManager;
 
     @Override
@@ -23,7 +24,7 @@ public class BraveHomepagePreferences extends HomepagePreferences {
         if (homepageSwitch.isVisible()) return;
         // Show homepage switch if it is hidden.
         homepageSwitch.setVisible(true);
-        boolean isHomepageEnabled = mHomepageManager.getPrefHomepageEnabled();
+        boolean isHomepageEnabled = HomepageManager.isHomepageEnabled();
         homepageSwitch.setChecked(isHomepageEnabled);
         homepageSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
             mHomepageManager.setPrefHomepageEnabled((boolean) newValue);

@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
 
-public class BraveDownloadPreferences extends DownloadPreferences {
+public class BraveDownloadPreferences extends DownloadSettings {
     private static final String PREF_PREFETCHING_ENABLED = "prefetching_enabled";
 
     @Override
