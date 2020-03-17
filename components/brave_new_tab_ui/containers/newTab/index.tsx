@@ -15,7 +15,8 @@ import {
   ClockWidget as Clock,
   ListWidget as List,
   RewardsWidget as Rewards,
-  WidgetStack
+  WidgetStack,
+  BinanceWidget as Binance
 } from '../../components/default'
 import * as Page from '../../components/default/page'
 import BrandedWallpaperLogo from '../../components/default/brandedWallpaper/logo'
@@ -30,6 +31,7 @@ interface Props {
   saveShowStats: (value: boolean) => void
   saveShowRewards: (value: boolean) => void
   saveBrandedWallpaperOptIn: (value: boolean) => void
+  saveShowBinance: (value: boolean) => void
 }
 
 interface State {
@@ -203,6 +205,104 @@ class NewTabPage extends React.Component<Props, State> {
     )
   }
 
+  toggleShowBinance = () => {
+    this.props.saveShowBinance(
+      !this.props.newTabData.showBinance
+    )
+  }
+
+  setBinanceBalances = (balances: Record<string, string>) => {
+    this.props.actions.onBinanceBalances(balances)
+  }
+
+  setBTCUSDPrice = (price: string) => {
+    this.props.actions.onBTCUSDPrice(price)
+  }
+
+  setBTCUSDVolume = (volume: string) => {
+    this.props.actions.onBTCUSDVolume(volume)
+  }
+
+  setAssetBTCPrice = (ticker: string, price: string) => {
+    this.props.actions.onAssetBTCPrice(ticker, price)
+  }
+
+  setAssetUSDPrice = (ticker: string, price: string) => {
+    this.props.actions.onAssetUSDPrice(ticker, price)
+  }
+
+  setAssetBTCVolume = (ticker: string, volume: string) => {
+    this.props.actions.onAssetBTCVolume(ticker, volume)
+  }
+
+  onBinanceUserTLD = (userTLD: NewTab.BinanceTLD) => {
+    this.props.actions.onBinanceUserTLD(userTLD)
+  }
+
+  onBinanceClientUrl = (clientUrl: string) => {
+    this.props.actions.onBinanceClientUrl(clientUrl)
+  }
+  
+  onValidAuthCode = () => {
+    this.props.actions.onValidAuthCode()
+  }
+
+  openBinanceUrl = (route: string, coin: string | null = null, amount: string | null = null) => {
+    let path = ''
+    let params = ''
+    const { userTLD } = this.props.newTabData.binanceState
+
+    switch (route) {
+      case 'buy':
+        path = 'buy-sell-crypto'
+        params = `?coin=${coin}&amount=${amount}`
+        break
+      case 'deposit':
+        path = 'usercenter/wallet/deposit/BTC'
+        break
+      case 'trade':
+        path = 'usercenter/wallet/balances'
+        break
+      case 'details':
+        path = 'usercenter/dashboard/overview'
+        break
+    }
+
+    window.open(`https://www.binance.${userTLD}/en/${path}${params}`, '_blank')
+  }
+
+  depositBinance = () => {
+    this.openBinanceUrl('deposit')
+  }
+
+  tradeBinance = () => {
+    this.openBinanceUrl('trade')
+  }
+
+  binanceDetails = () => {
+    this.openBinanceUrl('details')
+  }
+
+  generateNewKey = () => {
+    this.openBinanceUrl('newKey')
+  }
+
+  buyCrypto = (coin: string, amount: string) => {
+    this.openBinanceUrl('buy', coin, amount)
+  }
+
+  setHideBalance = (hide: boolean) => {
+    this.props.actions.setHideBalance(hide)
+  }
+
+  disconnectBinance = () => {
+    this.props.actions.disconnectBinance()
+  }
+
+  connectBinance = () => {
+    this.props.actions.connectToBinance()
+  }
+
   enableAds = () => {
     chrome.braveRewards.saveAdsSetting('adsEnabled', 'true')
   }
@@ -240,6 +340,41 @@ class NewTabPage extends React.Component<Props, State> {
       <>
         {this.renderRewardsWidget(true)}
       </>
+    )
+  }
+
+  renderBinanceContent () {
+    const { newTabData } = this.props
+
+    if (!newTabData.showBinance) {
+      return null
+    }
+
+    return (
+      <Page.GridItemBinance>
+        <Binance
+          {...newTabData.binanceState}
+          menuPosition={'left'}
+          onBuyCrypto={this.buyCrypto}
+          onBinanceDetails={this.binanceDetails}
+          onBinanceDeposit={this.depositBinance}
+          onBinanceTrade={this.tradeBinance}
+          onSetHideBalance={this.setHideBalance}
+          onGenerateNewKey={this.generateNewKey}
+          onBinanceBalances={this.setBinanceBalances}
+          onBinanceUserTLD={this.onBinanceUserTLD}
+          onBinanceClientUrl={this.onBinanceClientUrl}
+          onBTCUSDPrice={this.setBTCUSDPrice}
+          onBTCUSDVolume={this.setBTCUSDVolume}
+          onAssetBTCPrice={this.setAssetBTCPrice}
+          onAssetUSDPrice={this.setAssetUSDPrice}
+          onAssetBTCVolume={this.setAssetBTCVolume}
+          onConnectBinance={this.connectBinance}
+          onDisconnectBinance={this.disconnectBinance}
+          textDirection={newTabData.textDirection}
+          onValidAuthCode={this.onValidAuthCode}
+        />
+      </Page.GridItemBinance>
     )
   }
 
@@ -308,7 +443,8 @@ class NewTabPage extends React.Component<Props, State> {
     const isShowingBrandedWallpaper = newTabData.brandedWallpaperData ? true : false
     const showTopSites = !!this.props.newTabData.gridSites.length && newTabData.showTopSites
     const cryptoContent = this.renderCryptoContent()
-
+    const binanceContent = this.renderBinanceContent()
+  
     return (
       <Page.App dataIsReady={newTabData.initialDataLoaded}>
         <Page.PosterBackground
@@ -329,6 +465,7 @@ class NewTabPage extends React.Component<Props, State> {
             showStats={newTabData.showStats}
             showRewards={!!cryptoContent}
             showTopSites={showTopSites}
+            showBinance={!!binanceContent}
             showBrandedWallpaper={isShowingBrandedWallpaper}
         >
           {newTabData.showStats &&
@@ -386,6 +523,7 @@ class NewTabPage extends React.Component<Props, State> {
             : null
           }
             {cryptoContent}
+            {binanceContent}
           <Page.Footer>
             <Page.FooterContent>
             {isShowingBrandedWallpaper && newTabData.brandedWallpaperData &&
@@ -417,6 +555,8 @@ class NewTabPage extends React.Component<Props, State> {
               brandedWallpaperOptIn={newTabData.brandedWallpaperOptIn}
               allowBrandedWallpaperUI={newTabData.featureFlagBraveNTPBrandedWallpaper}
               toggleShowRewards={this.toggleShowRewards}
+              showBinance={newTabData.showBinance}
+              toggleShowBinance={this.toggleShowBinance}
             />
             </Page.FooterContent>
           </Page.Footer>

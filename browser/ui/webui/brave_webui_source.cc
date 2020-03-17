@@ -167,6 +167,8 @@ void CustomizeWebUIHTMLSource(const std::string &name,
         { "showTopSites", IDS_BRAVE_NEW_TAB_SHOW_TOP_SITES },
         { "showRewards", IDS_BRAVE_NEW_TAB_SHOW_REWARDS },
         { "brandedWallpaperOptIn", IDS_BRAVE_NEW_TAB_BRANDED_WALLPAPER_OPT_IN },
+        { "showBinance", IDS_BRAVE_NEW_TAB_SHOW_BINANCE },
+
         // Private Tab - General
         { "learnMore", IDS_BRAVE_PRIVATE_NEW_TAB_LEARN_MORE },
         { "done", IDS_BRAVE_PRIVATE_NEW_TAB_DONE },
@@ -230,6 +232,32 @@ void CustomizeWebUIHTMLSource(const std::string &name,
         { "rewardsWidgetBrandedNotificationTitle", IDS_REWARDS_WIDGET_BRANDED_NOTIFICATION_TITLE },      // NOLINT
         { "rewardsWidgetBrandedNotificationDescription", IDS_REWARDS_WIDGET_BRANDED_NOTIFICATION_DESCRIPTION }, // NOLINT
         { "rewardsWidgetBrandedNotificationHideAction", IDS_REWARDS_WIDGET_BRANDED_NOTIFICATION_HIDE_ACTION }, // NOLINT
+        { "rewardsWidgetNotificationTextUGP", IDS_REWARDS_WIDGET_NOTIFICATION_TEXT_UGP }, // NOLINT
+
+        // Binance Widget
+        { "binanceWidgetWelcomeTitle", IDS_BINANCE_WIDGET_WELCOME_TITLE },
+        { "binanceWidgetSubText", IDS_BINANCE_WIDGET_SUB_TEXT },
+        { "binanceWidgetConnectText", IDS_BINANCE_WIDGET_CONNECT_TEXT },
+        { "binanceWidgetDismissText", IDS_BINANCE_WIDGET_DISMISS_TEXT },
+        { "binanceWidgetValueText", IDS_BINANCE_WIDGET_VALUE_TEXT },
+        { "binanceWidgetBTCTickerText" , IDS_BINANCE_BTC_TICKER_TEXT },
+        { "binanceWidgetViewDetails", IDS_BRAVE_UI_VIEW_DETAILS },
+        { "binanceWidgetDepositLabel", IDS_BINANCE_WIDGET_DEPOSIT_LABEL },
+        { "binanceWidgetTradeLabel", IDS_BINANCE_WIDGET_TRADE_LABEL },
+        { "binanceWidgetApiKeyDesc" , IDS_BINANCE_WIDGET_API_KEY_DESC },
+        { "binanceWidgetApiKeyHelp" , IDS_BINANCE_WIDGET_API_KEY_HELP },
+        { "binanceWidgetApiKeyInput" , IDS_BINANCE_WIDGET_API_KEY_INPUT },
+        { "binanceWidgetApiSecretKeyInput" , IDS_BINANCE_WIDGET_API_SECRET_KEY_INPUT },  // NOLINT
+        { "binanceWidgetGenNewKey" , IDS_BINANCE_WIDGET_GENERATE_NEW_KEY },
+        { "binanceWidgetInvalidEntry", IDS_BINANCE_WIDGET_INVALID_ENTRY },
+        { "binanceWidgetValidatingCreds", IDS_BINANCE_WIDGET_VALIDATING_CREDS },    // NOLINT
+        { "binanceWidgetDisconnectTitle", IDS_BINANCE_WIDGET_DISCONNECT_TITLE },    // NOLINT
+        { "binanceWidgetDisconnectText" , IDS_BINANCE_WIDGET_DISCONNECT_TEXT },     // NOLINT
+        { "binanceWidgetDisconnectButton" , IDS_BINANCE_WIDGET_DISCONNECT_BUTTON }, // NOLINT
+        { "binanceWidgetCancelText" , IDS_BRAVE_UI_CANCEL },
+        { "binanceWidgetAccountDisconnected" , IDS_BINANCE_WIDGET_ACCOUNT_DISCONNECTED }, // NOLINT
+        { "binanceWidgetInvalidText" , IDS_BINANCE_WIDGET_KEY_INVALID_TEXT },             // NOLINT
+        { "binanceWidgetConfigureButton" , IDS_BINANCE_WIDGET_CONFIGURE_BUTTON }          // NOLINT
       }
     }, {
       std::string("welcome"), {

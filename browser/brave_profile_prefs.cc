@@ -199,6 +199,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kNewTabPageShowTopSites, true);
   registry->RegisterBooleanPref(kNewTabPageShowStats, true);
   registry->RegisterBooleanPref(kNewTabPageShowRewards, true);
+  registry->RegisterBooleanPref(kNewTabPageShowBinance, true);
 
   // Brave Wallet
   registry->RegisterIntegerPref(kBraveWalletPrefVersion, 0);
@@ -215,6 +216,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       password_manager::prefs::kPasswordLeakDetectionEnabled,
       base::Value(false));
 
+  // Binance widget
+  registry->RegisterStringPref(kBinanceAccessToken, "");
+  registry->RegisterStringPref(kBinanceRefreshToken, "");
   RegisterProfilePrefsForMigration(registry);
 }
 
