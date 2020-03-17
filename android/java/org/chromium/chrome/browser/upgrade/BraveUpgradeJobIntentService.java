@@ -53,6 +53,10 @@ public class BraveUpgradeJobIntentService extends JobIntentService {
     private static final String DSE_NAME = "Google";
     private static final String DSE_KEYWORD = "google.com";
 
+    // To detect update from tabs
+    private static final String PREF_STATS_PREFERENCES_NAME = "StatsPreferences";
+    private static final String PREF_WEEK_OF_INSTALLATION_NAME = "WeekOfInstallation";
+
     public static void startMigrationIfNecessary(Context context) {
         // Start migration in any case as we can have only partial data
         // to migrate available
@@ -190,6 +194,20 @@ public class BraveUpgradeJobIntentService extends JobIntentService {
             // Everything was already migrated
             return;
         }
+
+        // Detect whether it is update from tabs
+        SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+        SharedPreferences prefStatsFromTabs = ContextUtils.getApplicationContext()
+                .getSharedPreferences(PREF_STATS_PREFERENCES_NAME, 0);
+        boolean updateFormTabs = prefStatsFromTabs.contains(PREF_WEEK_OF_INSTALLATION_NAME);
+        if (!updateFormTabs) {
+            // We assume that everything was migrated in that case
+            sharedPreferencesEditor.putBoolean(BraveHelper.PREF_TABS_SETTINGS_MIGRATED, true);
+            sharedPreferencesEditor.apply();
+
+            return;
+        }
+
         // Total stats migration
         long trackersBlockedCount = sharedPreferences.getLong(PREF_TRACKERS_BLOCKED_COUNT, 0);
         long adsBlockedCount = sharedPreferences.getLong(PREF_ADS_BLOCKED_COUNT, 0);
@@ -203,16 +221,6 @@ public class BraveUpgradeJobIntentService extends JobIntentService {
         }
         if (httpsUpgradesCount > 0) {
             BravePrefServiceBridge.getInstance().setOldHttpsUpgradesCount(profile, httpsUpgradesCount);
-        }
-        SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
-        if (trackersBlockedCount == 0 &&
-                adsBlockedCount == 0 &&
-                httpsUpgradesCount == 0) {
-            // We assume that everything was migrated in that case
-            sharedPreferencesEditor.putBoolean(BraveHelper.PREF_TABS_SETTINGS_MIGRATED, true);
-            sharedPreferencesEditor.apply();
-
-            return;
         }
         sharedPreferencesEditor.putLong(PREF_TRACKERS_BLOCKED_COUNT, 0);
         sharedPreferencesEditor.putLong(PREF_ADS_BLOCKED_COUNT, 0);
