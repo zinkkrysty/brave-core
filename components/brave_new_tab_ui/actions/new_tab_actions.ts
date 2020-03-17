@@ -134,3 +134,50 @@ export const onPromotionFinish = (result: NewTab.RewardsResult, promotion: NewTa
 export const setCurrentStackWidget = (widgetId: NewTab.StackWidget) => action(types.SET_CURRENT_STACK_WIDGET, {
   widgetId
 })
+
+export const connectToBinance = () => action(types.CONNECT_TO_BINANCE)
+
+export const setHideBalance = (hide: boolean) => action(types.SET_HIDE_BALANCE, {
+  hide
+})
+
+export const onBinanceBalances = (balances: Record<string, string>) => action(types.ON_BINANCE_BALANCES, {
+  balances
+})
+
+export const onBinanceUserTLD = (userTLD: NewTab.BinanceTLD) => action(types.ON_BINANCE_USER_TLD, {
+  userTLD
+})
+
+
+export const onValidAuthCode = () => action(types.ON_VALID_AUTH_CODE)
+
+export const onBTCUSDPrice = (price: string) => action(types.ON_BTC_USD_PRICE, {
+  price
+})
+
+export const onBTCUSDVolume = (volume: string) => action(types.ON_BTC_USD_VOLUME, {
+  volume
+})
+
+export const disconnectBinance = () => action(types.DISCONNECT_BINANCE)
+
+
+export const onAssetBTCPrice = (ticker: string, price: string) => action(types.ON_ASSET_BTC_PRICE, {
+  ticker,
+  price
+})
+
+export const onAssetBTCVolume = (ticker: string, volume: string) => action(types.ON_ASSET_BTC_VOLUME, {
+  ticker,
+  volume
+})
+
+export const onAssetUSDPrice = (ticker: string, price: string) => action(types.ON_ASSET_USD_PRICE, {
+  ticker,
+  price
+})
+
+export const onBinanceClientUrl = (clientUrl: string) => action(types.ON_BINANCE_CLIENT_URL, {
+  clientUrl
+})

@@ -69,6 +69,7 @@ declare namespace NewTab {
     bookmarks: Record<string, Bookmark>
     rewardsState: RewardsWidgetState
     currentStackWidget: StackWidget
+    binanceState: BinanceWidgetState
   }
 
   export interface EphemeralState {
@@ -91,6 +92,7 @@ declare namespace NewTab {
     isBrandedWallpaperNotificationDismissed: boolean
     stats: Stats,
     brandedWallpaperData?: BrandedWallpaper
+    showBinance: boolean
   }
 
   export interface RewardsWidgetState {
@@ -108,6 +110,25 @@ declare namespace NewTab {
     walletCreateFailed: boolean
     walletCorrupted: boolean
   }
+
+  export interface BinanceWidgetState {
+    accountBalances: Record<string, string>
+    authInProgress: boolean
+    authFailed: boolean
+    assetBTCValues: Record<string, string>
+    assetUSDValues: Record<string, string>
+    assetBTCVolumes: Record<string, string>
+    userAuthed: boolean
+    btcBalanceValue: string
+    hideBalance: boolean
+    userTLD: BinanceTLD
+    validationInProgress: boolean
+    btcPrice: string
+    btcVolume: string
+    binanceClientUrl: string
+  }
+
+  export type BinanceTLD = 'us' | 'com'
 
   export const enum RewardsResult {
     LEDGER_OK = 0,

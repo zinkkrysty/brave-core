@@ -57,7 +57,20 @@ export const newTabInitialState: NewTab.ApplicationState = {
       adsBlockedStat: 0,
       javascriptBlockedStat: 0,
       httpsUpgradesStat: 0,
-      fingerprintingBlockedStat: 0
+      fingerprintingBlockedStat: 0,
+      bandwidthSavedStat: 0
+    },
+    binanceState: {
+      accountBalances: {},
+      authInProgress: false,
+      authFailed: false,
+      userAuthed: false,
+      btcBalanceValue: '0.00',
+      hideBalance: false,
+      userTLD: 'com',
+      apiCredError: false,
+      apiCredsInvalid: false,
+      validationInProgress: false
     }
   }
 }
@@ -280,6 +293,11 @@ export const getMockChrome = () => {
     topSites: {
       get: function (cb) {
         cb([])
+      }
+    },
+    binance: {
+      setAPIKey: function (_key: string, _secret: string) {
+        return
       }
     },
     bookmarks: {

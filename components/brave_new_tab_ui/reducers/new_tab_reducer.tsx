@@ -19,6 +19,7 @@ import { registerViewCount } from '../api/brandedWallpaper'
 import * as preferencesAPI from '../api/preferences'
 import * as storage from '../storage'
 import { getTotalContributions } from '../rewards-utils'
+import { getUSDPrice } from '../binance-utils'
 
 const initialState = storage.load()
 
@@ -473,6 +474,101 @@ export const newTabReducer: Reducer<NewTab.State | undefined> = (state: NewTab.S
         ...state,
         currentStackWidget: widgetId
       }
+
+      break
+
+    case types.SET_HIDE_BALANCE:
+      state = { ...state }
+      state.binanceState.hideBalance = payload.hide
+      break
+
+    case types.ON_BINANCE_BALANCES:
+      state = { ...state }
+      state.binanceState.accountBalances = payload.balances
+      break
+
+    case types.ON_BINANCE_USER_TLD:
+      state = { ...state }
+      state.binanceState.userTLD = payload.userTLD
+      break
+
+    case types.ON_VALID_AUTH_CODE:
+      state = { ...state }
+      state.binanceState.userAuthed = true
+      state.binanceState.authInProgress = false
+      break
+
+    case types.ON_BTC_USD_PRICE:
+      if (!payload.price) {
+        break
+      }
+
+      state = { ...state }
+      const accountBTCBalance = state.binanceState.accountBalances['BTC'] || ''
+      state.binanceState.btcBalanceValue = getUSDPrice(accountBTCBalance, payload.price)
+      state.binanceState.btcPrice = payload.price
+      break
+
+    case types.ON_BTC_USD_VOLUME:
+      if (!payload.volume) {
+        break
+      }
+
+      const btcFloatString = Math.floor(
+        parseFloat(payload.volume)
+      ).toString()
+
+      state = { ...state }
+      state.binanceState.btcVolume = btcFloatString
+      break
+
+    case types.ON_ASSET_BTC_PRICE:
+      const { ticker, price } = payload
+      if (!price) {
+        break
+      }
+
+      state = { ...state }
+      state.binanceState.assetBTCValues[ticker] = price
+      break
+
+    case types.ON_ASSET_BTC_VOLUME:
+      if (!payload.volume) {
+        break
+      }
+
+      const floatString = Math.floor(
+        parseFloat(payload.volume)
+      ).toString()
+
+      state = { ...state }
+      state.binanceState.assetBTCVolumes[payload.ticker] = floatString
+      break
+
+    case types.ON_ASSET_USD_PRICE:
+      if (!payload.price) {
+        break
+      }
+
+      state = { ...state }
+      state.binanceState.assetUSDValues[payload.ticker] = payload.price
+      break
+
+    case types.DISCONNECT_BINANCE:
+      state = { ...state }
+      state.binanceState = {
+        ...storage.defaultState.binanceState
+      }
+      break
+
+    case types.ON_BINANCE_CLIENT_URL:
+      state = { ...state }
+      state.binanceState.binanceClientUrl = payload.clientUrl
+      break
+
+    case types.CONNECT_TO_BINANCE:
+      state = { ...state }
+      state.binanceState.authInProgress = true
       break
 
     default:

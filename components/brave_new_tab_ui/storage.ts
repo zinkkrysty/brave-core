@@ -7,7 +7,7 @@ import { debounce } from '../common/debounce'
 
 const keyName = 'new-tab-data'
 
-const defaultState: NewTab.State = {
+export const defaultState: NewTab.State = {
   initialDataLoaded: false,
   textDirection: window.loadTimeData.getString('textdirection'),
   featureFlagBraveNTPBrandedWallpaper: window.loadTimeData.getBoolean('featureFlagBraveNTPBrandedWallpaper'),
@@ -18,6 +18,7 @@ const defaultState: NewTab.State = {
   showRewards: false,
   brandedWallpaperOptIn: false,
   isBrandedWallpaperNotificationDismissed: true,
+  showBinance: false,
   topSites: [],
   ignoredTopSites: [],
   pinnedTopSites: [],
@@ -53,7 +54,23 @@ const defaultState: NewTab.State = {
     walletCreateFailed: false,
     walletCorrupted: false
   },
-  currentStackWidget: 'rewards'
+  currentStackWidget: 'rewards',
+  binanceState: {
+    accountBalances: {},
+    assetBTCValues: {},
+    assetBTCVolumes: {},
+    assetUSDValues: {},
+    authInProgress: false,
+    authFailed: false,
+    userAuthed: false,
+    btcBalanceValue: '0.00',
+    hideBalance: false,
+    userTLD: 'com',
+    validationInProgress: false,
+    btcPrice: '0.00',
+    btcVolume: '0',
+    binanceClientUrl: ''
+  }
 }
 
 if (chrome.extension.inIncognitoContext) {
@@ -72,7 +89,8 @@ const getPersistentData = (state: NewTab.State): NewTab.PersistentState => {
     showEmptyPage: state.showEmptyPage,
     bookmarks: state.bookmarks,
     rewardsState: state.rewardsState,
-    currentStackWidget: state.currentStackWidget
+    currentStackWidget: state.currentStackWidget,
+    binanceState: state.binanceState
   }
 
   return peristantState
