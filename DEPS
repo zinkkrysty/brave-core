@@ -7,7 +7,7 @@ deps = {
   "vendor/requests": "https://github.com/kennethreitz/requests@e4d59bedfd3c7f4f254f4f5d036587bcd8152458",
   "vendor/boto": "https://github.com/boto/boto@f7574aa6cc2c819430c1f05e9a1a1a666ef8169b",
   "vendor/python-patch": "https://github.com/brave/python-patch@d8880110be6554686bc08261766538c2926d4e82",
-  "vendor/omaha":  "https://github.com/brave/omaha.git@de118d8511e4754a673d44a9f1e92d80442069e7",
+  "vendor/omaha":  "https://github.com/brave/omaha.git@1c8e681174bd453067ccdaca6aa0d0a58159d0e7",
   "vendor/sparkle": "https://github.com/brave/Sparkle.git@198b1f7930d3fb036eaae7a0eae34ec63ef4f479",
   "vendor/speedreader_rust_ffi": "https://github.com/brave-experiments/speedreader-rust-ffi.git@9237e8ac4e6fd06548177a7065681a4efabcc239",
   "vendor/bat-native-rapidjson": "https://github.com/brave-intl/bat-native-rapidjson.git@86aafe2ef89835ae71c9ed7c2527e3bb3000930e",
