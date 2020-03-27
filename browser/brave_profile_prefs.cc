@@ -15,6 +15,7 @@
 #include "brave/components/brave_wayback_machine/buildflags.h"
 #include "brave/components/brave_webtorrent/browser/buildflags/buildflags.h"
 #include "brave/components/ntp_sponsored_images/browser/ntp_background_images_utils.h"
+#include "brave/components/speedreader/buildflags.h"
 #include "chrome/browser/net/prediction_options.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/common/pref_names.h"
@@ -56,6 +57,10 @@
 #if BUILDFLAG(ENABLE_BRAVE_PERF_PREDICTOR)
 #include "brave/components/brave_perf_predictor/browser/perf_predictor_tab_helper.h"
 #include "brave/components/brave_perf_predictor/browser/p3a_bandwidth_savings_tracker.h"
+#endif
+
+#if BUILDFLAG(ENABLE_SPEEDREADER)
+#include "brave/components/speedreader/speedreader_service.h"
 #endif
 
 using extensions::FeatureSwitch;
@@ -225,6 +230,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->SetDefaultPrefValue(
       password_manager::prefs::kPasswordLeakDetectionEnabled,
       base::Value(false));
+
+#if BUILDFLAG(ENABLE_SPEEDREADER)
+  speedreader::SpeedreaderService::RegisterPrefs(registry);
+#endif
 
   RegisterProfilePrefsForMigration(registry);
 }
