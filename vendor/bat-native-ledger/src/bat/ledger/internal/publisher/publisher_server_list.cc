@@ -41,6 +41,9 @@ void PublisherServerList::OnTimer(uint32_t timer_id) {
 
 void PublisherServerList::Download(
     DownloadServerPublisherListCallback callback) {
+  callback(ledger::Result::LEDGER_OK);
+  return;
+  
   std::vector<std::string> headers;
   headers.push_back("Accept-Encoding: gzip");
 
