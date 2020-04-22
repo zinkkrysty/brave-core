@@ -17,6 +17,10 @@
 #include "brave_base/random.h"
 #include "net/http/http_status_code.h"
 
+#if defined(OS_IOS)
+#include <dispatch/dispatch.h>
+#endif
+
 using std::placeholders::_1;
 using std::placeholders::_2;
 using std::placeholders::_3;
@@ -79,7 +83,14 @@ void PublisherServerList::OnDownload(
   if (response_status_code == net::HTTP_OK && !response.empty()) {
     const auto parse_callback =
       std::bind(&PublisherServerList::OnParsePublisherList, this, _1, callback);
+#if defined(OS_IOS)
+    std::string data = response; // Make sure the data is copied into block
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+      this->ParsePublisherList(data, parse_callback);
+    });
+#else
     ParsePublisherList(response, parse_callback);
+#endif
     return;
   }
 
