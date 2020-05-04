@@ -1,8 +1,7 @@
 import("//build/config/ui.gni")
 
 source_set("tabs") {
-  sources = [
-  ]
+  sources = []
 
   if (!is_android) {
     sources += [
@@ -10,29 +9,18 @@ source_set("tabs") {
       "brave_tab_menu_model.h",
       "brave_tab_strip_model.cc",
       "brave_tab_strip_model.h",
-      "mru_tab_cycling_controller.cc",
-      "mru_tab_cycling_controller.h",
     ]
-
   }
 
-  deps = [
-  ]
+  deps = []
 
   if (!is_android) {
     deps += [
       "//brave/common/",
+      "//chrome/app:generated_resources",
       "//components/prefs",
+      "//components/sessions",
       "//content/public/browser",
-      "//content/public/common",
-      "//skia",
-      "//ui/events",
     ]
-
-    if(use_aura) {
-      deps += [
-        "//ui/aura"
-      ]
-    }
   }
 }

@@ -9,34 +9,33 @@
 #include <memory>
 #include <vector>
 
-#include "brave/browser/ui/tabs/mru_tab_cycling_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 
 class BraveTabStripModel : public TabStripModel {
  public:
   explicit BraveTabStripModel(TabStripModelDelegate* delegate,
                               Profile* profile);
-
   ~BraveTabStripModel() override;
 
+  BraveTabStripModel(const BraveTabStripModel&) = delete;
+  BraveTabStripModel operator=(const BraveTabStripModel&) = delete;
+
   void SelectRelativeTab(bool forward, UserGestureDetails detail) override;
+  void ActivateTabAt(int index,
+                     UserGestureDetails gesture_detail =
+                         UserGestureDetails(GestureType::kNone)) override;
+
+ private:
+  // List of tab indexes sorted by most recently used
+  std::vector<int> mru_cycle_list_;
+
+  bool dont_update_mru_cycle_list_ = false;
 
   // Set the next tab when doing a MRU cycling with Ctrl-tab
   void SelectMRUTab(
-      bool backward,
+      bool next,
       UserGestureDetails detail = UserGestureDetails(GestureType::kOther));
-
-  // Stop MRU cycling, called when releasing the Ctrl key
-  void StopMRUCycling();
-
- private:
-  std::unique_ptr<MRUTabCyclingController> mru_tab_cycling_controller_;
-
-  // Current index when we are MRU cycling, set to -1 when not cycling
-  int current_mru_cycling_index_ = -1;
-
-  // List of tab indexes sorted by most recently used
-  std::vector<int> mru_cycle_list;
+  void UpdateMRUCycleList();
 };
 
 #endif  // BRAVE_BROWSER_UI_TABS_BRAVE_TAB_STRIP_MODEL_H_
