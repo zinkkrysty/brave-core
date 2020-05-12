@@ -45,8 +45,7 @@ public class SearchEngineOnboardingFragment extends Fragment {
 
     private boolean fromSettings;
 
-    private TemplateUrl selectedSearchEngine =
-            TemplateUrlServiceFactory.get().getDefaultSearchEngineTemplateUrl();
+    private TemplateUrl selectedSearchEngine;
 
     public SearchEngineOnboardingFragment() {
         // Required empty public constructor
@@ -146,9 +145,14 @@ public class SearchEngineOnboardingFragment extends Fragment {
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!fromSettings && selectedSearchEngine != null) {
-                    BraveSearchEngineUtils.setDSEPrefs(selectedSearchEngine, false);
-                    BraveSearchEngineUtils.setDSEPrefs(selectedSearchEngine, true);
+                if (!fromSettings) {
+                    if (selectedSearchEngine == null) {
+                        selectedSearchEngine = TemplateUrlServiceFactory.get().getDefaultSearchEngineTemplateUrl();
+                    }
+                    if (selectedSearchEngine != null) {
+                        BraveSearchEngineUtils.setDSEPrefs(selectedSearchEngine, false);
+                        BraveSearchEngineUtils.setDSEPrefs(selectedSearchEngine, true);
+                    }
                 }
 
                 assert onViewPagerAction != null;
