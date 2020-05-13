@@ -56,9 +56,9 @@ void Wallet::CreateWalletIfNecessary(ledger::ResultCallback callback) {
     return;
   }
 
-  BLOG(ledger_, ledger::LogLevel::LOG_ERROR) <<
-     "Wallet creation didn't finish or corrupted. " <<
-     "We need to clear persona Id and start again";
+  BLOG(0, "Wallet creation didn't finish or corrupted. We need to clear "
+      "persona Id and start again");
+
   ledger_->SetPersonaId("");
 
   create_->Start(std::move(callback));
@@ -113,8 +113,10 @@ void Wallet::WalletPropertiesCallback(
     const std::string& response,
     const std::map<std::string, std::string>& headers,
     ledger::OnWalletPropertiesCallback callback) {
+  BLOG(9, ledger::ToString("", response_status_code, response, headers));
+
   ledger::WalletProperties properties;
-  ledger_->LogResponse(__func__, response_status_code, response, headers);
+
   if (response_status_code != net::HTTP_OK) {
     callback(ledger::Result::LEDGER_ERROR,
              WalletPropertiesToWalletInfo(properties));
@@ -127,8 +129,8 @@ void Wallet::WalletPropertiesCallback(
   bool ok = wallet_state.FromJson(response, &properties);
 
   if (!ok) {
-    BLOG(ledger_, ledger::LogLevel::LOG_ERROR) <<
-      "Failed to load wallet properties state";
+    BLOG(0, "Failed to load wallet properties state");
+
     callback(ledger::Result::LEDGER_ERROR, std::move(wallet));
     return;
   }
@@ -265,7 +267,7 @@ void Wallet::OnTransferAnonToExternalWallet(
     const std::string& response,
     const std::map<std::string, std::string>& headers,
     ledger::ResultCallback callback) {
-  ledger_->LogResponse(__func__, response_status_code, response, headers);
+  BLOG(9, ledger::ToString("", response_status_code, response, headers));
 
   if (response_status_code == net::HTTP_OK) {
     callback(ledger::Result::LEDGER_OK);

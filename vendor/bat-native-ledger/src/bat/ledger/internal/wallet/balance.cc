@@ -61,8 +61,10 @@ void Balance::OnWalletProperties(
     const std::string& response,
     const std::map<std::string, std::string>& headers,
     ledger::FetchBalanceCallback callback) {
+  BLOG(9, ledger::ToString("", response_status_code, response, headers));
+
   ledger::BalancePtr balance = ledger::Balance::New();
-  ledger_->LogResponse(__func__, response_status_code, response, headers);
+
   if (response_status_code != net::HTTP_OK) {
     callback(ledger::Result::LEDGER_ERROR, std::move(balance));
     return;

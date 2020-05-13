@@ -147,7 +147,8 @@ void Promotion::OnFetch(
     const std::string& response,
     const std::map<std::string, std::string>& headers,
     ledger::FetchPromotionCallback callback) {
-  ledger_->LogResponse(__func__, response_status_code, response, headers);
+  BLOG(9, ledger::ToString("", response_status_code, response, headers));
+
   ledger::PromotionList list;
 
   if (response_status_code == net::HTTP_NOT_FOUND) {
@@ -189,7 +190,7 @@ void Promotion::OnGetAllPromotions(
       &corrupted_promotions);
 
   if (result == ledger::Result::LEDGER_ERROR) {
-    BLOG(ledger_, ledger::LogLevel::LOG_ERROR) << "Failed to parse promotions";
+    BLOG(0, "Failed to parse promotions");
     ProcessFetchedPromotions(
         ledger::Result::LEDGER_ERROR,
         std::move(list),
@@ -200,9 +201,8 @@ void Promotion::OnGetAllPromotions(
   // even though that some promotions are corrupted
   // we should display non corrupted ones either way
   if (result == ledger::Result::CORRUPTED_DATA) {
-    BLOG(ledger_, ledger::LogLevel::LOG_ERROR) <<
-        "Promotions are not correct: " <<
-        base::JoinString(corrupted_promotions, ", ");
+    BLOG(0, "Promotions are not correct: "
+        << base::JoinString(corrupted_promotions, ", "));
   }
 
   for (auto & item : list) {
@@ -252,7 +252,7 @@ void Promotion::LegacyClaimedSaved(
     const ledger::Result result,
     const std::string& promotion_string) {
   if (result != ledger::Result::LEDGER_OK) {
-    BLOG(ledger_, ledger::LogLevel::LOG_ERROR) << "Save failed";
+    BLOG(0, "Save failed");
     return;
   }
 
@@ -332,8 +332,7 @@ void Promotion::OnAttestedPromotion(
     const std::string& promotion_id,
     ledger::AttestPromotionCallback callback) {
   if (result != ledger::Result::LEDGER_OK) {
-    BLOG(ledger_, ledger::LogLevel::LOG_ERROR)
-    << "Attestation failed " << result;
+    BLOG(0, "Attestation failed " << result);
     callback(result, nullptr);
     return;
   }
@@ -350,14 +349,13 @@ void Promotion::OnCompletedAttestation(
     ledger::PromotionPtr promotion,
     ledger::AttestPromotionCallback callback) {
   if (!promotion) {
-    BLOG(ledger_, ledger::LogLevel::LOG_ERROR)
-    << "Promotion does not exist ";
+    BLOG(0, "Promotion does not exist ");
     callback(ledger::Result::LEDGER_ERROR, nullptr);
     return;
   }
 
   if (promotion->status == ledger::PromotionStatus::FINISHED) {
-    BLOG(ledger_, ledger::LogLevel::LOG_ERROR) << "Promotions already claimed";
+    BLOG(0, "Promotions already claimed");
     callback(ledger::Result::GRANT_ALREADY_CLAIMED, nullptr);
     return;
   }
@@ -378,7 +376,7 @@ void Promotion::AttestedSaved(
     const std::string& promotion_string,
     ledger::AttestPromotionCallback callback) {
   if (result != ledger::Result::LEDGER_OK) {
-    BLOG(ledger_, ledger::LogLevel::LOG_ERROR) << "Save failed ";
+    BLOG(0, "Save failed ");
     callback(result, nullptr);
     return;
   }
@@ -459,7 +457,7 @@ void Promotion::GetCredentials(
     ledger::PromotionPtr promotion,
     ledger::ResultCallback callback) {
   if (!promotion) {
-    BLOG(ledger_, ledger::LogLevel::LOG_ERROR) << "Promotion is null";
+    BLOG(0, "Promotion is null");
     callback(ledger::Result::LEDGER_ERROR);
     return;
   }
@@ -532,8 +530,8 @@ void Promotion::Refresh(const bool retry_after_error) {
   if (retry_after_error) {
     start_timer_in = brave_base::random::Geometric(300);
 
-    BLOG(ledger_, ledger::LogLevel::LOG_WARNING) <<
-      "Failed to refresh promotion, will try again in " << start_timer_in;
+    BLOG(0, "Failed to refresh promotion, will try again in "
+        << start_timer_in);
   } else {
     const auto default_time = braveledger_ledger::_promotion_load_interval;
     const uint64_t now = braveledger_time_util::GetCurrentTimeStamp();
@@ -579,8 +577,7 @@ void Promotion::CheckForCorrupted(ledger::CredsBatchList list) {
         &error);
 
     if (!result) {
-      BLOG(ledger_, ledger::LogLevel::LOG_INFO)
-          << "Promotion corrupted " << item->trigger_id;
+      BLOG(1, "Promotion corrupted " << item->trigger_id);
       corrupted_promotions.push_back(item->trigger_id);
     }
   }
@@ -644,7 +641,7 @@ void Promotion::OnCheckForCorrupted(
     const std::string& response,
     const std::map<std::string, std::string>& headers,
     const std::vector<std::string>& promotion_id_list) {
-  ledger_->LogResponse(__func__, response_status_code, response, headers);
+  BLOG(9, ledger::ToString("", response_status_code, response, headers));
 
   if (response_status_code != net::HTTP_OK) {
     return;
@@ -659,7 +656,7 @@ void Promotion::OnCheckForCorrupted(
 
 void Promotion::PromotionListDeleted(const ledger::Result result) {
   if (result != ledger::Result::LEDGER_OK) {
-    BLOG(ledger_, ledger::LogLevel::LOG_ERROR) << "Error deleting promotions";
+    BLOG(0, "Error deleting promotions");
     return;
   }
 
