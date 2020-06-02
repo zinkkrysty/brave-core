@@ -35,7 +35,6 @@ if (!is_ios) {
   group("browser_dependencies") {
     deps = [
       "//brave/browser",
-      "//brave/components/resources:about_credits",
       "common",
       "chromium_src:browser",
     ]
@@ -84,6 +83,10 @@ group("brave") {
       "//chrome"
     ]
   }
+
+  data_deps = [
+    "//brave/components/resources:about_credits",
+  ]
 }
 
 group("resources") {

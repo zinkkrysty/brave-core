@@ -349,6 +349,7 @@
     "throttleit": "^1.0.0",
     "unique-selector": "^0.4.1",
     "webext-redux": "^2.1.4",
+    "foobar4": "^4.16.0",
     "webtorrent": "^0.107.16"
   }
 }
