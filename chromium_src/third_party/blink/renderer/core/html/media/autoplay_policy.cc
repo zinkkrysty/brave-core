@@ -9,9 +9,7 @@
 
 namespace {
 
-bool IsAutoplayAllowedPerSettings(
-    blink::Member<blink::HTMLMediaElement> element) {
-  blink::LocalFrame* frame = element->GetDocument().GetFrame();
+bool IsAutoplayAllowedForFrame(blink::LocalFrame* frame) {
   if (!frame)
     return false;
   if (auto* settings_client = frame->GetContentSettingsClient())
@@ -19,18 +17,29 @@ bool IsAutoplayAllowedPerSettings(
   return true;
 }
 
+bool IsAutoplayAllowedForElement(
+    blink::Member<blink::HTMLMediaElement> element) {
+  return IsAutoplayAllowedForFrame(element->GetDocument().GetFrame());
+}
+
 }  // namespace
 
+#define BRAVE_AUTOPLAY_POLICY_GET_FOR_DOCUMENT        \
+  if (IsAutoplayAllowedForFrame(document.GetFrame())) \
+    return Type::kNoUserGestureRequired;              \
+  else                                                \
+    return Type::kUserGestureRequired;
+
 #define BRAVE_AUTOPLAY_POLICY_REQUEST_AUTOPLAY_BY_ATTRIBUTE \
-  if (!IsAutoplayAllowedPerSettings(element_))              \
+  if (!IsAutoplayAllowedForElement(element_))               \
     return false;
 
-#define BRAVE_AUTOPLAY_POLICY_REQUEST_PLAY     \
-  if (!IsAutoplayAllowedPerSettings(element_)) \
+#define BRAVE_AUTOPLAY_POLICY_REQUEST_PLAY    \
+  if (!IsAutoplayAllowedForElement(element_)) \
     return DOMExceptionCode::kNotAllowedError;
 
 #include "../../../../../third_party/blink/renderer/core/html/media/autoplay_policy.cc"  // NOLINT
 
+#undef BRAVE_AUTOPLAY_POLICY_GET_FOR_DOCUMENT
 #undef BRAVE_AUTOPLAY_POLICY_REQUEST_AUTOPLAY_BY_ATTRIBUTE
 #undef BRAVE_AUTOPLAY_POLICY_REQUEST_PLAY
-#undef BRAVE_AUTOPLAY_POLICY_IS_AUTOPLAY_ALLOWED_PER_SETTINGS
