@@ -38,6 +38,10 @@
          margin: 0 20px;
          cursor: pointer;
        }
+      .no-top-border-settings-box {
+        padding-top: 20px;
+        border-style: none;
+      }
     </style>
     <div class="settings-box first">
       <div class="flex">
@@ -49,8 +53,16 @@
       </div>
     </div>
     <div class="settings-box">
+      <div class="label shields-primary-title">$i18n{shieldsLookFeelTitle}</div>
+    </div>
+    <settings-toggle-button
+        pref="{{prefs.brave.shields.stats_badge_visible}}"
+        label="$i18n{showStatsBlockedBadgeLabel}">
+    </settings-toggle-button>
+    </div>
+    <div class="settings-box no-border-settings-box">
       <div class="flex">
-        <div class="label shields-primary-title">$i18n{defaultView}</div>
+        <div class="label">$i18n{defaultView}</div>
         <settings-radio-group
           pref="{{prefs.brave.shields.advanced_view_enabled}}">
           <controlled-radio-button class="shields-view-col" name="false"
@@ -136,13 +148,6 @@
         </template>
       </select>
     </div>
-    <div class="settings-box">
-      <div class="label shields-primary-title">$i18n{shieldsLookFeelTitle}</div>
-    </div>
-    <settings-toggle-button
-        class="continuation"
-        pref="{{prefs.brave.shields.stats_badge_visible}}"
-        label="$i18n{showStatsBlockedBadgeLabel}">
   </template>
   <script src="default_brave_shields_page.js"></script>
 </dom-module>
