@@ -46,8 +46,9 @@ class PlaylistService : public KeyedService,
                         public PlaylistMediaFileDownloader::Client {
  public:
   explicit PlaylistService(content::BrowserContext* context);
-
   ~PlaylistService() override;
+  PlaylistService(const PlaylistService&) = delete;
+  PlaylistService& operator=(const PlaylistService&) = delete;
 
   // False when |params| are not sufficient for new playlist.
   // brave_playlist.json explains in detail about below apis.
@@ -84,7 +85,7 @@ class PlaylistService : public KeyedService,
 
   void OnDeletePlaylist(const std::string& playlist_id, bool success);
 
-  base::SequencedTaskRunner* io_task_runner();
+  base::SequencedTaskRunner* task_runner();
 
   // Delete orphaned playlist item directories that are not included in db.
   void CleanUp();
@@ -117,7 +118,7 @@ class PlaylistService : public KeyedService,
   std::unique_ptr<PlaylistMediaFileDownloader> video_media_file_downloader_;
   std::unique_ptr<PlaylistMediaFileDownloader> audio_media_file_downloader_;
 
-  scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   SimpleURLLoaderList url_loaders_;
@@ -125,8 +126,6 @@ class PlaylistService : public KeyedService,
   PrefService* prefs_;
 
   base::WeakPtrFactory<PlaylistService> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlaylistService);
 };
 
 }  // namespace playlist

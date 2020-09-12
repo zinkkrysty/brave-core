@@ -34,6 +34,12 @@ class GURL;
 
 namespace playlist {
 
+enum class MediaFileGenResult {
+  FAILED,
+  SUCCESS,  // All source files are unified into final media file.
+  PARTIAL_SUCCESS,  // Some source files are skipped.
+};
+
 // Handle one Playlist at once.
 class PlaylistMediaFileDownloader {
  public:
@@ -70,7 +76,7 @@ class PlaylistMediaFileDownloader {
   using SimpleURLLoaderList =
       std::list<std::unique_ptr<network::SimpleURLLoader>>;
 
-  void ResetStatus();
+  void ResetStatus(bool cancelled);
   void DownloadAllMediaFileSources();
   void DownloadMediaFile(const GURL& url, int index);
   void CreateSourceFilesDirThenDownloads();
@@ -79,9 +85,9 @@ class PlaylistMediaFileDownloader {
                              int index,
                              base::FilePath path);
   void StartSingleMediaFileGeneration();
-  // See the comments of DoGenerateSingleMediaFileOnIOThread() about
+  // See the comments of DoGenerateSingleMediaFile() about
   // the meaning of |result|.
-  void OnSingleMediaFileGenerated(int result);
+  void OnSingleMediaFileGenerated(MediaFileGenResult result);
 
   // True when all source media files are downloaded.
   // If it's true, single media file will be generated.
@@ -93,7 +99,7 @@ class PlaylistMediaFileDownloader {
   // generation for some reason.
   void NotifySucceed(bool partial);
 
-  base::SequencedTaskRunner* io_task_runner();
+  base::SequencedTaskRunner* task_runner();
 
   Client* client_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
@@ -118,7 +124,7 @@ class PlaylistMediaFileDownloader {
   // generation.
   bool cancelled_ = false;
 
-  scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   SimpleURLLoaderList url_loaders_;
 

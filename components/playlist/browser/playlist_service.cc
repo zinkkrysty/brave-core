@@ -40,7 +40,7 @@ const base::FilePath::StringType kThumbnailFileName(
     FILE_PATH_LITERAL("thumbnail"));
 
 void DeleteDir(const base::FilePath& path) {
-  base::DeleteFile(path, true);
+  base::DeleteFileRecursively(path);
 }
 
 PlaylistInfo CreatePlaylistInfo(const CreatePlaylistParams& params) {
@@ -148,9 +148,8 @@ const char kHTMLTemplate[] =
     "style='display:none'><source src='audio_file.m4a' type='audio/mp4' "
     "/></video>";
 
-int DoGenerateHTMLFileOnIOThread(const base::FilePath& html_file_path) {
-  if (base::PathExists(html_file_path))
-    base::DeleteFile(html_file_path, false);
+int DoGenerateHTMLFileOnTaskRunner(const base::FilePath& html_file_path) {
+  base::DeleteFile(html_file_path);
 
   base::File html_file(html_file_path,
                        base::File::FLAG_CREATE | base::File::FLAG_WRITE);
@@ -268,7 +267,7 @@ void PlaylistService::CreatePlaylistItem(const CreatePlaylistParams& params) {
       {PlaylistChangeParams::ChangeType::CHANGE_TYPE_ADDED, info.id});
 
   base::PostTaskAndReplyWithResult(
-      io_task_runner(),
+      task_runner(),
       FROM_HERE,
       base::BindOnce(&base::CreateDirectory, GetPlaylistItemDirPath(info.id)),
       base::BindOnce(&PlaylistService::OnPlaylistItemDirCreated,
@@ -427,7 +426,7 @@ void PlaylistService::DeletePlaylistItem(const std::string& id) {
       {PlaylistChangeParams::ChangeType::CHANGE_TYPE_DELETED, id});
 
   // Delete assets from filesystem after updating db.
-  io_task_runner()->PostTask(
+  task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&DeleteDir, GetPlaylistItemDirPath(id)));
 }
@@ -516,7 +515,7 @@ void PlaylistService::OnGetOrphanedPaths(
 
   for (const auto& path : orphaned_paths) {
     VLOG(2) << __func__ << ": " << path << " is orphaned";
-    io_task_runner()->PostTask(FROM_HERE, base::BindOnce(&DeleteDir, path));
+    task_runner()->PostTask(FROM_HERE, base::BindOnce(&DeleteDir, path));
   }
 }
 
@@ -531,7 +530,7 @@ void PlaylistService::CleanUp() {
   }
 
   base::PostTaskAndReplyWithResult(
-      io_task_runner(), FROM_HERE,
+      task_runner(), FROM_HERE,
       base::BindOnce(&GetOrphanedPaths, base_dir_, ids),
       base::BindOnce(&PlaylistService::OnGetOrphanedPaths,
                      weak_factory_.GetWeakPtr()));
@@ -551,8 +550,8 @@ void PlaylistService::GenerateIndexHTMLFile(
     const base::FilePath& playlist_path) {
   auto html_file_path = playlist_path.Append(FILE_PATH_LITERAL("index.html"));
   base::PostTaskAndReplyWithResult(
-      io_task_runner(), FROM_HERE,
-      base::BindOnce(&DoGenerateHTMLFileOnIOThread, html_file_path),
+      task_runner(), FROM_HERE,
+      base::BindOnce(&DoGenerateHTMLFileOnTaskRunner, html_file_path),
       base::BindOnce(&PlaylistService::OnHTMLFileGenerated,
                      weak_factory_.GetWeakPtr()));
 }
@@ -562,14 +561,14 @@ void PlaylistService::OnHTMLFileGenerated(int error_code) {
     LOG(ERROR) << "couldn't create HTML file for play";
 }
 
-base::SequencedTaskRunner* PlaylistService::io_task_runner() {
-  if (!io_task_runner_) {
-    io_task_runner_ = base::CreateSequencedTaskRunner(
+base::SequencedTaskRunner* PlaylistService::task_runner() {
+  if (!task_runner_) {
+    task_runner_ = base::CreateSequencedTaskRunner(
         { base::ThreadPool(), base::MayBlock(),
           base::TaskPriority::BEST_EFFORT,
           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN });
   }
-  return io_task_runner_.get();
+  return task_runner_.get();
 }
 
 }  // namespace playlist
