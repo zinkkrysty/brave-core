@@ -25,7 +25,7 @@ bool CanAddURLToHistory(const GURL& url) {
 #else
   bool is_wallet_host =
     url.SchemeIs(kChromeExtensionScheme) &&
-    url.host() == ethereum_remote_client_extension_id;
+    url.host() == "odbfpeeihdkbihmopkbjmoonfanlbfcl";  // ethereum-remote-client;
 
   return !is_brave_scheme && !is_wallet_host;
 #endif
