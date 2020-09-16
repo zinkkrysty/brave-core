@@ -632,7 +632,7 @@ IN_PROC_BROWSER_TEST_F(BraveContentSettingsAgentImplBrowserTest,
 
 // TODO(iefremov): https://github.com/brave/brave-browser/issues/7933
 IN_PROC_BROWSER_TEST_F(BraveContentSettingsAgentImplBrowserTest,
-                       DISABLED_BlockReferrerByDefaultRedirects) {
+                       BlockReferrerByDefaultRedirects) {
   ContentSettingsForOneType settings;
   content_settings()->GetSettingsForOneType(
       ContentSettingsType::PLUGINS, brave_shields::kReferrers, &settings);
@@ -651,19 +651,19 @@ IN_PROC_BROWSER_TEST_F(BraveContentSettingsAgentImplBrowserTest,
                        contents()),
       redirect_to_cross_site_image_url().spec());
   EXPECT_EQ(GetLastReferrer(cross_site_image_url()),
-            cross_site_url().GetOrigin().spec());
+            url().GetOrigin().spec());
 
-  // Cross-site iframe navigations get their referrer spoofed.
+  // Cross-site iframe navigations should follow the default referrer policy.
   NavigateCrossSiteRedirectIframe();
   EXPECT_EQ(ExecScriptGetStr(kReferrerScript, child_frame()),
-            cross_site_url().GetOrigin().spec());
-  EXPECT_EQ(GetLastReferrer(redirect_to_cross_site_url()),
-            cross_site_url().GetOrigin().spec());
+            url().GetOrigin().spec());
+  EXPECT_EQ(GetLastReferrer(cross_site_url()),
+            url().GetOrigin().spec());
 
   // Cross-site navigations get no referrer.
   RedirectToPageWithLink(redirect_to_cross_site_url(), cross_site_url());
   EXPECT_EQ(ExecScriptGetStr(kReferrerScript, contents()), "");
-  EXPECT_EQ(GetLastReferrer(redirect_to_cross_site_url()), "");
+  EXPECT_EQ(GetLastReferrer(cross_site_url()), "");
 }
 
 IN_PROC_BROWSER_TEST_F(BraveContentSettingsAgentImplBrowserTest,
@@ -734,7 +734,7 @@ IN_PROC_BROWSER_TEST_F(BraveContentSettingsAgentImplBrowserTest,
 
 // TODO(iefremov): https://github.com/brave/brave-browser/issues/7933
 IN_PROC_BROWSER_TEST_F(BraveContentSettingsAgentImplBrowserTest,
-                       DISABLED_BlockReferrerRedirects) {
+                       BlockReferrerRedirects) {
   BlockReferrers();
 
   // The initial navigation doesn't have a referrer.

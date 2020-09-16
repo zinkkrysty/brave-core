@@ -103,6 +103,10 @@ bool ApplyPotentialReferrerBlock(std::shared_ptr<BraveRequestInfo> ctx) {
 
   if (ctx->resource_type == blink::mojom::ResourceType::kMainFrame ||
       ctx->resource_type == blink::mojom::ResourceType::kSubFrame) {
+    LOG(ERROR) << ctx->request_url;
+    LOG(ERROR) << ctx->referrer;
+    ctx->new_referrer = GURL();
+    return true;
     // Frame navigations are handled in NavigationRequest.
     return false;
   }
