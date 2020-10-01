@@ -9,7 +9,6 @@ import * as privateTabDataAPI from './privateTabData'
 import * as torTabDataAPI from './torTabData'
 import * as topSitesAPI from './topSites'
 import * as brandedWallpaper from './brandedWallpaper'
-import { resolve } from 'bluebird'
 
 export type InitialData = {
   preferences: preferencesAPI.Preferences

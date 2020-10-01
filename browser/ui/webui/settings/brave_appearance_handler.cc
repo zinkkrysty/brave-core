@@ -109,12 +109,10 @@ void BraveAppearanceHandler::RegisterMessages() {
       "getIsBitcoinDotComSupported",
       base::BindRepeating(&BraveAppearanceHandler::GetIsBitcoinDotComSupported,
                           base::Unretained(this)));
-#if BUILDFLAG(CRYPTO_DOT_COM_ENABLED)
   web_ui()->RegisterMessageCallback(
       "getIsCryptoDotComSupported",
       base::BindRepeating(&BraveAppearanceHandler::GetIsCryptoDotComSupported,
                           base::Unretained(this)));
-#endif
 }
 
 void BraveAppearanceHandler::SetBraveThemeType(const base::ListValue* args) {
