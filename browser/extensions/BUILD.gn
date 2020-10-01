@@ -191,6 +191,8 @@ source_set("extensions") {
     deps += [
       "//brave/common",
       "//brave/components/crypto_dot_com/browser",
+      "//brave/components/crypto_dot_com/common/",
+      "//brave/components/ntp_widget_utils/browser",
       "//extensions/browser",
     ]
   }
