@@ -351,10 +351,7 @@ class CryptoDotCom extends React.PureComponent<Props, State> {
             {this.formattedNum(price)} USDT
           </Text>}
           {(percentChange !== null) && <Text inline={true} textColor={percentChange > 0 ? 'green' : 'red'}>{percentChange}%</Text>}
-          <SVG
-            chartWidth={chartWidth}
-            chartHeight={chartHeight}
-          >
+          <SVG viewBox={`0 0 ${chartWidth} ${chartHeight}`}>
             <polyline
               fill='none'
               stroke='#44B0FF'
