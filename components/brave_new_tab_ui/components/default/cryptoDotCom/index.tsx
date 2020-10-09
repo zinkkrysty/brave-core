@@ -76,13 +76,10 @@ interface Props {
   stackPosition: number
   onShowContent: () => void
   onDisableWidget: () => void
-  onTotalPriceOptIn: () => void
   onBtcPriceOptIn: () => void
-  onSetLosersGainers: () => Promise<void>
-  onSetSupportedPairs: () => Promise<void>
-  onSetTickerPrices: (assets: string[]) => Promise<void>
-  onSetCharts: (asset: string[]) => Promise<void>
-  onUpdateActions: () => Promise<void[]>
+  onUpdateActions: () => Promise<void>
+  onViewMarketsRequested: (assets: string[]) => Promise<void>
+  onSetAssetData: (assets: string[]) => Promise<void>
   onBuyCrypto: () => void
   onInteraction: () => void
   onOptInMarkets: () => void
@@ -147,20 +144,14 @@ class CryptoDotCom extends React.PureComponent<Props, State> {
   }
 
   handleViewMarketsClick = async () => {
-    await Promise.all([
-      this.props.onSetTickerPrices(this.topMovers),
-      this.props.onSetLosersGainers()
-    ])
     this.props.onInteraction()
     this.props.onOptInMarkets()
+    await this.props.onViewMarketsRequested(this.topMovers)
   }
 
   handleAssetDetailClick = async (asset: string) => {
-    await Promise.all([
-      this.props.onSetCharts([asset]),
-      this.props.onSetSupportedPairs()
-    ])
     this.setSelectedAsset(asset)
+    await this.props.onSetAssetData([asset])
   }
 
   onClickBuyTop = () => {
