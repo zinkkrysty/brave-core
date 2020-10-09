@@ -227,8 +227,8 @@ class CryptoDotCom extends React.PureComponent<Props, State> {
     const { percentChange = null } = losersGainers[currency] || {}
     return (
       <>
-        <Box isFlex={true} $height={48}>
-          <FlexItem $pl={5} $pr={5}>
+        <Box isFlex={true} $height={48} hasPadding={true}>
+          <FlexItem $pr={5}>
             {this.renderIconAsset(currency.toLowerCase())}
           </FlexItem>
           <FlexItem>
@@ -259,7 +259,7 @@ class CryptoDotCom extends React.PureComponent<Props, State> {
         <Text center={true} $fontSize={15}>
           {getLocale('cryptoDotComWidgetCopyTwo')}
         </Text>
-        <ActionAnchor onClick={this.onClickBuyBottom} $m='1em 0'>
+        <ActionAnchor onClick={this.onClickBuyBottom}>
           {getLocale('cryptoDotComWidgetBuyBtc')}
         </ActionAnchor>
         <PlainButton textColor='light' onClick={this.handleViewMarketsClick} $m='0 auto'>
