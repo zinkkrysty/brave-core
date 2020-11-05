@@ -26,7 +26,7 @@ struct PurchaseIntentSignalInfo {
       const PurchaseIntentSignalInfo& info);
   ~PurchaseIntentSignalInfo();
 
-  uint64_t timestamp_in_seconds = 0;
+  int64_t timestamp_in_seconds = 0;
   PurchaseIntentSegmentList segments;
   uint16_t weight = 0;
 };

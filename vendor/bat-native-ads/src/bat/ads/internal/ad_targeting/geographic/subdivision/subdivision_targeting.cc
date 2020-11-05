@@ -31,11 +31,10 @@ using std::placeholders::_1;
 
 namespace {
 
-const uint64_t kRetryAfterSeconds = 1 * base::Time::kSecondsPerMinute;
+const int64_t kRetryAfterSeconds = 1 * base::Time::kSecondsPerMinute;
 
-const uint64_t kFetchSubdivisionTargetingPing =
-    24 * base::Time::kSecondsPerHour;
-const uint64_t kDebugFetchSubdivisionTargetingPing =
+const int64_t kFetchSubdivisionTargetingPing = 24 * base::Time::kSecondsPerHour;
+const int64_t kDebugFetchSubdivisionTargetingPing =
     5 * base::Time::kSecondsPerMinute;
 
 }   // namespace
@@ -260,7 +259,7 @@ void SubdivisionTargeting::Retry() {
 }
 
 void SubdivisionTargeting::FetchAfterDelay() {
-  const uint64_t ping = _is_debug ? kDebugFetchSubdivisionTargetingPing :
+  const int64_t ping = _is_debug ? kDebugFetchSubdivisionTargetingPing :
       kFetchSubdivisionTargetingPing;
 
   const base::TimeDelta delay = base::TimeDelta::FromSeconds(ping);

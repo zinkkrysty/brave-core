@@ -25,9 +25,9 @@ using std::placeholders::_1;
 
 namespace {
 
-const uint64_t kRetryAfterSeconds = 1 * base::Time::kSecondsPerMinute;
+const int64_t kRetryAfterSeconds = 1 * base::Time::kSecondsPerMinute;
 
-const uint64_t kDebugCatalogPing = 15 * base::Time::kSecondsPerMinute;
+const int64_t kDebugCatalogPing = 15 * base::Time::kSecondsPerMinute;
 
 }  // namespace
 
@@ -47,7 +47,7 @@ void AdServer::MaybeFetch() {
   Fetch();
 }
 
-uint64_t AdServer::LastUpdated() const {
+int64_t AdServer::LastUpdated() const {
   return last_updated_;
 }
 
@@ -178,7 +178,7 @@ void AdServer::OnRetry() {
 }
 
 void AdServer::FetchAfterDelay() {
-  const uint64_t ping = _is_debug ? kDebugCatalogPing :
+  const int64_t ping = _is_debug ? kDebugCatalogPing :
       ads_->get_bundle()->GetCatalogPing();
 
   const base::TimeDelta delay = base::TimeDelta::FromSeconds(ping);

@@ -160,8 +160,8 @@ void BatAdsImpl::ReconcileAdRewards() {
 }
 
 void BatAdsImpl::GetAdsHistory(
-    const uint64_t from_timestamp,
-    const uint64_t to_timestamp,
+    const int64_t from_timestamp,
+    const int64_t to_timestamp,
     GetAdsHistoryCallback callback) {
   ads::AdsHistoryInfo history = ads_->GetAdsHistory(
       ads::AdsHistoryInfo::FilterType::kConfirmationType,

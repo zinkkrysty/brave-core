@@ -45,7 +45,7 @@ std::string ConfirmationsState::ToJson() {
 
   // Next token redemption date
   dictionary.SetKey("next_token_redemption_date_in_seconds",
-      base::Value(std::to_string(static_cast<uint64_t>(
+      base::Value(std::to_string(static_cast<int64_t>(
           next_token_redemption_date_.ToDoubleT()))));
 
   // Confirmations
@@ -533,12 +533,12 @@ bool ConfirmationsState::ParseNextTokenRedemptionDateFromDictionary(
     return false;
   }
 
-  uint64_t value_as_uint64;
-  if (!base::StringToUint64(*value, &value_as_uint64)) {
+  int64_t timestamp_as_int64;
+  if (!base::StringToInt64(*value, &timestamp_as_int64)) {
     return false;
   }
 
-  next_token_redemption_date_ = base::Time::FromDoubleT(value_as_uint64);
+  next_token_redemption_date_ = base::Time::FromDoubleT(timestamp_as_int64);
 
   return true;
 }

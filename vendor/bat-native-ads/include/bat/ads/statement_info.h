@@ -27,7 +27,7 @@ struct ADS_EXPORT StatementInfo {
       const std::string& json);
 
   double estimated_pending_rewards = 0.0;
-  uint64_t next_payment_date_in_seconds = 0;
+  int64_t next_payment_date_in_seconds = 0;
   uint64_t ad_notifications_received_this_month = 0;
   TransactionList transactions;
 
@@ -35,7 +35,7 @@ struct ADS_EXPORT StatementInfo {
   double GetEstimatedPendingRewardsFromDictionary(
       base::DictionaryValue* dictionary) const;
 
-  uint64_t GetNextPaymentDateInSecondsFromDictionary(
+  int64_t GetNextPaymentDateInSecondsFromDictionary(
       base::DictionaryValue* dictionary) const;
 
   uint64_t GetAdNotificationsReceivedThisMonthFromDictionary(

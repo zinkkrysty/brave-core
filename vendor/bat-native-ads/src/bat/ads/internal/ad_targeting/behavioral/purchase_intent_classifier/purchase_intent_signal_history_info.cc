@@ -45,7 +45,7 @@ Result PurchaseIntentSignalHistoryInfo::FromJson(
   }
 
   if (document.HasMember("timestamp_in_seconds")) {
-    timestamp_in_seconds = document["timestamp_in_seconds"].GetUint64();
+    timestamp_in_seconds = document["timestamp_in_seconds"].GetInt64();
   }
 
   if (document.HasMember("weight")) {

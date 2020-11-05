@@ -32,8 +32,8 @@ AdsHistory::~AdsHistory() = default;
 AdsHistoryInfo AdsHistory::Get(
     const AdsHistoryInfo::FilterType filter_type,
     const AdsHistoryInfo::SortType sort_type,
-    const uint64_t from_timestamp,
-    const uint64_t to_timestamp) const {
+    const int64_t from_timestamp,
+    const int64_t to_timestamp) const {
   std::deque<AdHistoryInfo> ads_history = ads_->get_client()->GetAdsHistory();
 
   const auto date_range_filter = std::make_unique<AdsHistoryDateRangeFilter>();
@@ -66,7 +66,7 @@ void AdsHistory::AddAdNotification(
   AdHistoryInfo ad_history;
 
   ad_history.timestamp_in_seconds =
-      static_cast<uint64_t>(base::Time::Now().ToDoubleT());
+      static_cast<int64_t>(base::Time::Now().ToDoubleT());
   ad_history.ad_content.type = ad.type;
   ad_history.ad_content.uuid = ad.uuid;
   ad_history.ad_content.creative_instance_id = ad.creative_instance_id;
@@ -88,7 +88,7 @@ void AdsHistory::AddNewTabPageAd(
   AdHistoryInfo ad_history;
 
   ad_history.timestamp_in_seconds =
-      static_cast<uint64_t>(base::Time::Now().ToDoubleT());
+      static_cast<int64_t>(base::Time::Now().ToDoubleT());
   ad_history.ad_content.type = ad.type;
   ad_history.ad_content.uuid = ad.uuid;
   ad_history.ad_content.creative_instance_id = ad.creative_instance_id;

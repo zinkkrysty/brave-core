@@ -79,7 +79,7 @@ uint64_t Bundle::GetCatalogVersion() const {
   return catalog_version_;
 }
 
-uint64_t Bundle::GetCatalogPing() const {
+int64_t Bundle::GetCatalogPing() const {
   return catalog_ping_ / base::Time::kMillisecondsPerSecond;
 }
 

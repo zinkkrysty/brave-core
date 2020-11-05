@@ -396,8 +396,8 @@ void AdsServiceImpl::ReconcileAdRewards() {
 }
 
 void AdsServiceImpl::GetAdsHistory(
-    const uint64_t from_timestamp,
-    const uint64_t to_timestamp,
+    const int64_t from_timestamp,
+    const int64_t to_timestamp,
     OnGetAdsHistoryCallback callback) {
   if (!connected()) {
     return;
@@ -1602,8 +1602,8 @@ void AdsServiceImpl::DisableAdsForUnsupportedCountryCodes(
   SetEnabled(false);
 }
 
-uint64_t AdsServiceImpl::MigrateTimestampToDoubleT(
-    const uint64_t timestamp_in_seconds) const {
+int64_t AdsServiceImpl::MigrateTimestampToDoubleT(
+    const int64_t timestamp_in_seconds) const {
   if (timestamp_in_seconds < 10000000000) {
     // Already migrated as DoubleT will never reach 10000000000 in our lifetime
     // and legacy timestamps are above 10000000000
@@ -1612,12 +1612,12 @@ uint64_t AdsServiceImpl::MigrateTimestampToDoubleT(
 
   // Migrate date to DoubleT
   auto now = base::Time::Now();
-  auto now_in_seconds = static_cast<uint64_t>((now - base::Time()).InSeconds());
+  auto now_in_seconds = static_cast<int64_t>((now - base::Time()).InSeconds());
 
   auto delta = timestamp_in_seconds - now_in_seconds;
 
   auto date = now + base::TimeDelta::FromSeconds(delta);
-  return static_cast<uint64_t>(date.ToDoubleT());
+  return static_cast<int64_t>(date.ToDoubleT());
 }
 
 void AdsServiceImpl::MaybeShowMyFirstAdNotification() {
@@ -1729,7 +1729,7 @@ void AdsServiceImpl::ShowNotification(
 void AdsServiceImpl::StartNotificationTimeoutTimer(
     const std::string& uuid) {
 #if !defined(OS_ANDROID)
-  const uint64_t timeout_in_seconds = 120;
+  const int64_t timeout_in_seconds = 120;
 
   notification_timers_[uuid] = std::make_unique<base::OneShotTimer>();
 

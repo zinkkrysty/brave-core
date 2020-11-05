@@ -21,7 +21,7 @@ enum class UserActivityType {
   kBrowserWindowDidEnterBackground
 };
 
-using UserActivityHistory = std::deque<uint64_t>;
+using UserActivityHistory = std::deque<int64_t>;
 using UserActivityHistoryMap = std::map<UserActivityType, UserActivityHistory>;
 
 class UserActivity {

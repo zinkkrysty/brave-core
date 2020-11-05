@@ -126,7 +126,7 @@ class BatAdsConversionsTest : public ::testing::Test {
     AdEventInfo ad_event;
     ad_event.creative_instance_id = "7a3b6d9f-d0b7-4da6-8988-8d5b8938c94f";
     ad_event.creative_set_id = creative_set_id;
-    ad_event.timestamp = base::Time::Now().ToDoubleT();
+    ad_event.timestamp = static_cast<int64_t>(base::Time::Now().ToDoubleT());
     ad_event.confirmation_type = confirmation_type;
 
     AdEvents ad_events(ads_.get());

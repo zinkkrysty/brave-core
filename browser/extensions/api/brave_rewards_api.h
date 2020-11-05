@@ -407,7 +407,7 @@ class BraveRewardsGetAdsEstimatedEarningsFunction
   void OnAdsEstimatedEarnings(
       const bool success,
       const double estimated_pending_rewards,
-      const uint64_t next_payment_date_in_seconds,
+      const int64_t next_payment_date_in_seconds,
       const uint64_t ad_notifications_received_this_month);
 };
 

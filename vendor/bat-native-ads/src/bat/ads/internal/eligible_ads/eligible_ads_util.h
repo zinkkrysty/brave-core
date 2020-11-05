@@ -18,7 +18,7 @@ namespace ads {
 template<typename T>
 T FilterSeenAdvertisers(
     const T& ads,
-    const std::map<std::string, uint64_t>& seen_advertisers) {
+    const std::map<std::string, int64_t>& seen_advertisers) {
   T unseen_advertisers = ads;
 
   const auto iter = std::remove_if(unseen_advertisers.begin(),
@@ -34,7 +34,7 @@ T FilterSeenAdvertisers(
 template<typename T>
 T FilterSeenAds(
     const T& ads,
-    const std::map<std::string, uint64_t>& seen_ads) {
+    const std::map<std::string, int64_t>& seen_ads) {
   T unseen_ads = ads;
 
   const auto iter = std::remove_if(unseen_ads.begin(), unseen_ads.end(),

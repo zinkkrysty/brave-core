@@ -61,7 +61,7 @@ uint64_t Catalog::GetVersion() const {
   return catalog_state_->version;
 }
 
-uint64_t Catalog::GetPing() const {
+int64_t Catalog::GetPing() const {
   return catalog_state_->ping;
 }
 

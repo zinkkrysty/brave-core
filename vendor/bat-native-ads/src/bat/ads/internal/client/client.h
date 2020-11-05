@@ -79,13 +79,13 @@ class Client {
 
   void UpdateSeenAdNotification(
       const std::string& creative_instance_id);
-  const std::map<std::string, uint64_t>& GetSeenAdNotifications();
+  const std::map<std::string, int64_t>& GetSeenAdNotifications();
   void ResetSeenAdNotifications(
       const CreativeAdNotificationList& ads);
 
   void UpdateSeenAdvertiser(
       const std::string& advertiser_id);
-  const std::map<std::string, uint64_t>& GetSeenAdvertisers();
+  const std::map<std::string, int64_t>& GetSeenAdvertisers();
   void ResetSeenAdvertisers(
       const CreativeAdNotificationList& ads);
 

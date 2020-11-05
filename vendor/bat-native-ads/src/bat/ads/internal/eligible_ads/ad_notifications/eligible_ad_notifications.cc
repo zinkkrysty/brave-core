@@ -60,7 +60,7 @@ CreativeAdNotificationList EligibleAds::Get(
 CreativeAdNotificationList
 EligibleAds::RemoveSeenAdvertisersAndRoundRobinIfNeeded(
     const CreativeAdNotificationList& ads) const {
-  const std::map<std::string, uint64_t> seen_advertisers =
+  const std::map<std::string, int64_t> seen_advertisers =
       ads_->get_client()->GetSeenAdvertisers();
 
   CreativeAdNotificationList eligible_ads =
@@ -77,7 +77,7 @@ EligibleAds::RemoveSeenAdvertisersAndRoundRobinIfNeeded(
 
 CreativeAdNotificationList EligibleAds::RemoveSeenAdsAndRoundRobinIfNeeded(
     const CreativeAdNotificationList& ads) const {
-  const std::map<std::string, uint64_t> seen_ads =
+  const std::map<std::string, int64_t> seen_ads =
       ads_->get_client()->GetSeenAdNotifications();
 
   CreativeAdNotificationList eligible_ads = FilterSeenAds(ads, seen_ads);

@@ -42,7 +42,7 @@ bool UserActivityFrequencyCap::DoesRespectCap(
     return true;
   }
 
-  const uint64_t time_constraint = base::Time::kSecondsPerHour;
+  const int64_t time_constraint = base::Time::kSecondsPerHour;
 
   double total_score = 0.0;
 

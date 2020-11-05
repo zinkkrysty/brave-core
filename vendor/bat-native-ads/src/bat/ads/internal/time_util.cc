@@ -48,14 +48,14 @@ std::string FriendlyDateAndTime(
 }
 
 std::string FriendlyDateAndTime(
-    const uint64_t timestamp_in_seconds,
+    const int64_t timestamp_in_seconds,
     const bool use_sentence_style) {
   const base::Time time = base::Time::FromDoubleT(timestamp_in_seconds);
   return FriendlyDateAndTime(time, use_sentence_style);
 }
 
-uint64_t MigrateTimestampToDoubleT(
-    const uint64_t timestamp_in_seconds) {
+int64_t MigrateTimestampToDoubleT(
+    const int64_t timestamp_in_seconds) {
   if (timestamp_in_seconds < 10000000000) {
     // Already migrated as DoubleT will never reach 10000000000 in our lifetime
     // and legacy timestamps are above 10000000000
@@ -65,13 +65,13 @@ uint64_t MigrateTimestampToDoubleT(
   // Migrate date to DoubleT
   const base::Time now = base::Time::Now();
 
-  const uint64_t now_in_seconds =
-      static_cast<uint64_t>((now - base::Time()).InSeconds());
+  const int64_t now_in_seconds =
+      static_cast<int64_t>((now - base::Time()).InSeconds());
 
-  const uint64_t delta = timestamp_in_seconds - now_in_seconds;
+  const int64_t delta = timestamp_in_seconds - now_in_seconds;
 
   const base::Time time = now + base::TimeDelta::FromSeconds(delta);
-  return static_cast<uint64_t>(time.ToDoubleT());
+  return static_cast<int64_t>(time.ToDoubleT());
 }
 
 std::string NowAsString() {

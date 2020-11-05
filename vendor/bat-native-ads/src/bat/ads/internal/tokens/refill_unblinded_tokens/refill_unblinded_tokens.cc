@@ -34,7 +34,7 @@ using challenge_bypass_ristretto::UnblindedToken;
 
 namespace {
 
-const uint64_t kRetryAfterSeconds = 15;
+const int64_t kRetryAfterSeconds = 15;
 
 const int kMinimumUnblindedTokens = 20;
 const int kMaximumUnblindedTokens = 50;

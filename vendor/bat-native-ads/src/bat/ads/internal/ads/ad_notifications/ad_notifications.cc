@@ -189,7 +189,7 @@ void AdNotifications::RemoveAllAfterReboot() {
     const AdEventInfo ad_event = ad_events.front();
 
     const base::Time boot_time = base::Time::Now() - base::SysInfo::Uptime();
-    const int64_t boot_timestamp = boot_time.ToDoubleT();
+    const int64_t boot_timestamp = static_cast<int64_t>(boot_time.ToDoubleT());
 
     if (ad_event.timestamp <= boot_timestamp) {
       ads_->get_ad_notifications()->RemoveAll(false);

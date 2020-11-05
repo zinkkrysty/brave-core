@@ -234,8 +234,8 @@ class AdsImpl
   AdsHistoryInfo GetAdsHistory(
       const AdsHistoryInfo::FilterType filter_type,
       const AdsHistoryInfo::SortType sort_type,
-      const uint64_t from_timestamp,
-      const uint64_t to_timestamp) override;
+      const int64_t from_timestamp,
+      const int64_t to_timestamp) override;
 
   void GetTransactionHistory(
       GetTransactionHistoryCallback callback) override;

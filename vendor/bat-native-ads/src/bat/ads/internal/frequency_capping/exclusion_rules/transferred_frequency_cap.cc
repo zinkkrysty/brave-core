@@ -51,10 +51,9 @@ std::string TransferredFrequencyCap::get_last_message() const {
 
 bool TransferredFrequencyCap::DoesRespectCap(
     const AdEventList& ad_events) {
-  const std::deque<uint64_t> history =
-      GetTimestampHistoryForAdEvents(ad_events);
+  const std::deque<int64_t> history = GetTimestampHistoryForAdEvents(ad_events);
 
-  const uint64_t time_constraint =
+  const int64_t time_constraint =
       2 * (base::Time::kSecondsPerHour * base::Time::kHoursPerDay);
 
   return DoesHistoryRespectCapForRollingTimeConstraint(

@@ -289,8 +289,8 @@ void AdsImpl::ReconcileAdRewards() {
 AdsHistoryInfo AdsImpl::GetAdsHistory(
     const AdsHistoryInfo::FilterType filter_type,
     const AdsHistoryInfo::SortType sort_type,
-    const uint64_t from_timestamp,
-    const uint64_t to_timestamp) {
+    const int64_t from_timestamp,
+    const int64_t to_timestamp) {
   return ads_history_->Get(filter_type, sort_type,
       from_timestamp, to_timestamp);
 }

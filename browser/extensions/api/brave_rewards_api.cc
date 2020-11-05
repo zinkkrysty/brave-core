@@ -1079,7 +1079,7 @@ BraveRewardsGetAdsEstimatedEarningsFunction::Run() {
 void BraveRewardsGetAdsEstimatedEarningsFunction::OnAdsEstimatedEarnings(
     const bool success,
     const double estimated_pending_rewards,
-    const uint64_t next_payment_date_in_seconds,
+    const int64_t next_payment_date_in_seconds,
     const uint64_t ad_notifications_received_this_month) {
   Respond(OneArgument(
       std::make_unique<base::Value>(estimated_pending_rewards)));

@@ -9,9 +9,9 @@
 
 namespace ads {
 
-std::deque<uint64_t> GetTimestampHistoryForAdEvents(
+std::deque<int64_t> GetTimestampHistoryForAdEvents(
     const AdEventList& ad_events) {
-  std::deque<uint64_t> history;
+  std::deque<int64_t> history;
 
   for (const auto& ad_event : ad_events) {
     history.push_back(ad_event.timestamp);
@@ -21,13 +21,13 @@ std::deque<uint64_t> GetTimestampHistoryForAdEvents(
 }
 
 bool DoesHistoryRespectCapForRollingTimeConstraint(
-    const std::deque<uint64_t> history,
-    const uint64_t time_constraint_in_seconds,
+    const std::deque<int64_t> history,
+    const int64_t time_constraint_in_seconds,
     const uint64_t cap) {
   uint64_t count = 0;
 
-  const uint64_t now_in_seconds =
-      static_cast<uint64_t>(base::Time::Now().ToDoubleT());
+  const int64_t now_in_seconds =
+      static_cast<int64_t>(base::Time::Now().ToDoubleT());
 
   for (const auto& timestamp_in_seconds : history) {
     if (now_in_seconds - timestamp_in_seconds < time_constraint_in_seconds) {
@@ -43,12 +43,12 @@ bool DoesHistoryRespectCapForRollingTimeConstraint(
 }
 
 uint64_t OccurrencesForRollingTimeConstraint(
-    const std::deque<uint64_t> history,
-    const uint64_t time_constraint_in_seconds) {
+    const std::deque<int64_t> history,
+    const int64_t time_constraint_in_seconds) {
   uint64_t count = 0;
 
-  const uint64_t now_in_seconds =
-      static_cast<uint64_t>(base::Time::Now().ToDoubleT());
+  const int64_t now_in_seconds =
+      static_cast<int64_t>(base::Time::Now().ToDoubleT());
 
   for (const auto& timestamp_in_seconds : history) {
     if (now_in_seconds - timestamp_in_seconds < time_constraint_in_seconds) {

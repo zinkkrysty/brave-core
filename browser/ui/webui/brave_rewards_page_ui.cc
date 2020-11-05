@@ -132,7 +132,7 @@ class RewardsDOMHandler : public WebUIMessageHandler,
   void OnGetTransactionHistory(
       const bool success,
       const double estimated_pending_rewards,
-      const uint64_t next_payment_date_in_seconds,
+      const int64_t next_payment_date_in_seconds,
       const uint64_t ad_notifications_received_this_month);
 
   void OnGetRecurringTips(ledger::type::PublisherInfoList list);
@@ -1367,7 +1367,7 @@ void RewardsDOMHandler::GetTransactionHistory(
 void RewardsDOMHandler::OnGetTransactionHistory(
     const bool success,
     const double estimated_pending_rewards,
-    const uint64_t next_payment_date_in_seconds,
+    const int64_t next_payment_date_in_seconds,
     const uint64_t ad_notifications_received_this_month) {
   if (!success) {
     return;

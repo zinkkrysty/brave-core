@@ -21,8 +21,8 @@ class AdsHistoryDateRangeFilter {
 
   std::deque<AdHistoryInfo> Apply(
       const std::deque<AdHistoryInfo>& history,
-      const uint64_t from_timestamp,
-      const uint64_t to_timestamp) const;
+      const int64_t from_timestamp,
+      const int64_t to_timestamp) const;
 };
 
 }  // namespace ads

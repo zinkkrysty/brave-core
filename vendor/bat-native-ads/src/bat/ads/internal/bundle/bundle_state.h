@@ -25,7 +25,7 @@ struct BundleState {
 
   std::string catalog_id;
   uint64_t catalog_version = 0;
-  uint64_t catalog_ping = 0;
+  int64_t catalog_ping = 0;
   base::Time catalog_last_updated;
   CreativeAdNotificationList creative_ad_notifications;
   CreativeNewTabPageAdList creative_new_tab_page_ads;

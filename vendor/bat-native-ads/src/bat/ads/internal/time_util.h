@@ -23,11 +23,11 @@ std::string FriendlyDateAndTime(
     const bool use_sentence_style = true);
 
 std::string FriendlyDateAndTime(
-    const uint64_t timestamp_in_seconds,
+    const int64_t timestamp_in_seconds,
     const bool use_sentence_style = true);
 
-uint64_t MigrateTimestampToDoubleT(
-    const uint64_t timestamp_in_seconds);
+int64_t MigrateTimestampToDoubleT(
+    const int64_t timestamp_in_seconds);
 
 std::string NowAsString();
 

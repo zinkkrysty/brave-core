@@ -134,8 +134,8 @@ class AdsServiceImpl : public AdsService,
   void ReconcileAdRewards() override;
 
   void GetAdsHistory(
-      const uint64_t from_timestamp,
-      const uint64_t to_timestamp,
+      const int64_t from_timestamp,
+      const int64_t to_timestamp,
       OnGetAdsHistoryCallback callback) override;
 
   void GetTransactionHistory(
@@ -335,8 +335,8 @@ class AdsServiceImpl : public AdsService,
   void DisableAdsForUnsupportedCountryCodes(
       const std::string& country_code,
       const std::vector<std::string>& country_codes);
-  uint64_t MigrateTimestampToDoubleT(
-      const uint64_t timestamp_in_seconds) const;
+  int64_t MigrateTimestampToDoubleT(
+      const int64_t timestamp_in_seconds) const;
 
   void MaybeShowMyFirstAdNotification();
   bool ShouldShowMyFirstAdNotification() const;

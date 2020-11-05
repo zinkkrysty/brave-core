@@ -28,11 +28,11 @@ using std::placeholders::_1;
 
 namespace {
 
-const uint64_t kRetryAfterSeconds = 1 * base::Time::kSecondsPerMinute;
+const int64_t kRetryAfterSeconds = 1 * base::Time::kSecondsPerMinute;
 
-const uint64_t kNextTokenRedemptionAfterSeconds =
+const int64_t kNextTokenRedemptionAfterSeconds =
     24 * base::Time::kSecondsPerHour;
-const uint64_t kDebugNextTokenRedemptionAfterSeconds =
+const int64_t kDebugNextTokenRedemptionAfterSeconds =
     25 * base::Time::kSecondsPerMinute;
 
 }  // namespace
@@ -200,9 +200,7 @@ base::TimeDelta RedeemUnblindedPaymentTokens::CalculateTokenRedemptionDelay() {
 }
 
 base::Time RedeemUnblindedPaymentTokens::CalculateNextTokenRedemptionDate() {
-  const base::Time now = base::Time::Now();
-
-  uint64_t delay;
+  int64_t delay;
 
   if (!_is_debug) {
     delay = kNextTokenRedemptionAfterSeconds;
@@ -210,9 +208,9 @@ base::Time RedeemUnblindedPaymentTokens::CalculateNextTokenRedemptionDate() {
     delay = kDebugNextTokenRedemptionAfterSeconds;
   }
 
-  const uint64_t rand_delay = brave_base::random::Geometric(delay);
+  const int64_t rand_delay = brave_base::random::Geometric(delay);
 
-  return now + base::TimeDelta::FromSeconds(rand_delay);
+  return base::Time::Now() + base::TimeDelta::FromSeconds(rand_delay);
 }
 
 }  // namespace ads

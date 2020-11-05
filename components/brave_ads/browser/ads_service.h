@@ -51,7 +51,7 @@ using OnToggleFlagAdCallback =
     base::OnceCallback<void(const std::string&, bool)>;
 
 using GetTransactionHistoryCallback = base::OnceCallback<void(
-    const bool, const double, const uint64_t, const uint64_t)>;
+    const bool, const double, const int64_t, const uint64_t)>;
 
 class AdsService : public KeyedService {
  public:
@@ -121,8 +121,8 @@ class AdsService : public KeyedService {
   virtual void ReconcileAdRewards() = 0;
 
   virtual void GetAdsHistory(
-      const uint64_t from_timestamp,
-      const uint64_t to_timestamp,
+      const int64_t from_timestamp,
+      const int64_t to_timestamp,
       OnGetAdsHistoryCallback callback) = 0;
 
   virtual void GetTransactionHistory(

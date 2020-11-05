@@ -345,7 +345,7 @@ void Client::UpdateSeenAdNotification(
   Save();
 }
 
-const std::map<std::string, uint64_t>& Client::GetSeenAdNotifications() {
+const std::map<std::string, int64_t>& Client::GetSeenAdNotifications() {
   return client_->seen_ad_notifications;
 }
 
@@ -371,7 +371,7 @@ void Client::UpdateSeenAdvertiser(
   Save();
 }
 
-const std::map<std::string, uint64_t>& Client::GetSeenAdvertisers() {
+const std::map<std::string, int64_t>& Client::GetSeenAdvertisers() {
   return client_->seen_advertisers;
 }
 
@@ -393,7 +393,7 @@ void Client::ResetSeenAdvertisers(
 void Client::SetNextAdServingInterval(
     const base::Time& next_check_serve_ad_date) {
   client_->next_ad_serving_interval_timestamp_
-      = static_cast<uint64_t>(next_check_serve_ad_date.ToDoubleT());
+      = static_cast<int64_t>(next_check_serve_ad_date.ToDoubleT());
 
   Save();
 }

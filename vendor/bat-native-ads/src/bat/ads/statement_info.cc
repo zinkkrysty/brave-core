@@ -80,7 +80,7 @@ double StatementInfo::GetEstimatedPendingRewardsFromDictionary(
   return dictionary->FindDoubleKey("estimated_pending_rewards").value_or(0.0);
 }
 
-uint64_t StatementInfo::GetNextPaymentDateInSecondsFromDictionary(
+int64_t StatementInfo::GetNextPaymentDateInSecondsFromDictionary(
     base::DictionaryValue* dictionary) const {
   DCHECK(dictionary);
 
@@ -90,12 +90,12 @@ uint64_t StatementInfo::GetNextPaymentDateInSecondsFromDictionary(
     return 0;
   }
 
-  uint64_t value_as_uint64 = 0;
-  if (!base::StringToUint64(*value, &value_as_uint64)) {
+  int64_t timestamp = 0;
+  if (!base::StringToInt64(*value, &timestamp)) {
     return 0;
   }
 
-  return value_as_uint64;
+  return timestamp;
 }
 
 uint64_t StatementInfo::GetAdNotificationsReceivedThisMonthFromDictionary(

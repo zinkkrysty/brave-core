@@ -34,9 +34,9 @@ struct ClientInfo {
 
   AdPreferencesInfo ad_preferences;
   std::deque<AdHistoryInfo> ads_shown_history;
-  std::map<std::string, uint64_t> seen_ad_notifications;
-  std::map<std::string, uint64_t> seen_advertisers;
-  uint64_t next_ad_serving_interval_timestamp_ = 0;
+  std::map<std::string, int64_t> seen_ad_notifications;
+  std::map<std::string, int64_t> seen_advertisers;
+  int64_t next_ad_serving_interval_timestamp_ = 0;
   ad_targeting::contextual::PageProbabilitiesList page_probabilities_history;
   std::string version_code;
   PurchaseIntentSignalSegmentHistoryMap purchase_intent_signal_history;

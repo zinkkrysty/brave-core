@@ -34,7 +34,7 @@ class AdRewards {
       const WalletInfo& wallet);
 
   double GetEstimatedPendingRewards() const;
-  uint64_t GetNextPaymentDateInSeconds() const;
+  int64_t GetNextPaymentDateInSeconds() const;
   uint64_t GetAdNotificationsReceivedThisMonth() const;
 
   double CalculateEstimatedPendingRewardsForTransactions(

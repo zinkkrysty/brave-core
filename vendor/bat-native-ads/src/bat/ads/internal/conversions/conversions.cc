@@ -276,10 +276,10 @@ void Conversions::AddItemToQueue(
 
   ConversionQueueItemInfo queue_item;
 
-  const uint64_t rand_delay = brave_base::random::Geometric(
+  const int64_t rand_delay = brave_base::random::Geometric(
       _is_debug ? kDebugConversionFrequency : kConversionFrequency);
 
-  const uint64_t now = static_cast<uint64_t>(base::Time::Now().ToDoubleT());
+  const int64_t now = static_cast<int64_t>(base::Time::Now().ToDoubleT());
 
   queue_item.timestamp_in_seconds = now + rand_delay;
   queue_item.creative_instance_id = ad_event.creative_instance_id;
@@ -360,13 +360,13 @@ void Conversions::StartTimer(
 
   const base::Time now = base::Time::Now();
   const base::Time timestamp =
-    base::Time::FromDoubleT(queue_item.timestamp_in_seconds);
+      base::Time::FromDoubleT(queue_item.timestamp_in_seconds);
 
   base::TimeDelta delay;
   if (now < timestamp) {
     delay = timestamp - now;
   } else {
-    const uint64_t rand_delay = brave_base::random::Geometric(
+    const int64_t rand_delay = brave_base::random::Geometric(
         kExpiredConversionFrequency);
     delay = base::TimeDelta::FromSeconds(rand_delay);
   }
@@ -550,7 +550,7 @@ bool Conversions::GetFromDictionary(
   if (!timestamp) {
     return false;
   }
-  if (!base::StringToUint64(*timestamp, &queue_item.timestamp_in_seconds)) {
+  if (!base::StringToInt64(*timestamp, &queue_item.timestamp_in_seconds)) {
     return false;
   }
 

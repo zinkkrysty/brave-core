@@ -48,7 +48,7 @@ Result AdHistoryInfo::FromJson(
 
   if (document.HasMember("timestamp_in_seconds")) {
     auto migrated_timestamp_in_seconds =
-        MigrateTimestampToDoubleT(document["timestamp_in_seconds"].GetUint64());
+        MigrateTimestampToDoubleT(document["timestamp_in_seconds"].GetInt64());
     timestamp_in_seconds = migrated_timestamp_in_seconds;
   }
 

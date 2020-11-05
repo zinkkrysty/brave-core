@@ -31,7 +31,7 @@ struct PurchaseIntentSignalHistoryInfo {
   Result FromJson(
       const std::string& json);
 
-  uint64_t timestamp_in_seconds;
+  int64_t timestamp_in_seconds;
   uint16_t weight = 0;
 };
 

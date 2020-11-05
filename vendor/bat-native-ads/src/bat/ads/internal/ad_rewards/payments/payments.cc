@@ -187,7 +187,8 @@ base::Time Payments::CalculateNextPaymentDate(
   return next_payment_date;
 }
 
-uint64_t Payments::GetTransactionCountForMonth(const base::Time& time) const {
+uint64_t Payments::GetTransactionCountForMonth(
+    const base::Time& time) const {
   const std::string month = GetTransactionMonth(time);
   const PaymentInfo payment = GetPaymentForTransactionMonth(month);
   return payment.transaction_count;

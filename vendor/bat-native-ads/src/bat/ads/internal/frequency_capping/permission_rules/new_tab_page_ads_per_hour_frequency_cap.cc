@@ -45,10 +45,9 @@ std::string NewTabPageAdsPerHourFrequencyCap::get_last_message() const {
 
 bool NewTabPageAdsPerHourFrequencyCap::DoesRespectCap(
     const AdEventList& ad_events) {
-  const std::deque<uint64_t> history =
-      GetTimestampHistoryForAdEvents(ad_events);
+  const std::deque<int64_t> history = GetTimestampHistoryForAdEvents(ad_events);
 
-  const uint64_t time_constraint = base::Time::kSecondsPerHour;
+  const int64_t time_constraint = base::Time::kSecondsPerHour;
 
   return DoesHistoryRespectCapForRollingTimeConstraint(
       history, time_constraint, kNewTabPageAdsPerHourFrequencyCap);

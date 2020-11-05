@@ -19,7 +19,7 @@ struct ConversionQueueItemInfo {
       const ConversionQueueItemInfo& info);
   ~ConversionQueueItemInfo();
 
-  uint64_t timestamp_in_seconds = 0;
+  int64_t timestamp_in_seconds = 0;
   std::string creative_instance_id;
   std::string creative_set_id;
 

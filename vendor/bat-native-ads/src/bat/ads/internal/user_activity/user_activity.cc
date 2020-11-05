@@ -24,8 +24,7 @@ void UserActivity::RecordActivityForType(
     history_.insert({type, {}});
   }
 
-  const uint64_t timestamp =
-      static_cast<uint64_t>(base::Time::Now().ToDoubleT());
+  const int64_t timestamp = static_cast<int64_t>(base::Time::Now().ToDoubleT());
   history_.at(type).push_front(timestamp);
 
   if (history_.at(type).size() > kMaximumUserActivityEntries) {

@@ -32,7 +32,7 @@ struct ADS_EXPORT AdHistoryInfo {
   Result FromJson(
       const std::string& json);
 
-  uint64_t timestamp_in_seconds = 0;
+  int64_t timestamp_in_seconds = 0;
   AdContentInfo ad_content;
   CategoryContentInfo category_content;
 };

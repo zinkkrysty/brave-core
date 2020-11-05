@@ -28,7 +28,7 @@ class AdServer {
 
   void MaybeFetch();
 
-  uint64_t LastUpdated() const;
+  int64_t LastUpdated() const;
 
  private:
   void Fetch();
@@ -51,7 +51,7 @@ class AdServer {
 
   bool is_processing_ = false;
 
-  uint64_t last_updated_ = 0;
+  int64_t last_updated_ = 0;
 
   AdsImpl* ads_;  // NOT OWNED
 };

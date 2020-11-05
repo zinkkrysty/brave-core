@@ -36,7 +36,7 @@ class Bundle {
 
   std::string GetCatalogId() const;
   uint64_t GetCatalogVersion() const;
-  uint64_t GetCatalogPing() const;
+  int64_t GetCatalogPing() const;
 
   void DeleteCreativeAdNotifications();
   void DeleteCreativeNewTabPageAds();
@@ -92,7 +92,7 @@ class Bundle {
 
   std::string catalog_id_;
   uint64_t catalog_version_ = 0;
-  uint64_t catalog_ping_ = 0;
+  int64_t catalog_ping_ = 0;
   base::Time catalog_last_updated_;
 
   AdsImpl* ads_;  // NOT OWNED

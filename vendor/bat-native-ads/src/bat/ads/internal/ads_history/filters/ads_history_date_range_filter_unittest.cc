@@ -44,8 +44,8 @@ TEST(BatAdsHistoryDateRangeFilterTest,
   // Arrange
   std::deque<AdHistoryInfo> history = GetAdsHistory();
 
-  const uint64_t from_timestamp = 44444444444;
-  const uint64_t to_timestamp = std::numeric_limits<uint64_t>::max();
+  const int64_t from_timestamp = 44444444444;
+  const int64_t to_timestamp = std::numeric_limits<int64_t>::max();
 
   // Act
   AdsHistoryDateRangeFilter filter;
@@ -70,8 +70,8 @@ TEST(BatAdsHistoryDateRangeFilterTest,
   // Arrange
   std::deque<AdHistoryInfo> history = GetAdsHistory();
 
-  const uint64_t from_timestamp = 77777777777;
-  const uint64_t to_timestamp = std::numeric_limits<uint64_t>::max();
+  const int64_t from_timestamp = 77777777777;
+  const int64_t to_timestamp = std::numeric_limits<int64_t>::max();
 
   // Act
   AdsHistoryDateRangeFilter filter;
@@ -88,8 +88,8 @@ TEST(BatAdsHistoryDateRangeFilterTest,
   // Arrange
   std::deque<AdHistoryInfo> history = GetAdsHistory();
 
-  const uint64_t from_timestamp = std::numeric_limits<uint64_t>::min();
-  const uint64_t to_timestamp = 44444444444;
+  const int64_t from_timestamp = std::numeric_limits<int64_t>::min();
+  const int64_t to_timestamp = 44444444444;
 
   // Act
   AdsHistoryDateRangeFilter filter;
@@ -113,8 +113,8 @@ TEST(BatAdsHistoryDateRangeFilterTest,
   // Arrange
   std::deque<AdHistoryInfo> history = GetAdsHistory();
 
-  const uint64_t from_timestamp = std::numeric_limits<uint64_t>::min();
-  const uint64_t to_timestamp = 11111111111;
+  const int64_t from_timestamp = std::numeric_limits<int64_t>::min();
+  const int64_t to_timestamp = 11111111111;
 
   // Act
   AdsHistoryDateRangeFilter filter;
@@ -131,8 +131,8 @@ TEST(BatAdsHistoryDateRangeFilterTest,
   // Arrange
   std::deque<AdHistoryInfo> history = GetAdsHistory();
 
-  const uint64_t from_timestamp = std::numeric_limits<uint64_t>::min();
-  const uint64_t to_timestamp = std::numeric_limits<uint64_t>::max();
+  const int64_t from_timestamp = std::numeric_limits<int64_t>::min();
+  const int64_t to_timestamp = std::numeric_limits<int64_t>::max();
 
   // Act
   AdsHistoryDateRangeFilter filter;
@@ -160,8 +160,8 @@ TEST(BatAdsHistoryDateRangeFilterTest,
   // Arrange
   std::deque<AdHistoryInfo> history = GetAdsHistory();
 
-  const uint64_t from_timestamp = std::numeric_limits<uint64_t>::max();
-  const uint64_t to_timestamp = std::numeric_limits<uint64_t>::min();
+  const int64_t from_timestamp = std::numeric_limits<int64_t>::max();
+  const int64_t to_timestamp = std::numeric_limits<int64_t>::min();
 
   // Act
   AdsHistoryDateRangeFilter filter;
@@ -178,8 +178,8 @@ TEST(BatAdsHistoryDateRangeFilterTest,
   // Arrange
   std::deque<AdHistoryInfo> history;
 
-  const uint64_t from_timestamp = std::numeric_limits<uint64_t>::min();
-  const uint64_t to_timestamp = std::numeric_limits<uint64_t>::max();
+  const int64_t from_timestamp = std::numeric_limits<int64_t>::min();
+  const int64_t to_timestamp = std::numeric_limits<int64_t>::max();
 
   // Act
   AdsHistoryDateRangeFilter filter;

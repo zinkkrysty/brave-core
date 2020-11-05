@@ -47,10 +47,9 @@ std::string AdsPerHourFrequencyCap::get_last_message() const {
 
 bool AdsPerHourFrequencyCap::DoesRespectCap(
     const AdEventList& ad_events) {
-  const std::deque<uint64_t> history =
-      GetTimestampHistoryForAdEvents(ad_events);
+  const std::deque<int64_t> history = GetTimestampHistoryForAdEvents(ad_events);
 
-  const uint64_t time_constraint = base::Time::kSecondsPerHour;
+  const int64_t time_constraint = base::Time::kSecondsPerHour;
 
   const uint64_t cap =
       ads_->get_ads_client()->GetUint64Pref(prefs::kAdsPerHour);

@@ -187,8 +187,8 @@ class ADS_EXPORT Ads {
   virtual AdsHistoryInfo GetAdsHistory(
       const AdsHistoryInfo::FilterType filter_type,
       const AdsHistoryInfo::SortType sort_type,
-      const uint64_t from_timestamp,
-      const uint64_t to_timestamp) = 0;
+      const int64_t from_timestamp,
+      const int64_t to_timestamp) = 0;
 
   // Should be called to get transaction history. The callback takes one
   // argument — |StatementInfo| which contains a list of |TransactionInfo|

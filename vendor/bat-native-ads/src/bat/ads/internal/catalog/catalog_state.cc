@@ -12,7 +12,7 @@
 namespace ads {
 
 namespace {
-const uint64_t kDefaultCatalogPing = 2 * base::Time::kSecondsPerHour;
+const int64_t kDefaultCatalogPing = 2 * base::Time::kSecondsPerHour;
 }  // namespace
 
 CatalogState::CatalogState() = default;
@@ -36,7 +36,7 @@ Result CatalogState::FromJson(
 
   std::string new_catalog_id;
   uint64_t new_version = 0;
-  uint64_t new_ping = kDefaultCatalogPing * base::Time::kMillisecondsPerSecond;
+  int64_t new_ping = kDefaultCatalogPing * base::Time::kMillisecondsPerSecond;
   CatalogCampaignList new_campaigns;
   CatalogIssuersInfo new_catalog_issuers;
 
@@ -47,7 +47,7 @@ Result CatalogState::FromJson(
     return FAILED;
   }
 
-  new_ping = document["ping"].GetUint64();
+  new_ping = document["ping"].GetInt64();
 
   // Campaigns
   for (const auto& campaign : document["campaigns"].GetArray()) {

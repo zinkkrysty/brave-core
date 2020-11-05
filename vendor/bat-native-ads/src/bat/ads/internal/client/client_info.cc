@@ -99,7 +99,7 @@ Result ClientInfo::FromJson(
 
   if (document.HasMember("nextCheckServeAd")) {
     next_ad_serving_interval_timestamp_ =
-        document["nextCheckServeAd"].GetUint64();
+        document["nextCheckServeAd"].GetInt64();
   }
 
   if (document.HasMember("pageProbabilitiesHistory")) {

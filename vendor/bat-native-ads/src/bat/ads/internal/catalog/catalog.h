@@ -35,7 +35,7 @@ class Catalog {
 
   std::string GetId() const;
   uint64_t GetVersion() const;
-  uint64_t GetPing() const;
+  int64_t GetPing() const;
   CatalogCampaignList GetCampaigns() const;
   CatalogIssuersInfo GetIssuers() const;
 

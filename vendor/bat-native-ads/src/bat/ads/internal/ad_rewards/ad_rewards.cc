@@ -25,7 +25,7 @@ namespace ads {
 using std::placeholders::_1;
 
 namespace {
-const uint64_t kRetryAfterSeconds = 1 * base::Time::kSecondsPerMinute;
+const int64_t kRetryAfterSeconds = 1 * base::Time::kSecondsPerMinute;
 }  // namespace
 
 AdRewards::AdRewards(
@@ -74,7 +74,7 @@ double AdRewards::GetEstimatedPendingRewards() const {
   return estimated_pending_rewards;
 }
 
-uint64_t AdRewards::GetNextPaymentDateInSeconds() const {
+int64_t AdRewards::GetNextPaymentDateInSeconds() const {
   const base::Time now = base::Time::Now();
 
   const base::Time next_token_redemption_date =
@@ -83,7 +83,7 @@ uint64_t AdRewards::GetNextPaymentDateInSeconds() const {
   const base::Time next_payment_date =
       payments_->CalculateNextPaymentDate(now, next_token_redemption_date);
 
-  return static_cast<uint64_t>(next_payment_date.ToDoubleT());
+  return static_cast<int64_t>(next_payment_date.ToDoubleT());
 }
 
 uint64_t AdRewards::GetAdNotificationsReceivedThisMonth() const {

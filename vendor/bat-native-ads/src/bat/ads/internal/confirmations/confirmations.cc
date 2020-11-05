@@ -23,7 +23,7 @@ namespace {
 
 const char kConfirmationsFilename[] = "confirmations.json";
 
-const uint64_t kRetryAfterSeconds = 5 * base::Time::kSecondsPerMinute;
+const int64_t kRetryAfterSeconds = 5 * base::Time::kSecondsPerMinute;
 
 }  // namespace
 
