@@ -1,0 +1,16 @@
+diff --git a/chrome/browser/resources/extensions/detail_view.js b/chrome/browser/resources/extensions/detail_view.js
+index 36602faefa99c089f1c34a1eb5ff178e55524b5c..d7f08f9072bf4ead41179676887912f2aca1e896 100644
+--- a/chrome/browser/resources/extensions/detail_view.js
++++ b/chrome/browser/resources/extensions/detail_view.js
+@@ -263,6 +263,11 @@ Polymer({
+     this.delegate.setItemAllowedIncognito(
+         this.data.id, this.$$('#allow-incognito').checked);
+   },
++  /** @private */
++  onAllowTorChange_() {
++    this.delegate.setItemAllowedTor(
++        this.data.id, this.$$('#allow-tor').checked);
++  },
+ 
+   /** @private */
+   onAllowOnFileUrlsChange_() {
