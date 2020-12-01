@@ -10,6 +10,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,11 +63,12 @@ public class BraveAdsNotificationDialog {
         mAdsDialog.setCancelable(false);
 
         window.setAttributes(wlp);
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
 
-        ImageView closeButton = mAdsDialog.findViewById(R.id.brave_ads_custom_notification_close_button);
+        View closeButton = mAdsDialog.findViewById(R.id.brave_ads_custom_notification_close_button);
 
         ((TextView) mAdsDialog.findViewById(R.id.brave_ads_custom_notification_header)).setText(title);
         ((TextView) mAdsDialog.findViewById(R.id.brave_ads_custom_notification_body)).setText(body);
