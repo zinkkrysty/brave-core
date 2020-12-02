@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.view.MotionEvent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.Gravity;
@@ -34,6 +35,11 @@ public class BraveAdsNotificationDialog {
 
     static AlertDialog mAdsDialog;
     static String mNotificationId;
+    static final int MIN_DISTANCE = 80;
+    static float mAlpha = 1;
+    static float mYDown = 0.0f;
+    static float mYUp = 0.0f;
+
 
     public static void displayAdsNotification(Activity activity, final String notificationId,
             final String origin, final String title, final String body) {
@@ -68,21 +74,50 @@ public class BraveAdsNotificationDialog {
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
 
-        View closeButton = mAdsDialog.findViewById(R.id.brave_ads_custom_notification_close_button);
+        window.findViewById(R.id.brave_ads_custom_notification_popup).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                float deltaY;
+                float y;
+                switch(event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    mYDown = event.getY();
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    y = event.getY();
+                    deltaY = mYDown - y;
+                    mAlpha = 1 - (deltaY / MIN_DISTANCE);
+                    if (mAlpha > 1) {
+                       mAlpha = 1;
+                    } else if (mAlpha < 0) {
+                       mAlpha = 0.0f;
+                    }
+                    v.setAlpha(mAlpha);
+                    break;
+                case MotionEvent.ACTION_UP:
+                    mYUp = event.getY();
+                    if (mYDown != 0.0f) {
+                      deltaY = mYDown - mYUp;
+                    } else {
+                      return false;
+                    }
+                    if (deltaY > MIN_DISTANCE) {
+                        mAdsDialog.dismiss();
+                        mAdsDialog = null;
+                        BraveAdsNativeHelper.nativeAdNotificationDismissed(Profile.getLastUsedRegularProfile(), mNotificationId, true);
+                        mNotificationId = null;
+                    }
+                    break;
+                }
+                return true;
+            }
+        });
+
 
         ((TextView) mAdsDialog.findViewById(R.id.brave_ads_custom_notification_header)).setText(title);
         ((TextView) mAdsDialog.findViewById(R.id.brave_ads_custom_notification_body)).setText(body);
 
         mNotificationId = notificationId;
-        closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mAdsDialog.dismiss();
-                mAdsDialog = null;
-                BraveAdsNativeHelper.nativeAdNotificationDismissed(Profile.getLastUsedRegularProfile(), mNotificationId, true);
-                mNotificationId = null;
-            }
-        });
 
         mAdsDialog.findViewById(R.id.brave_ads_custom_notification_popup).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,6 +159,7 @@ public class BraveAdsNotificationDialog {
             if (mNotificationId != null && mNotificationId.equals(notificationId) && mAdsDialog != null) {
                 mAdsDialog.dismiss();
                 BraveAdsNativeHelper.nativeAdNotificationDismissed(Profile.getLastUsedRegularProfile(), mNotificationId, false);
+                mAdsDialog = null;
             }
         } catch (IllegalArgumentException e) {
             mAdsDialog = null;
