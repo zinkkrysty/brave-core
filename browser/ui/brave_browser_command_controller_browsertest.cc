@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
@@ -205,4 +206,21 @@ IN_PROC_BROWSER_TEST_F(BraveBrowserCommandControllerTest,
   EXPECT_FALSE(
       command_controller->IsCommandEnabled(IDC_NEW_OFFTHERECORD_WINDOW_TOR));
 #endif
+}
+
+IN_PROC_BROWSER_TEST_F(BraveBrowserCommandControllerTest,
+                       HonorAddPersonEnabledPref) {
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kBrowserAddPersonEnabled,
+                                               false);
+  auto* command_controller = browser()->command_controller();
+  EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_ADD_NEW_PROFILE));
+}
+
+
+IN_PROC_BROWSER_TEST_F(BraveBrowserCommandControllerTest,
+                       HonorGuestModeEnabledPref) {
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kBrowserGuestModeEnabled,
+                                               false);
+  auto* command_controller = browser()->command_controller();
+  EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_OPEN_GUEST_PROFILE));
 }
