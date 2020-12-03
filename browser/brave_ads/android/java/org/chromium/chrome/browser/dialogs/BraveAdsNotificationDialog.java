@@ -36,7 +36,6 @@ public class BraveAdsNotificationDialog {
     static AlertDialog mAdsDialog;
     static String mNotificationId;
     static final int MIN_DISTANCE = 80;
-    static float mAlpha = 1;
     static float mYDown = 0.0f;
     static float mYUp = 0.0f;
 
@@ -86,13 +85,7 @@ public class BraveAdsNotificationDialog {
                 case MotionEvent.ACTION_MOVE:
                     y = event.getY();
                     deltaY = mYDown - y;
-                    mAlpha = 1 - (deltaY / MIN_DISTANCE);
-                    if (mAlpha > 1) {
-                       mAlpha = 1;
-                    } else if (mAlpha < 0) {
-                       mAlpha = 0.0f;
-                    }
-                    v.setAlpha(mAlpha);
+                    v.animate().translationY(-1 * deltaY);
                     break;
                 case MotionEvent.ACTION_UP:
                     mYUp = event.getY();
@@ -106,6 +99,9 @@ public class BraveAdsNotificationDialog {
                         mAdsDialog = null;
                         BraveAdsNativeHelper.nativeAdNotificationDismissed(Profile.getLastUsedRegularProfile(), mNotificationId, true);
                         mNotificationId = null;
+                    } else {
+                        // Reset back to starting position
+                        v.animate().translationY(0);
                     }
                     break;
                 }
