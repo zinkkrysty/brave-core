@@ -47,7 +47,8 @@ const handleWidgetPrefsChange = (state: NewTab.State, oldState: NewTab.State): N
     'binance': 'showBinance',
     'together': 'showTogether',
     'gemini': 'showGemini',
-    'cryptoDotCom': 'showCryptoDotCom'
+    'cryptoDotCom': 'showCryptoDotCom',
+    'ftxCom': 'showFTX'
   }
 
   for (const val in widgets) {
