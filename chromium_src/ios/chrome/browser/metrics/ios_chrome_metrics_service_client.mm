@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <utility>
 
-#include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
