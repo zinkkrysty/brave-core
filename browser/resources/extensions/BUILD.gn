@@ -47,15 +47,27 @@ generate_grd("build_grd") {
 }
 
 preprocess_grit("preprocess_generated") {
-  deps = [ ":brave_item_list_more_items_module" ]
+  deps = [
+    ":brave_item_list_more_items_module",
+    ":brave_tor_toggle_row_module",
+  ]
   in_folder = target_gen_dir
   out_folder = "$root_gen_dir/chrome/browser/resources/extensions/$preprocess_folder"
   out_manifest = "$root_gen_dir/chrome/browser/resources/extensions/$preprocess_gen_manifest"
-  in_files = [ "brave_item_list_more_items.js" ]
+  in_files = [
+    "brave_item_list_more_items.js",
+    "brave_tor_toggle_row.js",
+  ]
 }
 
 polymer_modulizer("brave_item_list_more_items") {
   js_file = "brave_item_list_more_items.js"
   html_file = "brave_item_list_more_items.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("brave_tor_toggle_row") {
+  js_file = "brave_tor_toggle_row.js"
+  html_file = "brave_tor_toggle_row.html"
   html_type = "v3-ready"
 }

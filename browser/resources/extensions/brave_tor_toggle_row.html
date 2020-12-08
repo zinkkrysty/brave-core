@@ -1,0 +1,23 @@
+<style include="cr-shared-style">
+  extensions-toggle-row {
+    box-sizing: border-box;
+    padding-inline-end: 0;
+    padding-inline-start: 0;
+    --toggle-row-label-horizontal-padding: var(--cr-section-padding);
+    --toggle-row-label-vertical-padding: var(--cr-section-vertical-padding);
+  }
+
+  .section-content {
+    color: var(--cr-secondary-text-color);
+  }
+</style>
+<extensions-toggle-row id="allow-tor"
+                       checked="[[data.torAccess.isActive]]"
+                       class="hr"
+                       hidden="[[!data.torAccess.isEnabled]]"
+                       on-change="onAllowTorChange_">
+  <div>
+    <div>$i18n{itemAllowInTor}</div>
+    <div class="section-content">$i18n{torInfoWarning}</div>
+  </div>
+</extensions-toggle-row>
