@@ -3,6 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "extensions/browser/extension_util.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 
 #define BRAVE_IS_INCOGNITO_ENABLED \
