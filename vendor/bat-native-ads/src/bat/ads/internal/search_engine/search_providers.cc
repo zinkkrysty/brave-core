@@ -5,6 +5,8 @@
 
 #include "bat/ads/internal/search_engine/search_providers.h"
 
+#include <iostream>
+
 #include "net/base/url_util.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
