@@ -59,6 +59,7 @@ class UnitTestBase : public testing::Test {
   std::unique_ptr<AdsClientMock> ads_client_mock_;
   std::unique_ptr<brave_l10n::LocaleHelperMock> locale_helper_mock_;
   std::unique_ptr<PlatformHelperMock> platform_helper_mock_;
+  std::unique_ptr<RPillHelperMock> rpill_helper_mock_;
 
   // Fast-forwards virtual time by |time_delta|, causing all tasks on the main
   // thread and thread pool with a remaining delay less than or equal to

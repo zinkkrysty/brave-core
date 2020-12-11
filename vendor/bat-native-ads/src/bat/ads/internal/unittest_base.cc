@@ -23,12 +23,15 @@ UnitTestBase::UnitTestBase()
       ads_client_mock_(std::make_unique<NiceMock<AdsClientMock>>()),
       locale_helper_mock_(std::make_unique<NiceMock<
           brave_l10n::LocaleHelperMock>>()),
-      platform_helper_mock_(std::make_unique<NiceMock<PlatformHelperMock>>()) {
+      platform_helper_mock_(std::make_unique<NiceMock<PlatformHelperMock>>()),
+      rpill_helper_mock_(std::make_unique<NiceMock<RpillHelperMock>>()) {
   // You can do set-up work for each test here
   brave_l10n::LocaleHelper::GetInstance()->set_for_testing(
       locale_helper_mock_.get());
 
   PlatformHelper::GetInstance()->set_for_testing(platform_helper_mock_.get());
+
+  RpillHelper::GetInstance()->set_for_testing(rpill_helper_mock_.get());
 }
 
 UnitTestBase::~UnitTestBase() {
@@ -117,6 +120,8 @@ void UnitTestBase::Initialize() {
   MockLocaleHelper(locale_helper_mock_, "en-US");
 
   MockPlatformHelper(platform_helper_mock_, PlatformType::kWindows);
+
+  MockRpillHelper(rpill_helper_mock_, /* is_uncertain_future */ false);
 
   MockIsNetworkConnectionAvailable(ads_client_mock_, true);
 

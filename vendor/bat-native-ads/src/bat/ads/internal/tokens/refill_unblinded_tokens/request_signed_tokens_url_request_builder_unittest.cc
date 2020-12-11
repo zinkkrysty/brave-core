@@ -71,7 +71,7 @@ std::vector<Token> GetTokens(
 }  // namespace
 
 TEST(BatAdsRequestSignedTokensUrlRequestBuilderTest,
-    BuildUrl) {
+    BuildUrlForRPill) {
   // Arrange
   WalletInfo wallet;
   wallet.id = "d4ed0af0-bfa9-464b-abd7-67b29d891b8b";
@@ -94,6 +94,41 @@ TEST(BatAdsRequestSignedTokensUrlRequestBuilderTest,
   expected_url_request->headers = {
     R"(digest: SHA-256=Sxq6H/YDThn/m2RSXsTzewSzKfAuGLh09w7m59VBYwU=)",
     R"(signature: keyId="primary",algorithm="ed25519",headers="digest",signature="zImEsG3U2K2jROcUOerWMgzA+LyEoDqqYcr9svpnaEDNOYLzGn67qiz+HIFlqSjzy6Q9RPdU+h3VaFrIspsfCQ==")",
+    R"(content-type: application/json; charset-utf8)"
+    R"(accept: application/json)"
+  };
+  expected_url_request->content = R"({"blindedTokens":["iEK4BXJINfAa0kzgpnnukGUAHvH5303+Y/msR5+u/nY=","eAAv7FNH2twpELsYf3glHLlOhnnlIMovIeEgEmcjgyo=","1G0+8546Y6jCIUXG0cKJq0qpkd6NsnG+4w9oSVW3gH8="]})";
+  expected_url_request->content_type = "application/json";
+  expected_url_request->method = UrlRequestMethod::POST;
+
+  EXPECT_TRUE(url_request.Equals(expected_url_request));
+}
+
+TEST(BatAdsRequestSignedTokensUrlRequestBuilderTest,
+    BuildUrlForBPill) {
+  // Arrange
+  WalletInfo wallet;
+  wallet.id = "d4ed0af0-bfa9-464b-abd7-67b29d891b8b";
+  wallet.secret_key =
+      "e9b1ab4f44d39eb04323411eed0b5a2ceedff01264474f86e29c707a56615650"
+      "33cea0085cfd551faa170c1dd7f6daaa903cdd3138d61ed5ab2845e224d58144";
+
+  const std::vector<Token> tokens = GetTokens(3);
+  const std::vector<BlindedToken> blinded_tokens = privacy::BlindTokens(tokens);
+
+  RequestSignedTokensUrlRequestBuilder
+      url_request_builder(wallet, blinded_tokens);
+
+  // Act
+  UrlRequestPtr url_request = url_request_builder.Build();
+
+  // Assert
+  UrlRequestPtr expected_url_request = UrlRequest::New();
+  expected_url_request->url = R"(https://ads-serve.brave.software/v1/confirmation/token/d4ed0af0-bfa9-464b-abd7-67b29d891b8b)";
+  expected_url_request->headers = {
+    R"(digest: SHA-256=Sxq6H/YDThn/m2RSXsTzewSzKfAuGLh09w7m59VBYwU=)",
+    R"(signature: keyId="primary",algorithm="ed25519",headers="digest",signature="zImEsG3U2K2jROcUOerWMgzA+LyEoDqqYcr9svpnaEDNOYLzGn67qiz+HIFlqSjzy6Q9RPdU+h3VaFrIspsfCQ==")",
+    R"(content-type: application/json)"
     R"(accept: application/json)"
   };
   expected_url_request->content = R"({"blindedTokens":["iEK4BXJINfAa0kzgpnnukGUAHvH5303+Y/msR5+u/nY=","eAAv7FNH2twpELsYf3glHLlOhnnlIMovIeEgEmcjgyo=","1G0+8546Y6jCIUXG0cKJq0qpkd6NsnG+4w9oSVW3gH8="]})";

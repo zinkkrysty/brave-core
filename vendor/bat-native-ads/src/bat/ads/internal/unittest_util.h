@@ -21,6 +21,7 @@
 #include "bat/ads/ads.h"
 #include "bat/ads/database.h"
 #include "bat/ads/internal/platform/platform_helper_mock.h"
+#include "bat/ads/internal/rpill/rpill_helper_mock.h"
 
 namespace ads {
 
@@ -94,6 +95,10 @@ void MockLocaleHelper(
 void MockPlatformHelper(
     const std::unique_ptr<PlatformHelperMock>& mock,
     const PlatformType platform_type);
+
+void MockRpillHelper(
+    const std::unique_ptr<RpillHelperMock>& mock,
+    const bool is_uncertain_future);
 
 void MockIsNetworkConnectionAvailable(
     const std::unique_ptr<AdsClientMock>& mock,

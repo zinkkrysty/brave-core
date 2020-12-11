@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "bat/ads/internal/logging.h"
+#include "bat/ads/internal/rpill/rpill_helper.h"
 #include "bat/ads/internal/security/security_util.h"
 #include "bat/ads/internal/server/confirmations_server_util.h"
 
@@ -53,21 +54,28 @@ std::string RequestSignedTokensUrlRequestBuilder::BuildUrl() const {
 
 std::vector<std::string> RequestSignedTokensUrlRequestBuilder::BuildHeaders(
     const std::string& body) const {
+  std::vector<std::string> headers;
+
   const std::string digest_header_value = BuildDigestHeaderValue(body);
   const std::string digest_header =
       base::StringPrintf("digest: %s", digest_header_value.c_str());
+  headers.push_back(digest_header);
 
   const std::string signature_header_value = BuildSignatureHeaderValue(body);
   const std::string signature_header =
       base::StringPrintf("signature: %s", signature_header_value.c_str());
+  headers.push_back(signature_header);
+
+  std::string content_type_header = "content-type: application/json";
+  if (RPillHelper::GetInstance()->IsUncertainFuture()) {
+    content_type_header += "; charset=utf-8";
+  }
+  headers.push_back(content_type_header);
 
   const std::string accept_header = "accept: application/json";
+  headers.push_back(accept_header);
 
-  return {
-    digest_header,
-    signature_header,
-    accept_header
-  };
+  return headers;
 }
 
 std::string RequestSignedTokensUrlRequestBuilder::BuildDigestHeaderValue(
