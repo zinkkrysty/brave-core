@@ -40,6 +40,15 @@ void BatAdsServiceImpl::SetEnvironment(
   std::move(callback).Run();
 }
 
+void BatAdsServiceImpl::SetSysInfo(
+    ads::SysInfoPtr sys_info,
+    SetSysInfoCallback callback) {
+  DCHECK(!is_initialized_);
+  ads::_sys_info.manufacturer = sys_info->manufacturer;
+  ads::_sys_info.model = sys_info->model;
+  std::move(callback).Run();
+}
+
 void BatAdsServiceImpl::SetBuildChannel(
     ads::BuildChannelPtr build_channel,
     SetBuildChannelCallback callback) {

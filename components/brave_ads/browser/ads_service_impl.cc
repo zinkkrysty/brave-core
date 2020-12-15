@@ -743,7 +743,7 @@ void AdsServiceImpl::MaybeStart(
 }
 
 void AdsServiceImpl::Start() {
-  EnsureBaseDirectoryExists();
+  GetHardwareInfo();
 }
 
 void AdsServiceImpl::Stop() {
@@ -798,6 +798,22 @@ void AdsServiceImpl::OnResetAllState(
   }
 
   VLOG(1) << "Successfully reset ads state";
+}
+
+void AdsServiceImpl::GetHardwareInfo() {
+  base::SysInfo::GetHardwareInfo(base::BindOnce(
+      &AdsServiceImpl::OnGetHardwareInfo, base::Unretained(this)));
+}
+
+void AdsServiceImpl::OnGetHardwareInfo(
+    base::SysInfo::HardwareInfo hardware) {
+  ads::SysInfoPtr sys_info = ads::SysInfo::New();
+  sys_info->manufacturer = hardware.manufacturer;
+  sys_info->model = hardware.model;
+
+  bat_ads_service_->SetSysInfo(std::move(sys_info), base::NullCallback());
+
+  EnsureBaseDirectoryExists();
 }
 
 void AdsServiceImpl::EnsureBaseDirectoryExists() {

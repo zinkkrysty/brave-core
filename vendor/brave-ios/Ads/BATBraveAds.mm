@@ -196,6 +196,21 @@ BATClassAdsBridge(BOOL, isDebug, setDebug, _is_debug)
   ads::_environment = static_cast<ads::Environment>(environment);
 }
 
++ (void)sysInfo:(BATBraveAdsSysInfo *)sysInfo
+{
+  auto sys_info = [[BATBraveAdsSysInfo alloc] init];
+  sys_info.manufacturer = [NSString stringWithUTF8String: ads::_sys_info.manufacturer.c_str()];
+  sys_info.model = [NSString stringWithUTF8String: ads::_sys_info.model.c_str()];
+
+  return build_channel;
+}
+
++ (void)setSysInfo:(BATBraveAdsSysInfo *)sysInfo
+{
+  ads::_sys_info.manufacturer = sysInfo.manufacturer.UTF8String;
+  ads::_sys_info.model = sysInfo.model.UTF8String;
+}
+
 + (BATBraveAdsBuildChannel *)buildChannel
 {
   auto build_channel = [[BATBraveAdsBuildChannel alloc] init];

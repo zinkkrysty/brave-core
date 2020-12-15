@@ -477,6 +477,12 @@ void SetEnvironment(
   _environment = environment;
 }
 
+void SetSysInfo(
+    const SysInfo& sys_info) {
+  _sys_info.manufacturer = sys_info.manufacturer;
+  _sys_info.model = sys_info.model;
+}
+
 void SetBuildChannel(
     const bool is_release,
     const std::string& name) {
@@ -543,6 +549,13 @@ void MockPlatformHelper(
 
   ON_CALL(*mock, GetPlatform())
       .WillByDefault(Return(platform_type));
+}
+
+void MockRPillHelper(
+    const std::unique_ptr<RPillHelperMock>& mock,
+    const bool is_uncertain_future) {
+  ON_CALL(*mock, IsUncertainFuture())
+      .WillByDefault(Return(is_uncertain_future));
 }
 
 void MockIsNetworkConnectionAvailable(

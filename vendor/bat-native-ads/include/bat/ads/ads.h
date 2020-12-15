@@ -36,6 +36,9 @@ using GetStatementCallback =
 // development servers but can be overridden via command-line arguments
 extern Environment _environment;
 
+// |_sys_info| contains the hardware |manufacturer| and |model|
+extern SysInfo _sys_info;
+
 // |_build_channel| indicates the build channel
 extern BuildChannel _build_channel;
 

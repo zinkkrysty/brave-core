@@ -21,6 +21,7 @@
 #include "bat/ads/ads.h"
 #include "bat/ads/database.h"
 #include "bat/ads/internal/platform/platform_helper_mock.h"
+#include "bat/ads/internal/rpill/rpill_helper_mock.h"
 
 namespace ads {
 
@@ -83,6 +84,9 @@ base::FilePath GetResourcesPath();
 void SetEnvironment(
     const Environment environment);
 
+void SetSysInfo(
+    const SysInfo& sys_info);
+
 void SetBuildChannel(
     const bool is_release,
     const std::string& name);
@@ -94,6 +98,10 @@ void MockLocaleHelper(
 void MockPlatformHelper(
     const std::unique_ptr<PlatformHelperMock>& mock,
     const PlatformType platform_type);
+
+void MockRPillHelper(
+    const std::unique_ptr<RPillHelperMock>& mock,
+    const bool is_uncertain_future);
 
 void MockIsNetworkConnectionAvailable(
     const std::unique_ptr<AdsClientMock>& mock,

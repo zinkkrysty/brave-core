@@ -13,6 +13,8 @@ namespace ads {
 
 Environment _environment = Environment::DEVELOPMENT;
 
+SysInfo _sys_info;
+
 BuildChannel _build_channel;
 
 bool _is_debug = false;
