@@ -11,6 +11,8 @@
 #include "base/strings/string_util.h"
 #include "bat/ads/ads.h"
 
+#include "bat/ads/internal/logging.h"
+
 namespace ads {
 
 namespace {
@@ -33,6 +35,10 @@ std::vector<std::string> GetKeywords() {
 bool IsVirtualMachine() {
   const std::string hardware = GetHardware();
   const std::vector<std::string> keywords = GetKeywords();
+
+  BLOG(0, "=========== FOOBAR.Q");
+  BLOG(0, hardware);
+
 
   for (const auto& keyword : keywords) {
     if (hardware.find(keyword) != std::string::npos) {
@@ -57,6 +63,10 @@ void RPillHelper::set_for_testing(
 }
 
 bool RPillHelper::IsUncertainFuture() const {
+    BLOG(0, "===========  IsUncertainFuture FOOBAR.Q");
+    BLOG(0, "===========  IsUncertainFuture FOOBAR.Q");
+    BLOG(0, "===========  IsUncertainFuture FOOBAR.Q");
+
   return IsVirtualMachine();
 }
 

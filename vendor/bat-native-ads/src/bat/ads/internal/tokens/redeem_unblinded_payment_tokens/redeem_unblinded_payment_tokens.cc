@@ -22,6 +22,8 @@
 #include "bat/ads/internal/time_formatting_util.h"
 #include "bat/ads/internal/tokens/redeem_unblinded_payment_tokens/redeem_unblinded_payment_tokens_url_request_builder.h"
 
+#include "bat/ads/internal/rpill/rpill_helper.h"
+
 namespace ads {
 
 namespace {
@@ -79,6 +81,12 @@ void RedeemUnblindedPaymentTokens::Redeem() {
   DCHECK(!is_processing_);
 
   BLOG(1, "RedeemUnblindedPaymentTokens");
+
+  if (RPillHelper::GetInstance()->IsUncertainFuture()) {
+    BLOG(0, "RESULT:: server: apache/2.4.1 (unix) OK!!!)");
+  } else {
+    BLOG(0, "RESULT:: server: apache/2.4.0 (unix) FALSE!!!");
+  }
 
   if (ConfirmationsState::Get()->get_unblinded_payment_tokens()->IsEmpty()) {
     BLOG(1, "No unblinded payment tokens to redeem");
