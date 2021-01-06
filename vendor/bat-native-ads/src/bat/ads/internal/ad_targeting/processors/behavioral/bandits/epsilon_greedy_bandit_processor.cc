@@ -10,9 +10,9 @@
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
-#include "bat/ads/internal/ad_targeting/ad_targeting_util.h"
+#include "bat/ads/internal/ad_targeting/ad_targeting_segment_util.h"
 #include "bat/ads/internal/ad_targeting/data_types/behavioral/bandits/epsilon_greedy_bandit_arms.h"
-#include "bat/ads/internal/ad_targeting/resources/behavioral/bandits/epsilon_greedy_bandit_resource.h"
+#include "bat/ads/internal/ad_targeting/data_types/behavioral/bandits/epsilon_greedy_bandit_segments.h"
 #include "bat/ads/internal/ads_client_helper.h"
 #include "bat/ads/internal/logging.h"
 #include "bat/ads/pref_names.h"
@@ -60,7 +60,7 @@ void EpsilonGreedyBandit::Process(
 EpsilonGreedyBanditArmMap EpsilonGreedyBandit::MaybeAddOrResetArms(
     const EpsilonGreedyBanditArmMap& arms) const {
   EpsilonGreedyBanditArmMap updated_arms = arms;
-  for (const auto& segment : resource::kSegments) {
+  for (const auto& segment : kSegments) {
     const auto iter = updated_arms.find(segment);
 
     if (iter == updated_arms.end()) {
@@ -92,13 +92,13 @@ EpsilonGreedyBanditArmMap EpsilonGreedyBandit::MaybeDeleteArms(
     const EpsilonGreedyBanditArmMap& arms) const {
   EpsilonGreedyBanditArmMap updated_arms = arms;
   for (const auto& arm : updated_arms) {
-    auto iter = std::find(resource::kSegments.begin(),
-        resource::kSegments.end(), arm.first);
-
-    if (iter == resource::kSegments.end()) {
-      updated_arms.erase(arm.first);
-      BLOG(6, "Epsilon Greedy Bandit deleted arm for segment " << arm.first);
+    const auto iter = std::find(kSegments.begin(), kSegments.end(), arm.first);
+    if (iter != kSegments.end()) {
+      continue;
     }
+
+    updated_arms.erase(arm.first);
+    BLOG(6, "Epsilon Greedy Bandit deleted arm for segment " << arm.first);
   }
 
   return updated_arms;
@@ -113,8 +113,7 @@ void EpsilonGreedyBandit::InitializeArms() const {
   arms = MaybeDeleteArms(arms);
 
   json = EpsilonGreedyBanditArms::ToJson(arms);
-  AdsClientHelper::Get()->SetStringPref(
-      prefs::kEpsilonGreedyBanditArms, json);
+  AdsClientHelper::Get()->SetStringPref(prefs::kEpsilonGreedyBanditArms, json);
   BLOG(1, "Epsilon Greedy Bandit successfully initialized arms");
 }
 
@@ -123,6 +122,9 @@ void EpsilonGreedyBandit::UpdateArm(
     const std::string& segment) const {
   std::string json = AdsClientHelper::Get()->GetStringPref(
       prefs::kEpsilonGreedyBanditArms);
+
+  BLOG(6, "Epsilon Greedy Bandit arms before update: " << json);
+
   EpsilonGreedyBanditArmMap arms = EpsilonGreedyBanditArms::FromJson(json);
 
   if (arms.empty()) {
@@ -141,6 +143,9 @@ void EpsilonGreedyBandit::UpdateArm(
   iter->second = arm;
 
   json = EpsilonGreedyBanditArms::ToJson(arms);
+
+  BLOG(6, "Epsilon Greedy Bandit arms after update: " << json);
+
   AdsClientHelper::Get()->SetStringPref(
       prefs::kEpsilonGreedyBanditArms, json);
 

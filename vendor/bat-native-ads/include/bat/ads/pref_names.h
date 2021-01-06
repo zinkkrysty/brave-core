@@ -29,6 +29,7 @@ extern const char kCatalogPing[];
 extern const char kCatalogLastUpdated[];
 
 extern const char kEpsilonGreedyBanditArms[];
+extern const char kEpsilonGreedyBanditEligibleSegments[];
 
 }  // namespace prefs
 
