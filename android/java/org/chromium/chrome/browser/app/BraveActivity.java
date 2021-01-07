@@ -88,6 +88,7 @@ import org.chromium.chrome.browser.toolbar.top.BraveToolbarLayout;
 import org.chromium.chrome.browser.util.BraveDbUtil;
 import org.chromium.chrome.browser.util.BraveReferrer;
 import org.chromium.chrome.browser.util.PackageUtils;
+import org.chromium.chrome.browser.vpn.VpnCalloutDialogFragment;
 import org.chromium.chrome.browser.widget.crypto.binance.BinanceAccountBalance;
 import org.chromium.chrome.browser.widget.crypto.binance.BinanceWidgetManager;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -399,6 +400,16 @@ public abstract class BraveActivity<C extends ChromeActivityComponent>
                 && !BravePrefServiceBridge.getInstance().getSafetynetCheckFailed()) {
             mBraveRewardsNativeWorker.StartProcess();
         }
+        if ((SharedPreferencesManager.getInstance().readInt(
+                     BravePreferenceKeys.BRAVE_APP_OPEN_COUNT)
+                            == 1
+                    && !PackageUtils.isFirstInstall(this))
+                || (SharedPreferencesManager.getInstance().readInt(
+                            BravePreferenceKeys.BRAVE_APP_OPEN_COUNT)
+                                == 7
+                        && PackageUtils.isFirstInstall(this))) {
+            showVpnCalloutDialog();
+    }
     }
 
     @Override
@@ -757,6 +768,12 @@ public abstract class BraveActivity<C extends ChromeActivityComponent>
         mDeprecateBAPModalDialogFragment.setCancelable(false);
         mDeprecateBAPModalDialogFragment.show(
                 getSupportFragmentManager(), "DeprecateBAPModalDialogFragment");
+    }
+
+    private void showVpnCalloutDialog() {
+        VpnCalloutDialogFragment mVpnCalloutDialogFragment = new VpnCalloutDialogFragment();
+        mVpnCalloutDialogFragment.setCancelable(false);
+        mVpnCalloutDialogFragment.show(getSupportFragmentManager(), "VpnCalloutDialogFragment");
     }
 
     private native void nativeRestartStatsUpdater();

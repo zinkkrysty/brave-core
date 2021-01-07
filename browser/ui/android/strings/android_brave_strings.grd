@@ -1657,6 +1657,27 @@ until they verify, or until 90 days have passed.
       <message name="IDS_REWARDS_MODAL_TEXT" desc="Rewards modal text">
         The tipping feature will be unavailable from March 13th until April 13th. All BAPs will be discontinued by April 13th. Please use your BAP by March 13th. Any BAP remaining in your Brave browser after March 13th cannot be held or transferred by you or Brave, and will be lost. A new and improved system awaits!
       </message>
+      <message name="IDS_BRAVE_FIREWALL_VPN" desc="VPN title text">
+        Brave Firewall + VPN
+      </message>
+      <message name="IDS_ENABLE" desc="VPN callout text">
+        Enable
+      </message>
+      <message name="IDS_POWERED_BY" desc="VPN text">
+        Powered by
+      </message>
+      <message name="IDS_VPN_MODAL_TEXT_1" desc="VPN modal text">
+        Block ads &amp; trackers across all apps
+      </message>
+      <message name="IDS_VPN_MODAL_TEXT_2" desc="VPN modal text">
+        Secures all connections
+      </message>
+      <message name="IDS_VPN_MODAL_TEXT_3" desc="VPN modal text">
+        Fast and unlimited up to 100 Mbps
+      </message>
+      <message name="IDS_VPN_MODAL_TEXT_4" desc="VPN modal text">
+        24/7 support
+      </message>
     </messages>
   </release>
 </grit>
