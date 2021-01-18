@@ -287,6 +287,8 @@ source_set("ui") {
     sources += [
       "views/frame/brave_contents_layout_manager.cc",
       "views/frame/brave_contents_layout_manager.h",
+      "views/sidebar/bubble_border_with_arrow.cc",
+      "views/sidebar/bubble_border_with_arrow.h",
       "views/sidebar/sidebar_add_item_bubble_delegate_view.cc",
       "views/sidebar/sidebar_add_item_bubble_delegate_view.h",
       "views/sidebar/sidebar_button_view.cc",

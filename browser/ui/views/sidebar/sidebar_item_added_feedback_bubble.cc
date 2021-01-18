@@ -5,6 +5,7 @@
 
 #include "base/bind.h"
 #include "brave/app/vector_icons/vector_icons.h"
+#include "brave/browser/ui/views/sidebar/bubble_border_with_arrow.h"
 #include "brave/browser/ui/views/sidebar/sidebar_item_added_feedback_bubble.h"
 #include "brave/grit/brave_generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -56,7 +57,7 @@ SidebarItemAddedFeedbackBubble::CreateNonClientFrameView(
   std::unique_ptr<views::BubbleFrameView> frame(
       new views::BubbleFrameView(gfx::Insets(), gfx::Insets(10, 18)));
   std::unique_ptr<views::BubbleBorder> border =
-      std::make_unique<views::BubbleBorder>(arrow(), GetShadow(), color());
+      std::make_unique<BubbleBorderWithArrow>(arrow(), GetShadow(), color());
   constexpr int kFeedbackBubbleRadius = 6;
   border->SetCornerRadius(kFeedbackBubbleRadius);
   frame->SetBubbleBorder(std::move(border));
