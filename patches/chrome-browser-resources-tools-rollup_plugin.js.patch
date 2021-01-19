@@ -1,12 +1,26 @@
 diff --git a/chrome/browser/resources/tools/rollup_plugin.js b/chrome/browser/resources/tools/rollup_plugin.js
-index ca1db0d08aa98e75e18ca5f46e8e23dc09df71d5..ebc3bcf3f288c1c799e9197b8f4dd7fd8d530b2e 100644
+index ca1db0d08aa98e75e18ca5f46e8e23dc09df71d5..228dee40cfcce4aeac70a276373b6a1544980e15 100644
 --- a/chrome/browser/resources/tools/rollup_plugin.js
 +++ b/chrome/browser/resources/tools/rollup_plugin.js
-@@ -81,6 +81,7 @@ export default function plugin(rootPath, hostUrl, excludes, externalPaths) {
+@@ -81,6 +81,21 @@ export default function plugin(rootPath, hostUrl, excludes, externalPaths) {
        if (origin) {
          origin = normalizeSlashes(origin);
        }
-+      const resolvedByBrave = require(path.join('brave', 'ui', 'webui', 'resources', 'tools', 'brave_rollup_overrides')).braveResolveId({rootPath, urlsToPaths, excludes}, source, origin, relativePath, joinPaths, combinePaths); if (resolvedByBrave) { return resolvedByBrave; }
++      // ___BRAVE_START___
++      const brave_rollup_overrides_path = urlsToPaths.get('brave_rollup_overrides');
++      urlsToPaths.delete('brave_rollup_overrides');
++      const srcPath = urlsToPaths.get('root_dir');
++      urlsToPaths.delete('root_dir');
++      const genPath = urlsToPaths.get('root_gen_dir');
++      urlsToPaths.delete('root_gen_dir');
++      const resolvedByBrave =
++        require(brave_rollup_overrides_path).braveResolveId(source, origin, {srcPath, genPath, excludes}, {relativePath, joinPaths, combinePaths});
++      if (resolvedByBrave) {
++        const msg = '\n----------------\nresolvedByBrave: [' + resolvedByBrave + ']\n';
++        process.stderr.write(msg);
++        return resolvedByBrave;
++      }
++      // ___BRAVE_END___
  
        for (const [url, path] of urlsToPaths) {
          const resultPath = getPathForUrl(source, origin, url, path, excludes);

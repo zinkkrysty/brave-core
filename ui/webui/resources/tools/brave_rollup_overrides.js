@@ -1,26 +1,32 @@
 const path = require('path');
 
 module.exports = {
-  braveResolveId: function (params, source, origin, relativePath, joinPaths, combinePaths) {
-    const {srcPath, urlsToPaths, excludes} = params;
+  braveResolveId: function (source, origin, params, funcs) {
+    const {srcPath, genPath, excludes} = params;
+    const {relativePath, joinPaths, combinePaths} = funcs;
+
+    const msg = '\n----------------\n' +
+                'braveResolveId:\n\tsrcPath: [' +
+                srcPath +
+                '],\n\tgenPath: [' +
+                genPath +
+                '],\n\tsource: [' +
+                source +
+                '],\n\torigin: [' +
+                origin +
+                ']\n';
+    process.stderr.write(msg);
+
     const chromeResourcesUrl = 'chrome://resources/';
     const schemeRelativeResourcesUrl = '//resources/';
     const braveResourcesUrl = 'chrome://brave-resources/';
     const braveSchemeRelativeResourcesUrl = '//brave-resources/';
-
-    const resourcesPreprocessedFullPath = urlsToPaths.get(chromeResourcesUrl)
-    if (!resourcesPreprocessedFullPath) {
-      throw 'chromeResourcesUrl mapping is not defined';
-    }
     const resourcesPreprocessedPath = 'ui/webui/resources/preprocessed/';
-    // Calculate genPath
-    const genPath = resourcesPreprocessedFullPath.substring(0,
-      resourcesPreprocessedFullPath.indexOf(resourcesPreprocessedPath));
 
     // sources not referencing `brave-resources`
     if (source.startsWith(chromeResourcesUrl) ||
         source.startsWith(schemeRelativeResourcesUrl) ||
-        (!!origin && origin.startsWith(resourcesPreprocessedFullPath) &&
+        (!!origin && origin.startsWith(resourcesPreprocessedPath) &&
          source.indexOf(braveResourcesUrl) === -1 &&
          source.indexOf(braveSchemeRelativeResourcesUrl) === -1))
     {
