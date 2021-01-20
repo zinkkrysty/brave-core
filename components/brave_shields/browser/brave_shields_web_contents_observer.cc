@@ -340,9 +340,11 @@ void BraveShieldsWebContentsObserver::RegisterProfilePrefs(
 void BraveShieldsWebContentsObserver::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   // when the main frame navigate away
+  content::ReloadType reload_type = navigation_handle->GetReloadType();
   if (navigation_handle->IsInMainFrame() &&
       !navigation_handle->IsSameDocument() &&
-      navigation_handle->GetReloadType() == content::ReloadType::NONE) {
+      (reload_type == content::ReloadType::NONE ||
+       reload_type == content::ReloadType::NORMAL)) {
     allowed_script_origins_.clear();
     blocked_url_paths_.clear();
   }
