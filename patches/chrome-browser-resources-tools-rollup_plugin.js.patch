@@ -1,8 +1,26 @@
 diff --git a/chrome/browser/resources/tools/rollup_plugin.js b/chrome/browser/resources/tools/rollup_plugin.js
-index ca1db0d08aa98e75e18ca5f46e8e23dc09df71d5..228dee40cfcce4aeac70a276373b6a1544980e15 100644
+index ca1db0d08aa98e75e18ca5f46e8e23dc09df71d5..cf6d23e53ec9965f031b9d2662ec2179963bd7e5 100644
 --- a/chrome/browser/resources/tools/rollup_plugin.js
 +++ b/chrome/browser/resources/tools/rollup_plugin.js
-@@ -81,6 +81,21 @@ export default function plugin(rootPath, hostUrl, excludes, externalPaths) {
+@@ -77,13 +77,62 @@ export default function plugin(rootPath, hostUrl, excludes, externalPaths) {
+     name: 'webui-path-resolver-plugin',
+ 
+     resolveId(source, origin) {
++      var fs = require('fs');
++      var logStream = fs.createWriteStream('c:\\max\\tmp\\rollup.log', {flags: 'a'});
++      var msg = '\n----------------\n' +
++                'resolveId:' +
++                '\n\tsource: [' +
++                source +
++                ']\n\torigin: [' +
++                origin +
++                '],\n\trootPath: [' +
++                rootPath +
++                '],\n\thostUrl: [' +
++                hostUrl +
++                '],\n';
++      logStream.write(msg);
+       // Normalize origin paths to use forward slashes.
        if (origin) {
          origin = normalizeSlashes(origin);
        }
@@ -14,13 +32,65 @@ index ca1db0d08aa98e75e18ca5f46e8e23dc09df71d5..228dee40cfcce4aeac70a276373b6a15
 +      const genPath = urlsToPaths.get('root_gen_dir');
 +      urlsToPaths.delete('root_gen_dir');
 +      const resolvedByBrave =
-+        require(brave_rollup_overrides_path).braveResolveId(source, origin, {srcPath, genPath, excludes}, {relativePath, joinPaths, combinePaths});
++        require(brave_rollup_overrides_path).braveResolveId(
++          source, origin, {srcPath, genPath, excludes, rootPath, hostUrl},
++          {relativePath, joinPaths, combinePaths}, logStream);
++      msg = '\n----------------\n' +
++            '<== resolvedByBrave: source: [' + source + '], result: [' + resolvedByBrave + ']';
++      logStream.write(msg);
 +      if (resolvedByBrave) {
-+        const msg = '\n----------------\nresolvedByBrave: [' + resolvedByBrave + ']\n';
-+        process.stderr.write(msg);
 +        return resolvedByBrave;
 +      }
++      /*
++      if (source.startsWith('//brave-resources/')) {
++        const oldSource = source;
++        source = 'chrome://' + source.substring(2);
++        origin = undefined;
++        var msg = '\n----------------\n' +
++                'resolveId: source: [' + oldSource + '] ==> [' + source + ']';
++        logStream.write(msg);
++      } else if (source.startsWith('chrome://brave-resources/')) {
++        origin = undefined;
++      }
++      */
 +      // ___BRAVE_END___
  
        for (const [url, path] of urlsToPaths) {
          const resultPath = getPathForUrl(source, origin, url, path, excludes);
++        if (resultPath) {
++          var msg = '\n----------------\n' +
++                    '<== resolveId: source: [' + source + '], returning [' + resultPath + ']';
++          logStream.write(msg);
++        }
+         if (resultPath.includes('://')) {
+           return {id: resultPath, external: true};
+         } else if (resultPath) {
+@@ -91,6 +140,11 @@ export default function plugin(rootPath, hostUrl, excludes, externalPaths) {
+         }
+       }
+ 
++      // ___BRAVE_START___
++      /*
++      */
++      // ___BRAVE_END___
++
+       // Not in the URL path map -> should be in the root directory.
+       // Check if it should be excluded from the bundle.
+       const fullSourcePath = combinePaths(origin, source);
+@@ -98,10 +152,16 @@ export default function plugin(rootPath, hostUrl, excludes, externalPaths) {
+         const pathFromRoot = relativePath(rootPath, fullSourcePath);
+         if (excludes.includes(pathFromRoot)) {
+           const url = new URL(pathFromRoot, hostUrl);
++          var msg = '\n----------------\n' +
++                          '<== resolveId: source: [' + source + '], returning [' + url.href + ']';
++          logStream.write(msg);
+           return {id: url.href, external: true};
+         }
+       }
+ 
++      var msg = '\n----------------\n' +
++                '<== resolveId: source: [' + source + '], returning [null]';
++      logStream.write(msg);
+       return null;
+     },
+   };

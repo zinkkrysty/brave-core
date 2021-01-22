@@ -1,8 +1,8 @@
 const path = require('path');
 
 module.exports = {
-  braveResolveId: function (source, origin, params, funcs) {
-    const {srcPath, genPath, excludes} = params;
+  braveResolveId: function (source, origin, params, funcs, logStream) {
+    const {srcPath, genPath, excludes, rootPath, hostUrl} = params;
     const {relativePath, joinPaths, combinePaths} = funcs;
 
     const msg = '\n----------------\n' +
@@ -10,18 +10,22 @@ module.exports = {
                 srcPath +
                 '],\n\tgenPath: [' +
                 genPath +
+                '],\n\trootPath: [' +
+                rootPath +
+                '],\n\thostUrl: [' +
+                hostUrl +
                 '],\n\tsource: [' +
                 source +
                 '],\n\torigin: [' +
                 origin +
                 ']\n';
-    process.stderr.write(msg);
+    logStream.write(msg);
 
     const chromeResourcesUrl = 'chrome://resources/';
     const schemeRelativeResourcesUrl = '//resources/';
+    const resourcesPreprocessedPath = 'ui/webui/resources/preprocessed/';
     const braveResourcesUrl = 'chrome://brave-resources/';
     const braveSchemeRelativeResourcesUrl = '//brave-resources/';
-    const resourcesPreprocessedPath = 'ui/webui/resources/preprocessed/';
 
     // sources not referencing `brave-resources`
     if (source.startsWith(chromeResourcesUrl) ||
@@ -51,12 +55,15 @@ module.exports = {
     // avoid excludes and non-generated files
     const fullPath = chromeResourcesUrl + pathFromBraveResources;
     if (excludes.includes(fullPath)) {
+      //throw 'fullPath: [' + fullPath + ']';
       return {id: fullPath, external: true};
     }
     // JS compiled into gen directory
     if (pathFromBraveResources.endsWith('.js')) {
+      //throw 'gen path: [' + joinPaths(braveResourcesGenPath, pathFromBraveResources) + ']';
       return joinPaths(braveResourcesGenPath, pathFromBraveResources);
     }
+    //throw 'src path: [' + joinPaths(braveResourcesSrcPath, pathFromBraveResources) + ']';
     return joinPaths(braveResourcesSrcPath, pathFromBraveResources);
   }
 }
