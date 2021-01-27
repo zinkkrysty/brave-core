@@ -289,7 +289,8 @@ class RewardsServiceImpl : public RewardsService,
 
   std::string GetLegacyWallet() override;
 
-  void GetUpholdWallet(GetUpholdWalletCallback callback) override;
+  void GetExternalWallet(const std::string& wallet_type,
+                         GetExternalWalletCallback callback) override;
 
   void ExternalWalletAuthorization(
       const std::string& wallet_type,
@@ -343,6 +344,8 @@ class RewardsServiceImpl : public RewardsService,
   void SetAdsEnabled(const bool is_enabled) override;
 
   bool IsRewardsEnabled() const override;
+
+  std::string GetExternalWalletType() const override;
 
   // Testing methods
   void SetLedgerEnvForTesting();
@@ -423,7 +426,7 @@ class RewardsServiceImpl : public RewardsService,
   void WalletBackupNotification(
       const uint64_t boot_stamp,
       const ledger::type::Result result,
-      ledger::type::UpholdWalletPtr wallet);
+      ledger::type::ExternalWalletPtr wallet);
 
   void MaybeShowAddFundsNotification(uint64_t reconcile_stamp);
 
@@ -468,10 +471,10 @@ class RewardsServiceImpl : public RewardsService,
                       const ledger::type::Result result,
                       ledger::type::BalancePtr balance);
 
-  void OnGetUpholdWallet(
-      GetUpholdWalletCallback callback,
+  void OnGetExternalWallet(
+      GetExternalWalletCallback callback,
       const ledger::type::Result result,
-      ledger::type::UpholdWalletPtr wallet);
+      ledger::type::ExternalWalletPtr wallet);
 
   void OnExternalWalletAuthorization(
     const std::string& wallet_type,
@@ -804,6 +807,7 @@ class RewardsServiceImpl : public RewardsService,
   PrefChangeRegistrar profile_pref_change_registrar_;
 
   uint32_t next_timer_id_;
+  int32_t country_id_ = 0;
   bool reset_states_;
   bool is_ledger_initialized_ = false;
   bool ledger_for_testing_ = false;

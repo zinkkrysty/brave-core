@@ -20,6 +20,7 @@ export interface Props {
   errorText?: string
   buttonText?: string
   titleText?: string
+  walletType?: string
   onClick?: () => void
 }
 
@@ -39,10 +40,19 @@ export default class ModalRedirect extends React.PureComponent<Props, {}> {
   }
 
   render () {
-    const { id, errorText, titleText } = this.props
+    const { id, errorText, titleText, walletType } = this.props
     let tags = null
     if (errorText && errorText.includes('$1')) {
       tags = splitStringForTag(errorText)
+    }
+
+    // TODO(zenparsing): [BF POST-MVP] Define a |supportURL| for bitFlyer. This
+    // link may not be required for bitFlyer since the only |errorText| message
+    // that is used with |supportURL| is currently Uphold-specific (and has to
+    // do with BAT not being supported for a user's region).
+    let supportURL = ''
+    if (walletType === 'uphold') {
+      supportURL = 'https://uphold.com/en/brave/support'
     }
 
     return (
@@ -58,15 +68,13 @@ export default class ModalRedirect extends React.PureComponent<Props, {}> {
               {
                 tags
                 ? <>
-                    {tags.beforeTag}
-                    <a
-                      href='https://uphold.com/en/brave/support'
-                      target='_blank'
-                      rel='noopener noreferrer'
-                    >
-                      {tags.duringTag}
-                    </a>
-                    {tags.afterTag}
+                  {
+                    supportURL
+                    ? <a href={supportURL} target='_blank' rel='noopener noreferrer'>
+                        {tags.duringTag}
+                      </a>
+                    : tags.duringTag
+                  }
                   </>
                 : errorText
               }

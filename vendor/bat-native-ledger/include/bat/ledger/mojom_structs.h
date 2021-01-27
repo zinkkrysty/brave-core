@@ -87,8 +87,8 @@ using Environment = mojom::Environment;
 
 using ExcludeFilter = mojom::ExcludeFilter;
 
-using UpholdWallet = mojom::UpholdWallet;
-using UpholdWalletPtr = mojom::UpholdWalletPtr;
+using ExternalWallet = mojom::ExternalWallet;
+using ExternalWalletPtr = mojom::ExternalWalletPtr;
 
 using InlineTipsPlatforms = mojom::InlineTipsPlatforms;
 

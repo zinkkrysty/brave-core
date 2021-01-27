@@ -447,6 +447,9 @@ void ContributionSKU::RetryStartStep(
     return;
   }
 
+  // TODO(zenparsing): [BF POST-MVP] Generalize this branch for bitFlyer in
+  // order to support AC with bitFlyer external wallets. Also, investigate this
+  // branch, as it looks broken because |get_callback| is never used.
   if (contribution->processor == type::ContributionProcessor::UPHOLD &&
       contribution->type == type::RewardsType::AUTO_CONTRIBUTE) {
     std::string order_id;
