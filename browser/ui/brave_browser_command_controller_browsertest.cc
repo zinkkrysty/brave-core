@@ -5,6 +5,7 @@
 
 #include <memory>
 
+#include "brave/browser/brave_browser_process_impl.h"
 #include "brave/browser/ui/brave_browser_command_controller.h"
 #include "brave/browser/ui/browser_commands.h"
 #include "brave/components/brave_rewards/browser/buildflags/buildflags.h"
@@ -209,18 +210,26 @@ IN_PROC_BROWSER_TEST_F(BraveBrowserCommandControllerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BraveBrowserCommandControllerTest,
-                       HonorAddPersonEnabledPref) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kBrowserAddPersonEnabled,
+                       PRE_HonorAddPersonEnabledPref) {
+  g_browser_process->local_state()->SetBoolean(prefs::kBrowserAddPersonEnabled,
                                                false);
-  auto* command_controller = browser()->command_controller();
-  EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_ADD_NEW_PROFILE));
 }
 
 
 IN_PROC_BROWSER_TEST_F(BraveBrowserCommandControllerTest,
-                       HonorGuestModeEnabledPref) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kBrowserGuestModeEnabled,
+                       HonorAddPersonEnabledPref) {
+  auto* command_controller = browser()->command_controller();
+  EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_ADD_NEW_PROFILE));
+}
+
+IN_PROC_BROWSER_TEST_F(BraveBrowserCommandControllerTest,
+                       PRE_HonorGuestModeEnabledPref) {
+  g_browser_process->local_state()->SetBoolean(prefs::kBrowserGuestModeEnabled,
                                                false);
+}
+
+IN_PROC_BROWSER_TEST_F(BraveBrowserCommandControllerTest,
+                       HonorGuestModeEnabledPref) {
   auto* command_controller = browser()->command_controller();
   EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_OPEN_GUEST_PROFILE));
 }
