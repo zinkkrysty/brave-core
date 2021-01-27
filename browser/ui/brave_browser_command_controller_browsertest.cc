@@ -5,7 +5,6 @@
 
 #include <memory>
 
-#include "brave/browser/brave_browser_process_impl.h"
 #include "brave/browser/ui/brave_browser_command_controller.h"
 #include "brave/browser/ui/browser_commands.h"
 #include "brave/components/brave_rewards/browser/buildflags/buildflags.h"
@@ -18,7 +17,6 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
@@ -207,29 +205,4 @@ IN_PROC_BROWSER_TEST_F(BraveBrowserCommandControllerTest,
   EXPECT_FALSE(
       command_controller->IsCommandEnabled(IDC_NEW_OFFTHERECORD_WINDOW_TOR));
 #endif
-}
-
-IN_PROC_BROWSER_TEST_F(BraveBrowserCommandControllerTest,
-                       PRE_HonorAddPersonEnabledPref) {
-  g_browser_process->local_state()->SetBoolean(prefs::kBrowserAddPersonEnabled,
-                                               false);
-}
-
-
-IN_PROC_BROWSER_TEST_F(BraveBrowserCommandControllerTest,
-                       HonorAddPersonEnabledPref) {
-  auto* command_controller = browser()->command_controller();
-  EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_ADD_NEW_PROFILE));
-}
-
-IN_PROC_BROWSER_TEST_F(BraveBrowserCommandControllerTest,
-                       PRE_HonorGuestModeEnabledPref) {
-  g_browser_process->local_state()->SetBoolean(prefs::kBrowserGuestModeEnabled,
-                                               false);
-}
-
-IN_PROC_BROWSER_TEST_F(BraveBrowserCommandControllerTest,
-                       HonorGuestModeEnabledPref) {
-  auto* command_controller = browser()->command_controller();
-  EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_OPEN_GUEST_PROFILE));
 }
