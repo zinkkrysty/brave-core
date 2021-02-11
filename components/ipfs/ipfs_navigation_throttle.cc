@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/rand_util.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "brave/common/webui_url_constants.h"
 #include "brave/components/ipfs/ipfs_constants.h"
 #include "brave/components/ipfs/ipfs_interstitial_controller_client.h"
 #include "brave/components/ipfs/ipfs_not_connected_page.h"
@@ -26,6 +27,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "net/base/net_errors.h"
+#include "net/base/escape.h"
 
 namespace {
 
@@ -107,8 +109,11 @@ IpfsNavigationThrottle::WillStartRequest() {
       pref_service_->GetInteger(kIPFSResolveMethod) ==
           static_cast<int>(ipfs::IPFSResolveMethodTypes::IPFS_ASK);
 
-  if (IsIPFSScheme(url) && should_ask)
-    return ShowIPFSOnboardingInterstitial();
+  if (IsIPFSScheme(url) && should_ask) {
+    LoadIPFSOnboarding();
+    return content::NavigationThrottle::CANCEL_AND_IGNORE;
+  }
+
 
   if (!IsLocalGatewayURL(url)) {
     return content::NavigationThrottle::PROCEED;
@@ -173,32 +178,9 @@ void IpfsNavigationThrottle::OnGetConnectedPeers(
     ShowInterstitial();
     return;
   }
-
   // Fallback to the public gateway.
   LoadPublicGatewayURL();
   CancelDeferredNavigation(content::NavigationThrottle::CANCEL_AND_IGNORE);
-}
-
-content::NavigationThrottle::ThrottleCheckResult
-IpfsNavigationThrottle::ShowIPFSOnboardingInterstitial() {
-  content::NavigationHandle* handle = navigation_handle();
-  content::WebContents* web_contents = handle->GetWebContents();
-  const GURL& request_url = handle->GetURL();
-
-  auto controller_client = std::make_unique<IPFSInterstitialControllerClient>(
-      web_contents, request_url, pref_service_, locale_);
-  auto page = std::make_unique<IPFSOnboardingPage>(
-      ipfs_service_, web_contents, handle->GetURL(),
-      std::move(controller_client));
-
-  // Get the page content before giving up ownership of |page|.
-  std::string page_content = page->GetHTMLContents();
-
-  security_interstitials::SecurityInterstitialTabHelper::AssociateBlockingPage(
-      web_contents, handle->GetNavigationId(), std::move(page));
-  return content::NavigationThrottle::ThrottleCheckResult(
-      content::NavigationThrottle::CANCEL, net::ERR_BLOCKED_BY_CLIENT,
-      page_content);
 }
 
 void IpfsNavigationThrottle::ShowInterstitial() {
@@ -220,6 +202,36 @@ void IpfsNavigationThrottle::ShowInterstitial() {
   CancelDeferredNavigation(content::NavigationThrottle::ThrottleCheckResult(
       content::NavigationThrottle::CANCEL, net::ERR_BLOCKED_BY_CLIENT,
       page_content));
+}
+
+void IpfsNavigationThrottle::LoadIPFSOnboarding() {
+  content::WebContents* web_contents = navigation_handle()->GetWebContents();
+  if (!web_contents)
+    return;
+
+  GURL redirect_url(kIPFSOnboardingUrl);
+  
+  const GURL& request_url = navigation_handle()->GetURL();
+  GURL::Replacements replacements;
+  std::string query = "source=" +
+    net::EscapeQueryParamValue(request_url.spec(), true);
+  replacements.SetQueryStr(query);
+  
+  content::OpenURLParams params =
+      content::OpenURLParams::FromNavigationHandle(navigation_handle());
+  params.url = redirect_url.ReplaceComponents(replacements);
+  params.transition = ui::PAGE_TRANSITION_CLIENT_REDIRECT;
+
+  // Post a task to navigate to the public gateway URL, as starting a
+  // navigation within a navigation is an antipattern. Use a helper object
+  // scoped to the WebContents lifetime to scope the navigation task to the
+  // WebContents lifetime.
+  IPFSWebContentsLifetimeHelper::CreateForWebContents(web_contents);
+  IPFSWebContentsLifetimeHelper* helper =
+      IPFSWebContentsLifetimeHelper::FromWebContents(web_contents);
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&IPFSWebContentsLifetimeHelper::NavigateTo,
+                                helper->GetWeakPtr(), std::move(params)));
 }
 
 void IpfsNavigationThrottle::LoadPublicGatewayURL() {

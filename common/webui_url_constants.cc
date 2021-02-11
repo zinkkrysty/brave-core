@@ -8,6 +8,8 @@
 const char kAdblockHost[] = "adblock";
 const char kAdblockJS[] = "brave_adblock.js";
 const char kIPFSHost[] = "ipfs";
+const char kIPFSOnboardingHost[] = "ipfsonboarding";
+const char kIPFSOnboardingUrl[] = "chrome://ipfsonboarding/";
 const char kWebcompatReporterHost[] = "webcompat";
 const char kRewardsPageHost[] = "rewards";
 const char kRewardsInternalsHost[] = "rewards-internals";

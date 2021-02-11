@@ -52,6 +52,7 @@ class IpfsNavigationThrottle : public content::NavigationThrottle {
                            DeferUntilPeersFetched);
 
   void ShowInterstitial();
+  void LoadIPFSOnboarding();
   content::NavigationThrottle::ThrottleCheckResult
   ShowIPFSOnboardingInterstitial();
   void LoadPublicGatewayURL();

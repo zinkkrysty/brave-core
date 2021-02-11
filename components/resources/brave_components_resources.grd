@@ -37,6 +37,7 @@
       <!-- WebUI wallet resources -->
       <!-- This is only used to redirect to the chrome-extension URL for the first run -->
       <include name="IDR_BRAVE_WALLET_HTML" file="../brave_wallet_ui/brave_wallet.html" type="BINDATA" />
+      <include name="IDR_BRAVE_IPFS_ONBOARDING_HTML" file="../ipfs_onboarding_ui/ipfs_onboarding.html" type="BINDATA" />
 
       <!-- Imagery links -->
       <if expr="not is_android">

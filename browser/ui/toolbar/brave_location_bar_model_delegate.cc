@@ -52,6 +52,12 @@ void BraveLocationBarModelDelegate::FormattedStringFromURL(const GURL& url,
         base::UTF8ToUTF16("brave://wallet"));
   }
 #endif
+#if BUILDFLAG(BRAVE_IPFS_ENABLED)
+  if (url.SchemeIs("brave") &&
+      url.host() == kIPFSOnboardingHost) {
+    // replacement here
+  }
+#endif
 }
 
 base::string16
