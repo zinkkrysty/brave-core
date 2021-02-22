@@ -235,7 +235,8 @@ std::unique_ptr<network::SimpleURLLoader> IpfsService::CreateURLLoader(
 
 void IpfsService::GetConnectedPeers(GetConnectedPeersCallback callback) {
   if (!IsDaemonLaunched()) {
-    std::move(callback).Run(false, std::vector<std::string>{});
+    if (callback)
+      std::move(callback).Run(false, std::vector<std::string>{});
     return;
   }
 

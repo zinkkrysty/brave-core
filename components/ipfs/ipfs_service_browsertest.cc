@@ -369,6 +369,8 @@ IN_PROC_BROWSER_TEST_F(IpfsServiceBrowserTest, GetConnectedPeers) {
   ipfs_service()->GetConnectedPeers(
       base::BindOnce(&IpfsServiceBrowserTest::OnGetConnectedPeersSuccess,
                      base::Unretained(this)));
+  ASSERT_TRUE(ipfs_service()->IsDaemonLaunched());
+  ipfs_service()->GetConnectedPeers(base::NullCallback());
   WaitForRequest();
 }
 
