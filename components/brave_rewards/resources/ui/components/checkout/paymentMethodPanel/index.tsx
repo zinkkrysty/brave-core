@@ -22,6 +22,8 @@ interface PaymentMethodPanelProps {
   walletBalanceConverted: string
   walletVerified: boolean
   walletLastUpdated: string
+  publisherName: string
+  publisherVerified: boolean
   onPayWithCreditCard: (cardDetails: CreditCardDetails) => void
   onPayWithWallet: () => void
   onShowAddFunds: () => void
@@ -49,6 +51,8 @@ export function PaymentMethodPanel (props: PaymentMethodPanelProps) {
             hasSufficientFunds={props.hasSufficientFunds}
             rewardsEnabled={props.rewardsEnabled}
             walletVerified={props.walletVerified}
+            publisherName={props.publisherName}
+            publisherVerified={props.publisherVerified}
             onShowAddFunds={props.onShowAddFunds}
             onPayWithWallet={props.onPayWithWallet}
           />

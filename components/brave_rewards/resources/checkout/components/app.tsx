@@ -4,7 +4,7 @@
 
 import * as React from 'react'
 
-import { WalletInfo, OrderInfo, ExchangeRateInfo, Host } from '../lib/interfaces'
+import { WalletInfo, OrderInfo, ExchangeRateInfo, Host, PublisherInfo } from '../lib/interfaces'
 import { DialogFrame } from '../../ui/components/checkout/dialogFrame'
 import { PaymentMethodPanel } from '../../ui/components/checkout/paymentMethodPanel'
 import { PaymentProcessing } from '../../ui/components/checkout/paymentProcessing'
@@ -31,6 +31,7 @@ export function App (props: AppProps) {
   const [rateInfo, setRateInfo] = React.useState<ExchangeRateInfo | null>(null)
   const [walletInfo, setWalletInfo] = React.useState<WalletInfo | null>(null)
   const [orderInfo, setOrderInfo] = React.useState<OrderInfo | null>(null)
+  const [publisherInfo, setPublisherInfo] = React.useState<PublisherInfo | null>(null)
 
   const showTitle =
     flowState !== 'payment-complete'
@@ -43,7 +44,8 @@ export function App (props: AppProps) {
     props.host.setListener({
       onWalletUpdated: setWalletInfo,
       onRatesUpdated: setRateInfo,
-      onOrderUpdated: setOrderInfo
+      onOrderUpdated: setOrderInfo,
+      onPublisherUpdated: setPublisherInfo
     })
   }, [props.host])
 
@@ -63,7 +65,7 @@ export function App (props: AppProps) {
     setFlowState('payment-complete')
   }
 
-  if (!rateInfo || !walletInfo || !orderInfo) {
+  if (!rateInfo || !walletInfo || !orderInfo || !publisherInfo) {
     return (
       <DialogFrame
         showTitle={showTitle}
@@ -74,6 +76,15 @@ export function App (props: AppProps) {
       </DialogFrame>
     )
   }
+
+  console.log("Wallet Info")
+  console.log(walletInfo)
+
+  console.log("Publisher Info")
+  console.log(publisherInfo)
+
+  console.log("Order Info")
+  console.log(orderInfo)
 
   const formatExchange = createExchangeFormatter(
     rateInfo.rate,
@@ -99,6 +110,8 @@ export function App (props: AppProps) {
             walletBalanceConverted={formatExchange(walletInfo.balance)}
             walletLastUpdated={formatLastUpdatedDate(rateInfo.lastUpdated)}
             walletVerified={walletInfo.verified}
+            publisherName={publisherInfo.name}
+            publisherVerified={publisherInfo.verified}
             hasSufficientFunds={amountNeeded <= 0}
             onPayWithCreditCard={() => {}}
             onPayWithWallet={payWithWallet}

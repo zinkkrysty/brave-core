@@ -17,6 +17,9 @@
 #include "brave/components/brave_rewards/resources/grit/brave_rewards_checkout_generated_map.h"
 #include "brave/components/brave_rewards/resources/grit/brave_rewards_resources.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -38,6 +41,7 @@ class CheckoutMessageHandler : public content::WebUIMessageHandler {
 
   // Message handlers
   void OnGetWalletBalance(const base::ListValue* args);
+  void OnGetPublisherDetails(const base::ListValue* args);
   void GetExternalWallet(const base::ListValue* args);
   void GetRewardsParameters(const base::ListValue* args);
 
@@ -50,6 +54,9 @@ class CheckoutMessageHandler : public content::WebUIMessageHandler {
       ledger::type::UpholdWalletPtr wallet);
   void GetRewardsParametersCallback(
       ledger::type::RewardsParametersPtr parameters);
+  void GetPublisherDetailsCallback(
+      const ledger::type::Result result,
+      ledger::type::PublisherInfoPtr info);
 
   RewardsService* rewards_service_ = nullptr;  // NOT OWNED
   base::WeakPtrFactory<CheckoutMessageHandler> weak_factory_;
@@ -59,15 +66,12 @@ class CheckoutMessageHandler : public content::WebUIMessageHandler {
 
 CheckoutMessageHandler::CheckoutMessageHandler() : weak_factory_(this) {}
 
-CheckoutMessageHandler::~CheckoutMessageHandler() {
-  // TODO(zenparsing): Remove observer
-}
+CheckoutMessageHandler::~CheckoutMessageHandler() = default;
 
 RewardsService* CheckoutMessageHandler::GetRewardsService() {
   if (!rewards_service_) {
     Profile* profile = Profile::FromWebUI(web_ui());
     rewards_service_ = RewardsServiceFactory::GetForProfile(profile);
-    // TODO(zenparsing): Add observer
   }
   return rewards_service_;
 }
@@ -87,6 +91,42 @@ void CheckoutMessageHandler::RegisterMessages() {
       "getRewardsParameters",
       base::BindRepeating(&CheckoutMessageHandler::GetRewardsParameters,
                           base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "getPublisherDetails",
+      base::BindRepeating(&CheckoutMessageHandler::OnGetPublisherDetails,
+                          base::Unretained(this)));
+}
+
+void CheckoutMessageHandler::OnGetPublisherDetails(const base::ListValue* args) {
+  if (auto* service = GetRewardsService()) {
+    auto* browser = BrowserList::GetInstance()->GetLastActive();
+    if (!browser) {
+      return;
+    }
+
+    auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();
+
+    service->GetPublisherInfo(
+      web_contents->GetLastCommittedURL().GetOrigin().host(),
+      base::BindOnce(
+          &CheckoutMessageHandler::GetPublisherDetailsCallback,
+          weak_factory_.GetWeakPtr()));
+  }
+}
+
+void CheckoutMessageHandler::GetPublisherDetailsCallback(
+    const ledger::type::Result result,
+    ledger::type::PublisherInfoPtr info) {
+  if (!info) {
+    return;
+  }
+
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetIntKey("status", static_cast<int>(info->status));
+  dict.SetStringKey("name", info->name);
+
+  FireWebUIListener("publisherDetailsUpdated", dict);
 }
 
 void CheckoutMessageHandler::GetRewardsParameters(const base::ListValue* args) {
@@ -122,15 +162,6 @@ void CheckoutMessageHandler::OnGetWalletBalance(const base::ListValue* args) {
   }
 }
 
-void CheckoutMessageHandler::GetExternalWallet(const base::ListValue* args) {
-  if (auto* service = GetRewardsService()) {
-    AllowJavascript();
-    service->GetUpholdWallet(
-        base::BindOnce(&CheckoutMessageHandler::GetUpholdWalletCallback,
-                       weak_factory_.GetWeakPtr()));
-  }
-}
-
 void CheckoutMessageHandler::FetchBalanceCallback(
     const ledger::type::Result result,
     ledger::type::BalancePtr balance) {
@@ -139,22 +170,18 @@ void CheckoutMessageHandler::FetchBalanceCallback(
   }
 
   base::Value data(base::Value::Type::DICTIONARY);
-  data.SetIntKey("status", static_cast<int>(result));
-
-  if (result == ledger::type::Result::LEDGER_OK && balance) {
-    base::Value wallets(base::Value::Type::DICTIONARY);
-    for (const auto& wallet : balance->wallets) {
-      wallets.SetDoubleKey(wallet.first, wallet.second);
-    }
-
-    base::Value balance_value(base::Value::Type::DICTIONARY);
-    balance_value.SetDoubleKey("total", balance->total);
-    balance_value.SetKey("wallets", std::move(wallets));
-
-    data.SetKey("balance", std::move(balance_value));
-  }
+  data.SetDoubleKey("total", balance->total);
 
   FireWebUIListener("walletBalanceUpdated", data);
+}
+
+void CheckoutMessageHandler::GetExternalWallet(const base::ListValue* args) {
+  if (auto* service = GetRewardsService()) {
+    AllowJavascript();
+    service->GetUpholdWallet(
+        base::BindOnce(&CheckoutMessageHandler::GetUpholdWalletCallback,
+                       weak_factory_.GetWeakPtr()));
+  }
 }
 
 void CheckoutMessageHandler::GetUpholdWalletCallback(
@@ -167,17 +194,8 @@ void CheckoutMessageHandler::GetUpholdWalletCallback(
   base::Value data(base::Value::Type::DICTIONARY);
 
   if (wallet) {
-    data.SetStringKey("token", wallet->token);
-    data.SetStringKey("address", wallet->address);
-    data.SetStringKey("verifyUrl", wallet->verify_url);
-    data.SetStringKey("addUrl", wallet->add_url);
-    data.SetStringKey("withdrawUrl", wallet->withdraw_url);
-    data.SetStringKey("userName", wallet->user_name);
-    data.SetStringKey("accountUrl", wallet->account_url);
-    data.SetStringKey("loginUrl", wallet->login_url);
     data.SetIntKey("status", static_cast<int>(wallet->status));
   }
-
   FireWebUIListener("externalWalletUpdated", data);
 }
 

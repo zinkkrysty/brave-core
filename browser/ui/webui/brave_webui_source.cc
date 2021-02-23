@@ -1129,6 +1129,8 @@ void CustomizeWebUIHTMLSource(const std::string &name,
         { "payWithBat", IDS_BRAVE_REWARDS_CHECKOUT_PAY_WITH_BAT_BUTTON_TEXT },
         { "payWithBatTermsOfSale", IDS_BRAVE_REWARDS_CHECKOUT_PAY_WITH_BAT_TOS },
         { "notEnoughFunds", IDS_BRAVE_REWARDS_CHECKOUT_NOT_ENOUGH_FUNDS },
+        { "unverifiedMerchant", IDS_BRAVE_REWARDS_CHECKOUT_UNVERIFIED_MERCHANT },
+        { "unverifiedWallet", IDS_BRAVE_REWARDS_CHECKOUT_UNVERIFIED_WALLET },
         { "useTokenBalance", IDS_BRAVE_REWARDS_CHECKOUT_USE_TOKEN_BALANCE },
         { "updated", IDS_BRAVE_REWARDS_CHECKOUT_UPDATED },
       }

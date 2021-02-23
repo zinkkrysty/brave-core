@@ -79,7 +79,7 @@ void SKUMerchant::OnOrder(
           callback);
 
     ledger_->publisher()->GetServerPublisherInfo(
-        "webtest-pj.herokuapp.com",
+        "together.bsg.brave.software",
         publisher_callback);
     return;
   }

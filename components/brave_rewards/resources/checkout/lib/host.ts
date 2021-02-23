@@ -25,7 +25,6 @@ function parseDialogArgs (): OrderInfo {
 
 interface BalanceDetails {
   total: number
-  rates: Record<string, number>
 }
 
 interface RateDetails {
@@ -33,27 +32,49 @@ interface RateDetails {
   lastUpdated: string
 }
 
-/*interface ExternalWalletDetails {
+interface ExternalWalletDetails {
   status: number
-}*/
+}
+
+interface PublisherDetails {
+  status: number
+  name: string
+}
 
 export function createHost (): Host {
+
   let hostListener: HostListener | null = null
   let balanceDetails: BalanceDetails | null = null
   let rateDetails: RateDetails | null = null
-  // let externalWalletDetails: ExternalWalletDetails | null = null
+  let externalWalletDetails: ExternalWalletDetails | null = null
+  let publisherDetails: PublisherDetails | null = null
+
   let orderInfo = parseDialogArgs()
 
   // TODO(zenparsing): Is this required?
   self.i18nTemplate.process(document, self.loadTimeData)
 
   function sendWalletInfo () {
-    if (hostListener && balanceDetails) {
+    console.log("Balance Details")
+    console.log(balanceDetails)
+
+    console.log("External Wallet Details")
+    console.log(externalWalletDetails)
+
+    if (externalWalletDetails && hostListener && balanceDetails) {
+      console.log("Sending Wallet Info!!")
       const balance = balanceDetails.total
       // TODO(zenparsing): Any other status codes?
-      // const verified = externalWalletDetails.status === 1
-      const verified = 1 === 1
+      const verified = externalWalletDetails.status === 2
       hostListener.onWalletUpdated({ balance, verified })
+    }
+  }
+
+  function sendPublisherInfo () {
+    if (publisherDetails && hostListener) {
+      const name = publisherDetails.name
+      const verified = publisherDetails.status === 2
+      hostListener.onPublisherUpdated({ verified, name })
     }
   }
 
@@ -66,27 +87,32 @@ export function createHost (): Host {
   }
 
   self.cr.addWebUIListener('walletBalanceUpdated', (event: any) => {
-    const { balance } = event
-
-    console.log("Wallet balance updated")
-    console.log(event)
-
-    // TODO(zenparsing): Details can be empty if rewards
-    // are not enabled and the user does not have a wallet.
-    // How do we detect this case without ignoring a real
-    // error on startup? If we don't have any details, then
-    // how do we get the rates which are required for
-    // credit card processing?
-    if (!balance) {
+    if (!event) {
       return
     }
 
-    balanceDetails = balance as BalanceDetails
+    console.log("Wallet Balance Updated")
+    console.log(event)
+
+    balanceDetails = event as BalanceDetails
 
     console.log("Balance Details")
     console.log(balanceDetails)
 
     sendWalletInfo()
+  })
+
+  self.cr.addWebUIListener('publisherDetailsUpdated', (event: any) => {
+    if (!event) {
+      return
+    }
+
+    publisherDetails = event as PublisherDetails
+
+    console.log("Publisher Details")
+    console.log(publisherDetails)
+
+    sendPublisherInfo()
   })
 
   self.cr.addWebUIListener('rewardsParametersUpdated', (event: any) => {
@@ -101,15 +127,15 @@ export function createHost (): Host {
     sendRateInfo()
   })
 
-  /*self.cr.addWebUIListener('externalWalletUpdated', (event: any) => {
+  self.cr.addWebUIListener('externalWalletUpdated', (event: any) => {
     console.log("On external wallet updated")
-    const { details } = event
-    if (!details) {
+    console.log(event)
+    if (!event) {
       return
     }
-    externalWalletDetails = details as ExternalWalletDetails
+    externalWalletDetails = event as ExternalWalletDetails
     sendWalletInfo()
-  })*/
+  })
 
   console.log("Getting wallet balance")
   chrome.send('getWalletBalance')
@@ -135,6 +161,7 @@ export function createHost (): Host {
 
       chrome.send('getWalletBalance')
       chrome.send('getExternalWallet')
+      chrome.send('getPublisherDetails')
 
       queueMicrotask(() => {
         if (hostListener) {

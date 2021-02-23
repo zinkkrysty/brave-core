@@ -27,6 +27,11 @@ export interface HostError {
   code?: number
 }
 
+export interface PublisherInfo {
+  verified: boolean
+  name: string
+}
+
 export interface HostState {
   balanceInfo?: BalanceInfo
   hostError?: HostError
@@ -36,6 +41,7 @@ export interface HostListener {
   onWalletUpdated: (wallet: WalletInfo) => void
   onRatesUpdated: (exchangeInfo: ExchangeRateInfo) => void
   onOrderUpdated: (order: OrderInfo) => void
+  onPublisherUpdated: (publisher: PublisherInfo) => void
 }
 
 export interface Host {
