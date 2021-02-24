@@ -213,7 +213,7 @@ std::string GetAccountUrl() {
   const std::string url = GetUrl();
 
   return base::StringPrintf(
-      "%s/ex/Home",
+      "%s/ex/Home?login=1",
       url.c_str());
 }
 
