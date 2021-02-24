@@ -31,6 +31,33 @@ static base::NoDestructor<std::string> g_observing_script("");
 static base::NoDestructor<std::vector<std::string>> g_vetted_search_engines(
     {"duckduckgo", "qwant", "bing", "startpage", "google", "yandex", "ecosia"});
 
+const char kScriptletInitScript[] =
+    R"((function() {
+          //if (window.content_cosmetic == undefined) {
+          //  window.content_cosmetic = {};
+          // }
+          //if (window.content_cosmetic.scriptlet == undefined) {
+          let text = %s;
+            //window.content_cosmetic.scriptlet = `${text}`;
+          //}
+          let script;
+          try {
+            script = document.createElement('script');
+            const textNode = document.createTextNode(text);
+            script.appendChild(textNode);;
+            (document.head || document.documentElement).appendChild(script);
+          } catch (ex) {
+            /* Unused catch */
+          }
+          if (script) {
+            if (script.parentNode) {
+              script.parentNode.removeChild(script);
+            }
+            script.textContent = '';
+          }
+        })();)";
+
+
 const char kPreInitScript[] =
     R"((function() {
           if (window.content_cosmetic == undefined) {
@@ -222,14 +249,25 @@ bool CosmeticFiltersJSHandler::EnsureConnected() {
 }
 
 void CosmeticFiltersJSHandler::ProcessURL(const GURL& url) {
+  // if (!scripts_.empty()) {
+  //   LOG(ERROR) << "!!!here1";
+  //   blink::WebLocalFrame* web_frame = render_frame_->GetWebFrame();
+  //   web_frame->ExecuteScript(blink::WebString::FromUTF8(scripts_));
+  //   return;
+  // }
   if (!EnsureConnected())
     return;
 
   url_ = url;
+  LOG(ERROR) << "!!!ShouldDoCosmeticFiltering url_ == " << url_.spec();
   cosmetic_filters_resources_->ShouldDoCosmeticFiltering(
       url_.spec(),
       base::BindOnce(&CosmeticFiltersJSHandler::OnShouldDoCosmeticFiltering,
                      base::Unretained(this)));
+  // cosmetic_filters_resources_->UrlCosmeticResources(
+  //     url_.spec(),
+  //     base::BindOnce(&CosmeticFiltersJSHandler::OnUrlCosmeticResources,
+  //                    base::Unretained(this)));
 }
 
 void CosmeticFiltersJSHandler::OnShouldDoCosmeticFiltering(
@@ -239,6 +277,7 @@ void CosmeticFiltersJSHandler::OnShouldDoCosmeticFiltering(
     return;
 
   enabled_1st_party_cf_ = first_party_enabled;
+  LOG(ERROR) << "!!!OnShouldDoCosmeticFiltering url_ == " << url_.spec();
   cosmetic_filters_resources_->UrlCosmeticResources(
       url_.spec(),
       base::BindOnce(&CosmeticFiltersJSHandler::OnUrlCosmeticResources,
@@ -254,8 +293,27 @@ void CosmeticFiltersJSHandler::OnUrlCosmeticResources(base::Value result) {
   std::string scriptlet_script;
   resources_dict->GetString("injected_script", &scriptlet_script);
   // Execute scriptlets on all frames
+  LOG(ERROR) << "!!!Injecting url_ == " << url_.spec();
   if (!scriptlet_script.empty()) {
-    web_frame->ExecuteScript(blink::WebString::FromUTF8(scriptlet_script));
+    //scripts_ = scriptlet_script;
+    //web_frame->ExecuteScript(blink::WebString::FromUTF8(scriptlet_script));
+    base::Value* injected_script = resources_dict->FindPath("injected_script");
+    if (injected_script) {
+      std::string json_to_inject;
+      base::JSONWriter::Write(*injected_script, &json_to_inject);
+      scriptlet_script =
+          base::StringPrintf(kScriptletInitScript, json_to_inject.c_str());
+      //web_frame->ExecuteScript(blink::WebString::FromUTF8(scriptlet_script));
+      blink::WebScriptSource script_source(blink::WebString::FromUTF8(scriptlet_script), blink::WebURL(GURL("chrome-extension://mnojpmjdmbbfmejpflffifhffcmidifd/script.js")));
+      web_frame->RequestExecuteScriptInIsolatedWorld(
+        isolated_world_id_,
+        &script_source,
+        1,
+        false,
+        blink::WebLocalFrame::kSynchronous,
+        nullptr);
+      //web_frame->ExecuteScript(blink::WebString::FromUTF8(*g_observing_script));
+    }
   }
   if (!render_frame_->IsMainFrame())
     return;

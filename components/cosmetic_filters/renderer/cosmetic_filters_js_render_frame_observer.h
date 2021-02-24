@@ -34,6 +34,7 @@ class CosmeticFiltersJsRenderFrameObserver
   void DidCreateScriptContext(v8::Local<v8::Context> context,
                               int32_t world_id) override;
   void DidCreateNewDocument() override;
+  void DidFinishSameDocumentNavigation() override;
 
  private:
   // RenderFrameObserver implementation.

@@ -62,6 +62,8 @@ class CosmeticFiltersJSHandler {
   bool enabled_1st_party_cf_;
   std::vector<std::string> exceptions_;
   GURL url_;
+
+  //std::string scripts_;
 };
 
 // static

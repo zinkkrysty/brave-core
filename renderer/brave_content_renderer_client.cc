@@ -9,6 +9,8 @@
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 
+#include "third_party/blink/public/web/web_local_frame.h"
+
 BraveContentRendererClient::BraveContentRendererClient()
     : ChromeContentRendererClient() {}
 
@@ -29,6 +31,14 @@ SetRuntimeFeaturesDefaultsBeforeBlinkInitialization() {
 }
 
 BraveContentRendererClient::~BraveContentRendererClient() = default;
+
+void BraveContentRendererClient::RunScriptsAtDocumentStart(
+    content::RenderFrame* render_frame) {
+  ChromeContentRendererClient::RunScriptsAtDocumentStart(render_frame);
+
+  LOG(ERROR) << "!!!RunScriptsAtDocumentStart url_ == " << url::Origin(render_frame->GetWebFrame()->GetSecurityOrigin())
+               .GetURL().spec();
+}
 
 void BraveContentRendererClient::RenderFrameCreated(
     content::RenderFrame* render_frame) {

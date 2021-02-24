@@ -15,7 +15,9 @@ CosmeticFiltersJsRenderFrameObserver::CosmeticFiltersJsRenderFrameObserver(
     content::RenderFrame* render_frame,
     const int32_t isolated_world_id)
     : RenderFrameObserver(render_frame),
-      isolated_world_id_(isolated_world_id) {}
+      isolated_world_id_(isolated_world_id) {
+        LOG(ERROR) << "!!!CosmeticFiltersJsRenderFrameObserver constructor " << url_.spec();
+      }
 
 CosmeticFiltersJsRenderFrameObserver::~CosmeticFiltersJsRenderFrameObserver() {}
 
@@ -23,11 +25,31 @@ void CosmeticFiltersJsRenderFrameObserver::DidStartNavigation(
     const GURL& url,
     base::Optional<blink::WebNavigationType> navigation_type) {
   url_ = url;
+  LOG(ERROR) << "!!!DidStartNavigation url_ == " << url_.spec();
+}
+
+void CosmeticFiltersJsRenderFrameObserver::DidFinishSameDocumentNavigation() {
+  // There could be empty and "about:blank" URLs, empty URLs are duplicated
+  // with DidCreateDocumentElement, so we just skip them, "about:blank"
+  // should fallback to the main frame rules
+  // if (url_.is_empty())
+  //   return;
+  // if (url_.spec() == "about:blank") {
+  //   url_ = url::Origin(render_frame()->GetWebFrame()->GetSecurityOrigin())
+  //              .GetURL();
+  // }
+  // if (!native_javascript_handle_) {
+  //   native_javascript_handle_.reset(
+  //       new CosmeticFiltersJSHandler(render_frame(), isolated_world_id_));
+  // }
+  // native_javascript_handle_->ProcessURL(url_);
+  // LOG(ERROR) << "!!!DidFinishSameDocumentNavigation url_ == " << url_.spec(); 
 }
 
 void CosmeticFiltersJsRenderFrameObserver::DidCreateScriptContext(
     v8::Local<v8::Context> context,
     int32_t world_id) {
+  LOG(ERROR) << "!!!DidCreateScriptContext url_ == " << url_.spec(); 
   if (!render_frame()->IsMainFrame() || world_id != isolated_world_id_ ||
       !native_javascript_handle_)
     return;
@@ -45,6 +67,7 @@ void CosmeticFiltersJsRenderFrameObserver::DidCreateNewDocument() {
     url_ = url::Origin(render_frame()->GetWebFrame()->GetSecurityOrigin())
                .GetURL();
   }
+  LOG(ERROR) << "!!!DidCreateNewDocument url_ == " << url_.spec();
   if (!native_javascript_handle_) {
     native_javascript_handle_.reset(
         new CosmeticFiltersJSHandler(render_frame(), isolated_world_id_));
