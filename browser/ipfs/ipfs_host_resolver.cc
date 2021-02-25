@@ -49,7 +49,7 @@ void IPFSHostResolver::Resolve(const net::HostPortPair& host,
   optional_parameters->source = net::HostResolverSource::DNS;
   resolving_host_ = host.host();
   resolved_callback_ = std::move(callback);
-  GetHostResover()->ResolveHost(
+  GetHostResolver()->ResolveHost(
       net::HostPortPair(prefix_ + resolving_host_, host.port()), isolation_key,
       std::move(optional_parameters), receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(

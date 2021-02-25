@@ -49,31 +49,26 @@ class IPFSHostResolverTest : public testing::Test {
   base::WeakPtrFactory<IPFSHostResolverTest> weak_ptr_factory_{this};
 };
 
-net::DnsConfig CreateValidDnsConfig() {
-  net::IPAddress dns_ip(192, 168, 1, 0);
-  net::DnsConfig config;
-  config.nameservers.push_back(
-      net::IPEndPoint(dns_ip, net::dns_protocol::kDefaultPort));
-  config.dns_over_https_servers.emplace_back("example.com",
-                                             false /* use_post */);
-  EXPECT_TRUE(config.IsValid());
-  return config;
-}
-
 class FakeHostResolver: public network::mojom::HostResolver {
  public:
   FakeHostResolver() {}
-  ~FakeHostResolver() {}
+  ~FakeHostResolver() override {}
   
   void ResolveHost(const net::HostPortPair& host,
                    const net::NetworkIsolationKey& network_isolation_key,
                    network::mojom::ResolveHostParametersPtr optional_parameters,
                    mojo::PendingRemote<network::mojom::ResolveHostClient>
                        pending_response_client) override {
-    pending_response_client->OnTextResults(std::vector<std::string>());
+    mojo::Remote<network::mojom::ResolveHostClient>
+                       response_client = pending_response_client;
+    response_client->OnTextResults(std::vector<std::string>());
   }
 
-}
+   void MdnsListen(const ::net::HostPortPair& host,
+                   ::net::DnsQueryType query_type,
+                   ::mojo::PendingRemote<network::mojom::MdnsListenClient> response_client,
+                   MdnsListenCallback callback) override {}
+};
 
 TEST_F(IPFSHostResolverTest, Run) {
 
@@ -84,7 +79,7 @@ TEST_F(IPFSHostResolverTest, Run) {
   auto* storage_partition =
       content::BrowserContext::GetDefaultStoragePartition(browser_context());
   ipfs_resolver.Resolve(
-      net::HostPortPair("example.com", net::dns_protocol::kDefaultPort),
+      net::HostPortPair("example.com", 11),
       net::NetworkIsolationKey(), storage_partition->GetNetworkContext(),
       net::DnsQueryType::TXT,
       base::BindOnce(&IPFSHostResolverTest::HostResolvedCallback,

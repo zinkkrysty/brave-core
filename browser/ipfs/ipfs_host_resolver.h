@@ -38,7 +38,7 @@ class IPFSHostResolver : public network::ResolveHostClientBase {
 
   std::string host() const { return resolving_host_; }
 
-  network::mojom::HostResolver* GetHostResover() {
+  network::mojom::HostResolver* GetHostResolver() {
     if (test_host_resolver_)
       return test_host_resolver_;
     return host_resolver_.get();
