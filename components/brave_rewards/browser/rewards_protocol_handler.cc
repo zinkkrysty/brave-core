@@ -58,21 +58,23 @@ void LoadRewardsURL(
     return;
   }
 
-  // Only accept rewards schema from allowed domains
+  // Only accept rewards scheme from allowed domains
+  const std::string bitflyer_staging_host = GURL(BITFLYER_STAGING_URL).host();
   const char* kAllowedDomains[] = {
-      "bitflyer.jp",         // bitFlyer production
-      BITFLYER_STAGING_URL,  // bitFlyer staging
-      "uphold.com",          // Uphold staging/production
+      "bitflyer.jp",                  // bitFlyer production
+      bitflyer_staging_host.c_str(),  // bitFlyer staging
+      "uphold.com",                   // Uphold staging/production
   };
   bool allowed_domain = false;
   for (const auto* domain : kAllowedDomains) {
-    if (web_contents->GetURL().DomainIs(domain)) {
+    if (ref_url.DomainIs(domain)) {
       allowed_domain = true;
       break;
     }
   }
 
   if (!allowed_domain) {
+    LOG(ERROR) << "Blocked invalid rewards url domain: " << ref_url.spec();
     return;
   }
 
