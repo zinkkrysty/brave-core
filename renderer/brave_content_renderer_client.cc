@@ -8,7 +8,6 @@
 #include "brave/components/cosmetic_filters/renderer/cosmetic_filters_js_render_frame_observer.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
-
 #include "third_party/blink/public/web/web_local_frame.h"
 
 BraveContentRendererClient::BraveContentRendererClient()
@@ -45,5 +44,5 @@ void BraveContentRendererClient::RenderFrameCreated(
   ChromeContentRendererClient::RenderFrameCreated(render_frame);
 
   new cosmetic_filters::CosmeticFiltersJsRenderFrameObserver(
-      render_frame, ISOLATED_WORLD_ID_CHROME_INTERNAL);
+      render_frame, ISOLATED_WORLD_ID_BRAVE_INTERNAL);
 }
