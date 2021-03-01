@@ -48,8 +48,8 @@ void Bitflyer::Initialize() {
     return;
   }
 
-  for (auto const& value : wallet->fees) {
-    StartTransferFeeTimer(value.first);
+  for (const auto& value : wallet->fees) {
+    StartTransferFeeTimer(value.first, 1);
   }
 }
 
@@ -213,7 +213,7 @@ void Bitflyer::DisconnectWallet(const bool manual) {
 void Bitflyer::SaveTransferFee(
     const std::string& contribution_id,
     const double fee) {
-  StartTransferFeeTimer(contribution_id);
+  StartTransferFeeTimer(contribution_id, 1);
 
   auto wallet = GetWallet();
   if (!wallet) {
@@ -225,7 +225,9 @@ void Bitflyer::SaveTransferFee(
   SetWallet(std::move(wallet));
 }
 
-void Bitflyer::StartTransferFeeTimer(const std::string& fee_id) {
+void Bitflyer::StartTransferFeeTimer(
+    const std::string& fee_id,
+    const int attempts) {
   DCHECK(!fee_id.empty());
 
   base::TimeDelta delay = util::GetRandomizedDelay(
@@ -236,16 +238,22 @@ void Bitflyer::StartTransferFeeTimer(const std::string& fee_id) {
   transfer_fee_timers_[fee_id].Start(FROM_HERE, delay,
       base::BindOnce(&Bitflyer::OnTransferFeeTimerElapsed,
           base::Unretained(this),
-          fee_id));
+          fee_id,
+          attempts));
 }
 
 void Bitflyer::OnTransferFeeCompleted(
     const type::Result result,
     const std::string& transaction_id,
-    const std::string& contribution_id) {
+    const std::string& contribution_id,
+    const int attempts) {
   if (result != type::Result::LEDGER_OK) {
-    BLOG(0, "Transaction fee failed");
-    StartTransferFeeTimer(contribution_id);
+    if (attempts < 3) {
+      BLOG(0, "Transaction fee failed, retrying");
+      StartTransferFeeTimer(contribution_id, attempts + 1);
+      return;
+    }
+    BLOG(0, "Transaction fee failed, no remaining attempts this session");
     return;
   }
 
@@ -254,12 +262,14 @@ void Bitflyer::OnTransferFeeCompleted(
 
 void Bitflyer::TransferFee(
     const std::string& contribution_id,
-    const double amount) {
+    const double amount,
+    const int attempts) {
   auto transfer_callback = std::bind(&Bitflyer::OnTransferFeeCompleted,
       this,
       _1,
       _2,
-      contribution_id);
+      contribution_id,
+      attempts);
 
   Transaction transaction;
   transaction.address = GetFeeAddress();
@@ -269,7 +279,9 @@ void Bitflyer::TransferFee(
   transfer_->Start(transaction, transfer_callback);
 }
 
-void Bitflyer::OnTransferFeeTimerElapsed(const std::string& id) {
+void Bitflyer::OnTransferFeeTimerElapsed(
+    const std::string& id,
+    const int attempts) {
   transfer_fee_timers_.erase(id);
 
   auto wallet = GetWallet();
@@ -278,9 +290,9 @@ void Bitflyer::OnTransferFeeTimerElapsed(const std::string& id) {
     return;
   }
 
-  for (auto const& value : wallet->fees) {
+  for (const auto& value : wallet->fees) {
     if (value.first == id) {
-      TransferFee(value.first, value.second);
+      TransferFee(value.first, value.second, attempts);
       return;
     }
   }

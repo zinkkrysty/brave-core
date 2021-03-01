@@ -32,6 +32,7 @@
 //
 // Error codes:
 // HTTP_UNAUTHORIZED (401)
+// HTTP_NOT_FOUND (404)
 //
 // Response body:
 // {

@@ -59,6 +59,11 @@ type::Result PostTransaction::CheckStatusCode(const int status_code) {
     return type::Result::EXPIRED_TOKEN;
   }
 
+  if (status_code == net::HTTP_NOT_FOUND) {
+    BLOG(0, "Account not found");
+    return type::Result::NOT_FOUND;
+  }
+
   if (status_code != net::HTTP_OK) {
     return type::Result::LEDGER_ERROR;
   }
