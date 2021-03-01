@@ -62,24 +62,12 @@ std::string GetAuthorizeUrl(const std::string& state) {
       state.c_str());
 }
 
-std::string GetAddUrl(const std::string& address) {
-  const std::string url = GetUrl();
-
-  if (address.empty()) {
-    return "";
-  }
-
-  return "";
+std::string GetAddUrl() {
+  return GetAccountUrl();
 }
 
-std::string GetWithdrawUrl(const std::string& address) {
-  const std::string url = GetUrl();
-
-  if (address.empty()) {
-    return "";
-  }
-
-  return "";
+std::string GetWithdrawUrl() {
+  return GetAccountUrl();
 }
 
 type::ExternalWalletPtr GetWallet(LedgerImpl* ledger) {
@@ -136,6 +124,16 @@ type::ExternalWalletPtr GetWallet(LedgerImpl* ledger) {
     wallet->verify_url = *verify_url;
   }
 
+  auto* add_url = dictionary->FindStringKey("add_url");
+  if (add_url) {
+    wallet->add_url = *add_url;
+  }
+
+  auto* withdraw_url = dictionary->FindStringKey("withdraw_url");
+  if (withdraw_url) {
+    wallet->withdraw_url = *withdraw_url;
+  }
+
   auto* account_url = dictionary->FindStringKey("account_url");
   if (account_url) {
     wallet->account_url = *account_url;
@@ -183,6 +181,8 @@ bool SetWallet(LedgerImpl* ledger, type::ExternalWalletPtr wallet) {
   new_wallet.SetStringKey("one_time_string", wallet->one_time_string);
   new_wallet.SetStringKey("user_name", wallet->user_name);
   new_wallet.SetStringKey("verify_url", wallet->verify_url);
+  new_wallet.SetStringKey("add_url", wallet->add_url);
+  new_wallet.SetStringKey("withdraw_url", wallet->withdraw_url);
   new_wallet.SetStringKey("account_url", wallet->account_url);
   new_wallet.SetStringKey("login_url", wallet->login_url);
   new_wallet.SetKey("fees", std::move(fees));
@@ -220,6 +220,23 @@ std::string GetAccountUrl() {
 type::ExternalWalletPtr GenerateLinks(type::ExternalWalletPtr wallet) {
   if (!wallet) {
     return nullptr;
+  }
+
+  switch (wallet->status) {
+    case type::WalletStatus::VERIFIED: {
+      wallet->add_url = GetAddUrl();
+      wallet->withdraw_url = GetWithdrawUrl();
+      break;
+    }
+    case type::WalletStatus::CONNECTED:
+    case type::WalletStatus::PENDING:
+    case type::WalletStatus::NOT_CONNECTED:
+    case type::WalletStatus::DISCONNECTED_VERIFIED:
+    case type::WalletStatus::DISCONNECTED_NOT_VERIFIED: {
+      wallet->add_url = "";
+      wallet->withdraw_url = "";
+      break;
+    }
   }
 
   wallet->verify_url = GetAuthorizeUrl(wallet->one_time_string);

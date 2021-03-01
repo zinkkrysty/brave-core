@@ -36,9 +36,9 @@ std::string GetACAddress();
 
 std::string GetAuthorizeUrl(const std::string& state);
 
-std::string GetAddUrl(const std::string& address);
+std::string GetAddUrl();
 
-std::string GetWithdrawUrl(const std::string& address);
+std::string GetWithdrawUrl();
 
 type::ExternalWalletPtr GetWallet(LedgerImpl* ledger);
 

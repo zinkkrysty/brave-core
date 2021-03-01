@@ -91,35 +91,27 @@ TEST_F(BitflyerUtilTest, GetAuthorizeUrl) {
 }
 
 TEST_F(BitflyerUtilTest, GetAddUrl) {
-  // empty string
-  std::string result = bitflyer::GetAddUrl("");
-  ASSERT_EQ(result, "");
-
   // production
   ledger::_environment = type::Environment::PRODUCTION;
-  result = bitflyer::GetAddUrl("9324i5i32459i");
-  ASSERT_EQ(result, "");
+  std::string result = bitflyer::GetAddUrl();
+  ASSERT_EQ(result, "https://bitflyer.jp/ex/Home?login=1");
 
   // staging
   ledger::_environment = type::Environment::STAGING;
-  result = bitflyer::GetAddUrl("9324i5i32459i");
-  ASSERT_EQ(result, "");
+  result = bitflyer::GetAddUrl();
+  ASSERT_EQ(result, BITFLYER_STAGING_URL "/ex/Home?login=1");
 }
 
 TEST_F(BitflyerUtilTest, GetWithdrawUrl) {
-  // empty string
-  std::string result = bitflyer::GetWithdrawUrl("");
-  ASSERT_EQ(result, "");
-
   // production
   ledger::_environment = type::Environment::PRODUCTION;
-  result = bitflyer::GetWithdrawUrl("9324i5i32459i");
-  ASSERT_EQ(result, "");
+  std::string result = bitflyer::GetWithdrawUrl();
+  ASSERT_EQ(result, "https://bitflyer.jp/ex/Home?login=1");
 
   // staging
   ledger::_environment = type::Environment::STAGING;
-  result = bitflyer::GetWithdrawUrl("9324i5i32459i");
-  ASSERT_EQ(result, "");
+  result = bitflyer::GetWithdrawUrl();
+  ASSERT_EQ(result, BITFLYER_STAGING_URL "/ex/Home?login=1");
 }
 
 TEST_F(BitflyerUtilTest, GetWallet) {
@@ -203,8 +195,8 @@ TEST_F(BitflyerUtilTest, GenerateLinks) {
   // Verified
   wallet->status = type::WalletStatus::VERIFIED;
   result = bitflyer::GenerateLinks(wallet->Clone());
-  ASSERT_EQ(result->add_url, "");
-  ASSERT_EQ(result->withdraw_url, "");
+  ASSERT_EQ(result->add_url, BITFLYER_STAGING_URL "/ex/Home?login=1");
+  ASSERT_EQ(result->withdraw_url, BITFLYER_STAGING_URL "/ex/Home?login=1");
   ASSERT_EQ(result->verify_url,
       BITFLYER_STAGING_URL
       "/ex/OAuth/authorize"
