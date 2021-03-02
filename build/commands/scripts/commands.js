@@ -222,6 +222,10 @@ program
   .action(util.lint)
 
 program
+  .command('pylint')
+  .action(util.pylint)
+
+program
   .command('format')
   .option('--full', 'format all lines in changed files instead of only the changed lines')
   .action(util.format)

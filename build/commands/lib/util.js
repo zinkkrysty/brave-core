@@ -497,6 +497,18 @@ const util = {
         '--base_branch=' + options.base], cmd_options)
   },
 
+  pylint: (options = {}) => {
+    if (!options.base) {
+      options.base = 'origin/master'
+    }
+    let cmd_options = config.defaultOptions
+    cmd_options.cwd = config.braveCoreDir
+    cmd_options = mergeWithDefault(cmd_options)
+    util.run('vpython', [path.join(config.braveCoreDir, 'src', 'third_party', 'depot_tools', 'pylint'),
+        '--project_root=' + config.srcDir,
+        '--base_branch=' + options.base], cmd_options)
+  },
+
   format: (options = {}) => {
     let cmd_options = config.defaultOptions
     cmd_options.cwd = config.braveCoreDir
