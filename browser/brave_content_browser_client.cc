@@ -113,7 +113,7 @@ using extensions::ChromeContentBrowserClientExtensionsPart;
 #include "brave/browser/gemini/gemini_protocol_handler.h"
 #endif
 
-#if BUILDFLAG(BRAVE_WALLET_ENABLED)
+#if BUILDFLAG(BRAVE_WALLET_ENABLED) && BUILDFLAG(ENABLE_EXTENSIONS)
 #include "brave/browser/brave_wallet/brave_wallet_service_factory.h"
 #include "brave/components/brave_wallet/brave_wallet_constants.h"
 #include "brave/components/brave_wallet/brave_wallet_service.h"
@@ -548,7 +548,7 @@ bool BraveContentBrowserClient::HandleURLOverrideRewrite(GURL* url,
     return true;
   }
 
-#if BUILDFLAG(BRAVE_WALLET_ENABLED)
+#if BUILDFLAG(BRAVE_WALLET_ENABLED) && BUILDFLAG(ENABLE_EXTENSIONS)
   // If the Crypto Wallets extension is loaded, then it replaces the WebUI
   Profile* profile = Profile::FromBrowserContext(browser_context);
   auto* service = BraveWalletServiceFactory::GetForProfile(profile);
