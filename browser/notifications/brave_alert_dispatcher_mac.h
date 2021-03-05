@@ -21,6 +21,9 @@
                   profileId:(NSString *)profileId                                // NOLINT
                   incognito:(BOOL)incognito;                                     // NOLINT
 
+-(void)closeNotificationsWithProfileId:(NSString*)profileId                      // NOLINT
+                             incognito : (BOOL)incognito;                        // NOLINT
+
 - (void)closeAllNotifications;
 
 - (void)
