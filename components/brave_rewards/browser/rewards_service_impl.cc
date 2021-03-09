@@ -1470,10 +1470,8 @@ void RewardsServiceImpl::ClearState(const std::string& name) {
 bool RewardsServiceImpl::GetBooleanOption(const std::string& name) const {
   DCHECK(!name.empty());
 
-  // AC is not currently supported for regions where the external wallet
-  // provider is bitFlyer.
-  if (name == ledger::option::kAutoContributeSupported)
-    return GetExternalWalletType() != ledger::constant::kWalletBitflyer;
+  if (name == ledger::option::kIsBitflyerRegion)
+    return GetExternalWalletType() == ledger::constant::kWalletBitflyer;
 
   if (name == ledger::option::kContributionsDisabledForBAPMigration) {
     if (OnlyAnonWallet()) {
