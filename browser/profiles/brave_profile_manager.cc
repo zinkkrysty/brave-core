@@ -183,7 +183,8 @@ void BraveProfileManager::MigrateProfileNames() {
 
 void BraveProfileManager::OnProfileAdded(Profile* profile) {
   content::URLDataSource::Add(
-      profile,
+      (profile && profile->IsSystemProfile()) ? profile->GetPrimaryOTRProfile()
+                                              : profile,
       std::make_unique<brave_content::BraveSharedResourcesDataSource>());
 }
 
