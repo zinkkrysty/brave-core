@@ -146,6 +146,8 @@ public class BytecodeTest {
                 "shouldCloseAppWithZeroTabs", false, null));
         Assert.assertTrue(methodExists("org/chromium/chrome/browser/ntp/NewTabPageLayout",
                 "insertSiteSectionView", false, null));
+        Assert.assertTrue(methodExists("org/chromium/chrome/browser/ntp/NewTabPageLayout",
+                "updateTileGridPlaceholderVisibility", false, null));
         Assert.assertTrue(methodExists("org/chromium/chrome/browser/query_tiles/QueryTileSection",
                 "getMaxRowsForMostVisitedTiles", false, null));
         Assert.assertTrue(
@@ -265,6 +267,8 @@ public class BytecodeTest {
                 "org/chromium/chrome/browser/sync/AndroidSyncSettings", "mMasterSyncEnabled"));
         Assert.assertTrue(fieldExists(
                 "org/chromium/chrome/browser/ntp/NewTabPageLayout", "mSiteSectionView"));
+        Assert.assertTrue(
+                fieldExists("org/chromium/chrome/browser/ntp/NewTabPageLayout", "mTileGroup"));
         Assert.assertTrue(fieldExists(
                 "org/chromium/chrome/browser/feed/FeedSurfaceCoordinator", "mActivity"));
         Assert.assertTrue(fieldExists(
