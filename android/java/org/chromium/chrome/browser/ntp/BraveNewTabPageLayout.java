@@ -140,6 +140,7 @@ public class BraveNewTabPageLayout extends NewTabPageLayout {
     private DatabaseHelper mDatabaseHelper;
 
     private ViewGroup mSiteSectionView;
+    private TileGroup mTileGroup;
     private LottieAnimationView mBadgeAnimationView;
     private VerticalViewPager ntpWidgetViewPager;
     private NTPWidgetAdapter ntpWidgetAdapter;
@@ -250,6 +251,10 @@ public class BraveNewTabPageLayout extends NewTabPageLayout {
         mainLayout.addView(mSiteSectionView, insertionPoint);
     }
 
+    protected void updateTileGridPlaceholderVisibility() {
+        // This function is kept empty to avoid placeholder implementation
+    }
+
     private List<NTPWidgetItem> setWidgetList() {
         NTPWidgetManager ntpWidgetManager = NTPWidgetManager.getInstance();
         LayoutInflater inflater =
@@ -290,8 +295,8 @@ public class BraveNewTabPageLayout extends NewTabPageLayout {
                 } else if (!mNTPBackgroundImagesBridge.isSuperReferral()
                         || !NTPBackgroundImagesBridge.enableSponsoredImages()
                         || Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                    boolean showPlaceholder =
-                            getTileGroup().hasReceivedData() && getTileGroup().isEmpty();
+                    boolean showPlaceholder = mTileGroup != null && mTileGroup.hasReceivedData()
+                            && mTileGroup.isEmpty();
                     if (mSiteSectionView != null && !showPlaceholder) {
                         mTopsiteErrorMessage.setVisibility(View.GONE);
                         if (mSiteSectionView.getLayoutParams()
@@ -424,10 +429,6 @@ public class BraveNewTabPageLayout extends NewTabPageLayout {
         super.onAttachedToWindow();
         if (sponsoredTab == null) {
             initilizeSponsoredTab();
-        }
-        if (getPlaceholder() != null
-                && ((ViewGroup)getPlaceholder().getParent()) != null) {
-            ((ViewGroup)getPlaceholder().getParent()).removeView(getPlaceholder());
         }
         checkAndShowNTPImage(false);
         mNTPBackgroundImagesBridge.addObserver(mNTPBackgroundImageServiceObserver);
@@ -963,13 +964,8 @@ public class BraveNewTabPageLayout extends NewTabPageLayout {
             return;
         }
 
-        if (getPlaceholder() != null
-                && ((ViewGroup)getPlaceholder().getParent()) != null) {
-            ((ViewGroup)getPlaceholder().getParent()).removeView(getPlaceholder());
-        }
-
         boolean showPlaceholder =
-            getTileGroup().hasReceivedData() && getTileGroup().isEmpty();
+                mTileGroup != null && mTileGroup.hasReceivedData() && mTileGroup.isEmpty();
         if (!showPlaceholder) {
             mTopsiteErrorMessage.setVisibility(View.GONE);
         } else {
