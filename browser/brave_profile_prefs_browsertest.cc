@@ -44,6 +44,8 @@ IN_PROC_BROWSER_TEST_F(BraveProfilePrefsBrowserTest, DownloadPromptDefault) {
 }
 
 IN_PROC_BROWSER_TEST_F(BraveProfilePrefsBrowserTest, MiscBravePrefs) {
+  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+      kDefaultBrowserPromptDisabled));
   EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
       kHTTPSEVerywhereControlType));
   EXPECT_FALSE(

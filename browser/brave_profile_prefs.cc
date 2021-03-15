@@ -149,6 +149,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // if widevine is disabled.
   // F/u issue: https://github.com/brave/brave-browser/issues/7000
   registry->RegisterBooleanPref(kAskWidevineInstall, true);
+  registry->RegisterBooleanPref(kDefaultBrowserPromptDisabled, false);
 
   // Default Brave shields
   registry->RegisterBooleanPref(kHTTPSEVerywhereControlType, true);

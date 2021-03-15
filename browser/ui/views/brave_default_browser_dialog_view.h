@@ -11,12 +11,15 @@
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
+class Checkbox;
 class Label;
 }  // namespace views
 
+class Profile;
+
 class BraveDefaultBrowserDialogView : public views::DialogDelegateView {
  public:
-  BraveDefaultBrowserDialogView();
+  explicit BraveDefaultBrowserDialogView(Profile* profile);
   ~BraveDefaultBrowserDialogView() override;
 
   BraveDefaultBrowserDialogView(const BraveDefaultBrowserDialogView&) = delete;
@@ -35,8 +38,10 @@ class BraveDefaultBrowserDialogView : public views::DialogDelegateView {
   void OnAcceptButtonClicked();
   void CreateChildViews();
 
+  Profile* profile_ = nullptr;
   views::Label* header_label_ = nullptr;
   views::Label* contents_label_ = nullptr;
+  views::Checkbox* dont_ask_again_checkbox_ = nullptr;
 };
 
 #endif  // BRAVE_BROWSER_UI_VIEWS_BRAVE_DEFAULT_BROWSER_DIALOG_VIEW_H_

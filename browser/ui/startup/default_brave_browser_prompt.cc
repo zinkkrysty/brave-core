@@ -149,6 +149,9 @@ void ShowDefaultBraveBrowserPrompt(Profile* profile) {
   }
 
   PrefService* prefs = profile->GetPrefs();
+  if (prefs->GetBoolean(kDefaultBrowserPromptDisabled))
+    return;
+
   // Reset preferences if kResetCheckDefaultBrowser is true.
   if (prefs->GetBoolean(prefs::kResetCheckDefaultBrowser)) {
     prefs->SetBoolean(prefs::kResetCheckDefaultBrowser, false);
