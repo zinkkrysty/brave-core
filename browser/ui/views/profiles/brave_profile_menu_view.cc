@@ -16,28 +16,11 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/signin/profile_colors_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
-
-namespace {
-
-void CloseGuestProfileWindows() {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Profile* profile =
-      profile_manager->GetProfileByPath(ProfileManager::GetGuestProfilePath());
-
-  if (profile) {
-    BrowserList::CloseAllBrowsersWithProfile(
-        profile, BrowserList::CloseCallback(), BrowserList::CloseCallback(),
-        false);
-  }
-}
-
-}  // namespace
 
 void BraveProfileMenuView::BuildIdentity() {
   ProfileMenuView::BuildIdentity();
@@ -86,7 +69,6 @@ gfx::ImageSkia BraveProfileMenuView::GetSyncIcon() const {
 void BraveProfileMenuView::OnExitProfileButtonClicked() {
   if (browser()->profile()->IsGuestSession()) {
     RecordClick(ActionableItem::kExitProfileButton);
-    CloseGuestProfileWindows();
   } else {
     ProfileMenuView::OnExitProfileButtonClicked();
   }
