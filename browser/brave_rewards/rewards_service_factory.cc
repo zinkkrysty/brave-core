@@ -92,11 +92,16 @@ RewardsServiceFactory::RewardsServiceFactory()
 #endif
 
 #if BUILDFLAG(BRAVE_REWARDS_ENABLED) && !defined(OS_ANDROID)
-  g_browser_process->profile_manager()->AddObserver(this);
+  if (g_browser_process && g_browser_process->profile_manager())
+    g_browser_process->profile_manager()->AddObserver(this);
 #endif
 }
 
 RewardsServiceFactory::~RewardsServiceFactory() {
+#if BUILDFLAG(BRAVE_REWARDS_ENABLED) && !defined(OS_ANDROID)
+  if (g_browser_process && g_browser_process->profile_manager())
+    g_browser_process->profile_manager()->RemoveObserver(this);
+#endif
 }
 
 KeyedService* RewardsServiceFactory::BuildServiceInstanceFor(
