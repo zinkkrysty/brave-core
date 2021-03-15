@@ -46,11 +46,18 @@ hooks = [
     'action': ['vpython3', 'script/download_rust_deps.py', '--platform', 'linux'],
   },
   {
-    # Download rust deps if necessary for the other platforms (macOS and Windows)
+    # Download rust deps if necessary for macOS
     'name': 'download_rust_deps',
     'pattern': '.',
-    'condition': 'not checkout_android and not checkout_ios and not checkout_linux',
+    'condition': 'checkout_mac',
     'action': ['vpython3', 'script/download_rust_deps.py'],
+  },
+  {
+    # Download rust deps if necessary for Windows
+    'name': 'download_rust_deps',
+    'pattern': '.',
+    'condition': 'checkout_win',
+    'action': ['vpython', 'script/download_rust_deps.py'],
   },
   {
     'name': 'generate_licenses',
