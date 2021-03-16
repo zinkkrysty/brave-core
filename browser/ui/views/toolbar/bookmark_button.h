@@ -17,7 +17,7 @@ class BookmarkButton : public ToolbarButton {
   void UpdateImage();
 
   // ToolbarButton:
-  base::string16 GetTooltipText(const gfx::Point& p) const override;
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
   const char* GetClassName() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 

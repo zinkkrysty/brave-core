@@ -34,7 +34,7 @@ const char* BookmarkButton::GetClassName() const {
   return "BookmarkButton";
 }
 
-base::string16 BookmarkButton::GetTooltipText(const gfx::Point& p) const {
+std::u16string BookmarkButton::GetTooltipText(const gfx::Point& p) const {
   int textId = active_ ? IDS_TOOLTIP_STARRED : IDS_TOOLTIP_STAR;
   return l10n_util::GetStringUTF16(textId);
 }

@@ -46,7 +46,7 @@ const char* SpeedreaderButton::GetClassName() const {
   return "SpeedreaderButton";
 }
 
-base::string16 SpeedreaderButton::GetTooltipText(const gfx::Point& p) const {
+std::u16string SpeedreaderButton::GetTooltipText(const gfx::Point& p) const {
   int textId =
       on_ ? IDS_TOOLTIP_TURN_OFF_SPEEDREADER : IDS_TOOLTIP_TURN_ON_SPEEDREADER;
   return l10n_util::GetStringUTF16(textId);
