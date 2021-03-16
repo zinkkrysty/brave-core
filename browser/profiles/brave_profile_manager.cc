@@ -64,13 +64,13 @@ BraveProfileManager::BraveProfileManager(const base::FilePath& user_data_dir)
 
 BraveProfileManager::~BraveProfileManager() {
   std::vector<Profile*> profiles = GetLoadedProfiles();
-  RemoveObserver(this);
   for (Profile* profile : profiles) {
     if (brave::IsSessionProfile(profile)) {
       // passing false for `success` removes the profile from the info cache
       OnProfileCreated(profile, false, false);
     }
   }
+  RemoveObserver(this);
 }
 
 void BraveProfileManager::InitProfileUserPrefs(Profile* profile) {
