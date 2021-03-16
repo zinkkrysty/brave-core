@@ -68,8 +68,7 @@ class RewardsStateBrowserTest : public InProcessBrowserTest {
     rewards_service_->SetLedgerEnvForTesting();
 
     // Bypass onboarding UX by default
-    rewards_service_->SaveOnboardingResult(
-        brave_rewards::OnboardingResult::kDismissed);
+    profile_->GetPrefs()->SetBoolean("brave.rewards.enabled", true);
   }
 
   void GetTestResponse(
