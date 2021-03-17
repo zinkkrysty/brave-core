@@ -610,6 +610,14 @@ class NewTabPage extends React.Component<Props, State> {
     this.props.actions.onCryptoDotComRefreshedDataReceived(tickerPrices, losersGainers, charts, accountBalances, newsEvents, pairs)
   }
 
+
+  disconnectCryptoDotCom = () => {
+    chrome.cryptoDotCom.disconnect((success: boolean) => {
+      console.log(`cryptoDotCom disconnect ${success}`)
+      this.props.actions.onIsConnectedReceived(false)
+    })
+  }
+
   getCurrencyList = () => {
     const { accountBalances, userTLD } = this.props.newTabData.binanceState
     const { usCurrencies, comCurrencies } = currencyData
@@ -982,6 +990,7 @@ class NewTabPage extends React.Component<Props, State> {
   }
 
   renderCryptoDotComWidget (showContent: boolean, position: number) {
+    const menuActions = {}
     const { newTabData } = this.props
     const { cryptoDotComState, showCryptoDotCom, textDirection, cryptoDotComSupported } = newTabData
 
@@ -989,9 +998,15 @@ class NewTabPage extends React.Component<Props, State> {
       return null
     }
 
+    if (cryptoDotComState.isConnected) {
+      menuActions['onDisconnect'] = this.disconnectCryptoDotCom
+      menuActions['onRefreshData'] = this.onCryptoDotComRefreshRequested
+    }
+
     return (
       <CryptoDotCom
         {...cryptoDotComState}
+        {...menuActions}
         isCrypto={true}
         paddingType={'none'}
         isCryptoTab={!showContent}
@@ -1008,6 +1023,7 @@ class NewTabPage extends React.Component<Props, State> {
         onUpdateActions={this.onCryptoDotComRefreshRequested}
         onDisableWidget={this.toggleShowCryptoDotCom}
         onBtcPriceOptIn={this.onCryptoDotComBtcOptIn}
+        onIsConnected={this.props.actions.onIsConnectedReceived}
         onSetHideBalance={this.setCryptoDotComHideBalance}
       />
     )
