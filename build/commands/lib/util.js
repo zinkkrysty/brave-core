@@ -454,7 +454,15 @@ const util = {
     console.log('building redirect-cc.exe...')
     // Determine Visual Studio path and version
     const vsToolchainPath = path.join(config.srcDir, 'build', 'vs_toolchain.py')
+    // Don't update depot_tools while checking
+    const depotToolsWinToolchain = process.env.DEPOT_TOOLS_WIN_TOOLCHAIN
+    process.env.DEPOT_TOOLS_WIN_TOOLCHAIN = '0'
     const vsInfo = util.run('python', [vsToolchainPath, 'get_toolchain_dir']).stdout.toString()
+    if (depotToolsWinToolchain) {
+      process.env.DEPOT_TOOLS_WIN_TOOLCHAIN = depotToolsWinToolchain
+    } else {
+      delete process.env.DEPOT_TOOLS_WIN_TOOLCHAIN
+    }
     const vsPath = vsInfo.split('\n', 1)[0].split('=', 2)[1].trim().replace(/"/g, '')
     const vsVersion = vsInfo.split('\n', 3)[2].split('=', 2)[1].trim().replace(/"/g, '')
     // Path to MSBuild.exe
