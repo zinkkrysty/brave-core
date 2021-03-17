@@ -68,6 +68,9 @@ class ADBLOCK_EXPORT Engine {
       const std::string& resource_type, bool* did_match_rule,
       bool* did_match_exception, bool* did_match_important,
       std::string* redirect);
+  std::string getCspDirectives(const std::string& url,
+      const std::string& host, const std::string& tab_host,
+      bool is_third_party, const std::string& resource_type);
   bool deserialize(const char* data, size_t data_size);
   void addTag(const std::string& tag);
   void addResource(const std::string& key,

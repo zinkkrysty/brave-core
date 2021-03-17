@@ -239,4 +239,39 @@ int OnBeforeURLRequest_AdBlockTPPreWork(const ResponseCallback& next_callback,
   return net::ERR_IO_PENDING;
 }
 
+int OnHeadersReceived_AdBlockCspWork(
+    const net::HttpResponseHeaders* response_headers,
+    scoped_refptr<net::HttpResponseHeaders>* override_response_headers,
+    GURL* allowed_unsafe_redirect_url,
+    const brave::ResponseCallback& next_callback,
+    std::shared_ptr<brave::BraveRequestInfo> ctx) {
+  std::string source_host = ctx->initiator_url.host();
+
+  if (ctx->resource_type == blink::mojom::ResourceType::kMainFrame ||
+      ctx->resource_type == blink::mojom::ResourceType::kSubFrame) {
+    std::string additional_directives;
+    const base::Optional<std::string> csp_directives =
+        g_brave_browser_process->ad_block_service()->GetCspDirectives(
+            ctx->request_url, ctx->resource_type, source_host);
+    if (csp_directives) {
+      *override_response_headers =
+          new net::HttpResponseHeaders(response_headers->raw_headers());
+      (*override_response_headers)->RemoveHeader("Content-Security-Policy");
+
+      std::string original_csp;
+      if (response_headers->GetNormalizedHeader("Content-Security-Policy",
+                                                &original_csp)) {
+        (*override_response_headers)
+            ->AddHeader("Content-Security-Policy",
+                        original_csp + ", " + *csp_directives);
+      } else {
+        (*override_response_headers)
+            ->AddHeader("Content-Security-Policy", *csp_directives);
+      }
+    }
+  }
+
+  return net::OK;
+}
+
 }  // namespace brave
