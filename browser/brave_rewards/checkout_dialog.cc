@@ -46,7 +46,8 @@ const char kBat[] = "bat";
 
 CheckoutDialogDelegate::CheckoutDialogDelegate(base::Value params,
                                                base::WeakPtr<PaymentRequest> request)
-    : params_(std::move(params)), request_(request) {}
+    : params_(std::move(params)),
+      request_(request) {}
 
 CheckoutDialogDelegate::~CheckoutDialogDelegate() = default;
 
@@ -145,21 +146,27 @@ void CheckoutDialogHandler::ProcessSKU() {
     return;
   }
 
-  auto* rewards_service = brave_rewards::RewardsServiceFactory::GetForProfile(Profile::FromBrowserContext(rfh->GetBrowserContext()));
+  auto* rewards_service = brave_rewards::RewardsServiceFactory::GetForProfile(
+    Profile::FromBrowserContext(rfh->GetBrowserContext()));
   if (!rewards_service) {
     request_->TerminateConnection();
     return;
   }
 
-  auto item = ledger::type::SKUOrderItem::New();
+  const auto& display_items = spec->GetDisplayItems(request_->state()->selected_app());
+  for (size_t i = 0; i < display_items.size(); i++) {
+    auto item = ledger::type::SKUOrderItem::New();
 
-  item->sku = "AgEJYnJhdmUuY29tAiNicmF2ZSB1c2VyLXdhbGxldC12b3RlIHNrdSB0b2tlbiB2MQACFHNrdT11c2VyLXdhbGxldC12b3RlAAIKcHJpY2U9MC4yNQACDGN1cnJlbmN5PUJBVAACDGRlc2NyaXB0aW9uPQACGmNyZWRlbnRpYWxfdHlwZT1zaW5nbGUtdXNlAAAGINiB9dUmpqLyeSEdZ23E4dPXwIBOUNJCFN9d5toIME2M";
-  item->quantity = 2;
-  item->type = ledger::type::SKUOrderItemType::SINGLE_USE;
-  item->expires_at = ledger::util::GetCurrentTimeStamp();
-  item->created_at = ledger::util::GetCurrentTimeStamp();
+    if ((*display_items[i])->sku.has_value()) {
+      item->sku = (*display_items[i])->sku.value();
+    } else {
+      request_->TerminateConnection();
+    }
 
-  items_.push_back(std::move(item));
+    item->quantity = 1;
+    item->type = ledger::type::SKUOrderItemType::SINGLE_USE;
+    items_.push_back(std::move(item));
+  }
 
   auto callback = base::BindOnce(&CheckoutDialogHandler::OnSKUProcessed,
                                  base::Unretained(this));
@@ -179,7 +186,6 @@ void CheckoutDialogHandler::HandlePaymentCompletion(
 
 void ShowCheckoutDialog(WebContents* initiator, base::WeakPtr<PaymentRequest> request) {
   double total;
-  std::string description = "";
 
   base::WeakPtr<payments::PaymentRequestSpec> spec = request->spec();
   if (!spec) {
@@ -188,16 +194,8 @@ void ShowCheckoutDialog(WebContents* initiator, base::WeakPtr<PaymentRequest> re
 
   // TODO(jumde): handle errors
   base::StringToDouble(spec->details().total->amount->value, &total);
-  for (auto it = spec->details().display_items->begin();
-       it != spec->details().display_items->end(); ++it) {
-    description = description + it->get()->label + ", ";
-  }
 
-  base::TrimString(description, " ,", &description);
-
-  // TODO(zenparsing): Take params from caller
   base::Value order_info(base::Value::Type::DICTIONARY);
-  order_info.SetStringKey("description", description);
   order_info.SetDoubleKey("total", total);
 
   base::Value params(base::Value::Type::DICTIONARY);

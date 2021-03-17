@@ -17,8 +17,10 @@ function parseDialogArgs (): OrderInfo {
   const { orderInfo } = Object(args)
   // TODO(zenparsing): Throw if orderInfo is invalid?
 
+  console.log("In host.ts!! - Order Info")
+  console.log(orderInfo)
+
   return {
-    description: orderInfo.description,
     total: orderInfo.total
   }
 }

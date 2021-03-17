@@ -7,6 +7,7 @@ import * as React from 'react'
 import { WalletInfo, OrderInfo, ExchangeRateInfo, Host, PublisherInfo } from '../lib/interfaces'
 import { DialogFrame } from '../../ui/components/checkout/dialogFrame'
 import { PaymentMethodPanel } from '../../ui/components/checkout/paymentMethodPanel'
+import { UnverifiedWalletPanel } from '../../ui/components/checkout/unverifiedWalletPanel'
 import { PaymentProcessing } from '../../ui/components/checkout/paymentProcessing'
 import { PaymentComplete } from '../../ui/components/checkout/paymentComplete'
 
@@ -99,11 +100,12 @@ export function App (props: AppProps) {
       onClose={onClose}
     >
       {
+        !walletInfo.verified ?
+          <UnverifiedWalletPanel /> :
         flowState === 'start' ?
           <PaymentMethodPanel
             canUseCreditCard={false}
             rewardsEnabled={true}
-            orderDescription={orderInfo.description}
             orderTotal={formatTokenValue(orderInfo.total)}
             orderTotalConverted={formatExchange(orderInfo.total)}
             walletBalance={formatTokenValue(walletInfo.balance)}

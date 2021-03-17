@@ -73,7 +73,6 @@ class CheckoutDialogHandler : public content::WebUIMessageHandler {
   base::WeakPtr<payments::PaymentRequest> request_;
   std::vector<::ledger::mojom::SKUOrderItemPtr> items_;
 
-
   DISALLOW_COPY_AND_ASSIGN(CheckoutDialogHandler);
 };
 

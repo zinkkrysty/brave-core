@@ -13,7 +13,6 @@ export interface ExchangeRateInfo {
 }
 
 export interface OrderInfo {
-  description: string
   total: number
 }
 

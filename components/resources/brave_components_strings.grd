@@ -662,7 +662,10 @@
       <message name="IDS_BRAVE_REWARDS_CHECKOUT_PAY_WITH_BAT_TOS" desc="">By clicking Pay with BAT, you agree to Brave’s Terms of Sale.</message>
       <message name="IDS_BRAVE_REWARDS_CHECKOUT_NOT_ENOUGH_FUNDS" desc="">You don't have enough tokens to buy this item.</message>
       <message name="IDS_BRAVE_REWARDS_CHECKOUT_UNVERIFIED_MERCHANT" desc=""> is not verified.</message>
-      <message name="IDS_BRAVE_REWARDS_CHECKOUT_UNVERIFIED_WALLET" desc="">Verify user wallet to pay with BAT.</message>
+      <message name="IDS_BRAVE_REWARDS_CHECKOUT_UNVERIFIED_WALLET_TITLE" desc="">Sorry...</message>
+      <message name="IDS_BRAVE_REWARDS_CHECKOUT_UNVERIFIED_WALLET_MESSAGE" desc="">This item is only available to users with a verified wallet for now. This is a seller's preference and may not apply to all sellers.</message>
+      <message name="IDS_BRAVE_REWARDS_CHECKOUT_CONNECT_WALLET_PREFIX" desc="">If you want to buy this item,</message>
+      <message name="IDS_BRAVE_REWARDS_CHECKOUT_CONNECT_WALLET_SUFFIX" desc=""> connect to a wallet and verify</message>
       <message name="IDS_BRAVE_REWARDS_CHECKOUT_USE_TOKEN_BALANCE" desc="">Use your token balance</message>
       <message name="IDS_BRAVE_REWARDS_CHECKOUT_UPDATED" desc="">Updated</message>
 
