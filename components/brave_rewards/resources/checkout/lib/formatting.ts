@@ -44,5 +44,5 @@ export function formatLastUpdatedDate (dateString: string) {
 }
 
 export function formatTokenValue (value: number) {
-  return value.toFixed(1)
+  return value.toFixed(2)
 }

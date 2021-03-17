@@ -78,15 +78,6 @@ export function App (props: AppProps) {
     )
   }
 
-  console.log("Wallet Info")
-  console.log(walletInfo)
-
-  console.log("Publisher Info")
-  console.log(publisherInfo)
-
-  console.log("Order Info")
-  console.log(orderInfo)
-
   const formatExchange = createExchangeFormatter(
     rateInfo.rate,
     props.exchangeCurrency)

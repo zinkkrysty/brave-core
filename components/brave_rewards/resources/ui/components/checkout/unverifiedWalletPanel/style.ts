@@ -14,7 +14,7 @@ export const StyledImage = styled.img`
   margin-right: auto;
 `
 
-export const StyledNoticeLink = styled<{}, 'a'>('a')`
+export const StyledNoticeLink = styled('a')<{}>`
   color: #0095FF;
   font-size: 12px;
   text-decoration: none;

@@ -49,9 +49,9 @@ class CheckoutMessageHandler : public content::WebUIMessageHandler {
   void FetchBalanceCallback(const ledger::type::Result result,
                             ledger::type::BalancePtr balance);
 
-  void GetUpholdWalletCallback(
+  void GetExternalWalletCallback(
       const ledger::type::Result result,
-      ledger::type::UpholdWalletPtr wallet);
+      ledger::type::ExternalWalletPtr wallet);
   void GetRewardsParametersCallback(
       ledger::type::RewardsParametersPtr parameters);
   void GetPublisherDetailsCallback(
@@ -178,15 +178,15 @@ void CheckoutMessageHandler::FetchBalanceCallback(
 void CheckoutMessageHandler::GetExternalWallet(const base::ListValue* args) {
   if (auto* service = GetRewardsService()) {
     AllowJavascript();
-    service->GetUpholdWallet(
-        base::BindOnce(&CheckoutMessageHandler::GetUpholdWalletCallback,
+    service->GetExternalWallet(
+        base::BindOnce(&CheckoutMessageHandler::GetExternalWalletCallback,
                        weak_factory_.GetWeakPtr()));
   }
 }
 
-void CheckoutMessageHandler::GetUpholdWalletCallback(
+void CheckoutMessageHandler::GetExternalWalletCallback(
     const ledger::type::Result result,
-    ledger::type::UpholdWalletPtr wallet) {
+    ledger::type::ExternalWalletPtr wallet) {
   if (!IsJavascriptAllowed()) {
     return;
   }

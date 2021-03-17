@@ -81,6 +81,11 @@ export function createHost (): Host {
   }
 
   function sendRateInfo() {
+    console.log("Sending Rate Info!")
+    console.log("Host Listener")
+    console.log(hostListener)
+    console.log("Rate Details")
+    console.log(rateDetails)
     if (hostListener && rateDetails) {
       const rate = rateDetails.rate
       const lastUpdated = new Date(Number(rateDetails.lastUpdated)).toISOString()
@@ -140,8 +145,6 @@ export function createHost (): Host {
   })
 
   console.log("Getting wallet balance")
-  chrome.send('getWalletBalance')
-  chrome.send('getRewardsParameters')
 
   return {
     getLocaleString (key: string) {
@@ -161,6 +164,8 @@ export function createHost (): Host {
     setListener (listener) {
       hostListener = listener
 
+      chrome.send('getWalletBalance')
+      chrome.send('getRewardsParameters')
       chrome.send('getWalletBalance')
       chrome.send('getExternalWallet')
       chrome.send('getPublisherDetails')

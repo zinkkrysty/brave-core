@@ -3524,6 +3524,10 @@ void RewardsServiceImpl::OnWalletCreatedForSetAdsEnabled(
   }
 }
 
+std::string RewardsServiceImpl::GetExternalWalletType() const {
+  return ledger::constant::kWalletUphold;
+}
+
 void RewardsServiceImpl::ProcessSKU(
     std::vector<ledger::type::SKUOrderItemPtr> items,
     const std::string& wallet_type,
