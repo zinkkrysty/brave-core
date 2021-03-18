@@ -3,7 +3,7 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 export function formatTokenAmount (value: number) {
-  return value.toFixed(3)
+  return value.toFixed(2)
 }
 
 export function formatExchangeAmount (value: number, rate: number) {
