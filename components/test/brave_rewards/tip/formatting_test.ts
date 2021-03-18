@@ -11,10 +11,10 @@ import {
 describe('Rewards Tip Dialog - formatting', () => {
 
   describe('formatTokenAmount', () => {
-    it('formats token values to 3 decimal places', () => {
-      expect(formatTokenAmount(0)).toBe('0.000')
-      expect(formatTokenAmount(1.333333)).toBe('1.333')
-      expect(formatTokenAmount(10.55555)).toBe('10.556')
+    it('formats token values to 2 decimal places', () => {
+      expect(formatTokenAmount(0)).toBe('0.00')
+      expect(formatTokenAmount(1.333333)).toBe('1.33')
+      expect(formatTokenAmount(10.55555)).toBe('10.56')
     })
   })
 
