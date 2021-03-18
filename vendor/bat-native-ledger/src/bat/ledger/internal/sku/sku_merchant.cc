@@ -79,7 +79,7 @@ void SKUMerchant::OnOrder(
           callback);
 
     ledger_->publisher()->GetServerPublisherInfo(
-        "webtest-pj.herokuapp.com",
+        order->location,
         publisher_callback);
     return;
   }

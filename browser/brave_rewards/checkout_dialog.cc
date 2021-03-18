@@ -127,11 +127,15 @@ void CheckoutDialogHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void CheckoutDialogHandler::OnSKUProcessed(const ledger::type::Result, const std::string& value) {
-  payments::mojom::PaymentDetailsPtr details = payments::mojom::PaymentDetails::New();
-  details->id = "7F741337-467A-4D53-B192-3487AF4E65C4";
-  request_->spec()->UpdateWith(std::move(details));
-  request_->Pay();
+void CheckoutDialogHandler::OnSKUProcessed(const ledger::type::Result result, const std::string& value) {
+  if (result == ledger::type::Result::LEDGER_OK) {
+    payments::mojom::PaymentDetailsPtr details = payments::mojom::PaymentDetails::New();
+    details->id = value;
+    request_->spec()->UpdateWith(std::move(details));
+    request_->Pay();
+    return;
+  }
+  request_->TerminateConnection();
 }
 
 void CheckoutDialogHandler::ProcessSKU() {
@@ -192,7 +196,6 @@ void ShowCheckoutDialog(WebContents* initiator, base::WeakPtr<PaymentRequest> re
     return;
   }
 
-  // TODO(jumde): handle errors
   base::StringToDouble(spec->details().total->amount->value, &total);
 
   base::Value order_info(base::Value::Type::DICTIONARY);
