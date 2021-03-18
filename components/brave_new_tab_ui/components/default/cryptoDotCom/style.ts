@@ -466,3 +466,63 @@ margin-left: 2px;
   height: 100%;
 }
 `
+
+export const GenButton = styled<{}, 'button'>('button')`
+  font-size: 13px;
+  font-weight: bold;
+  border-radius: 20px;
+  border: 0;
+  padding: 5px 10px;
+  cursor: pointer;
+  background: #2C2C2B;
+  color: rgba(255, 255, 255, 0.7);
+`
+
+export const DisconnectButton = styled(GenButton)`
+  background: #AA1212;
+  color: #fff;
+  padding: 5px 20px;
+`
+
+export const DisconnectWrapper = styled<{}, 'div'>('div')`
+  padding-top: 75px;
+  min-height: 250px;
+  text-align: center;
+  max-width: 240px;
+`
+
+export const Title = styled<{}, 'span'>('span')`
+  display: block;
+  font-size: 13px;
+  font-weight: bold;
+`
+
+export const Copy = styled<{}, 'p'>('p')`
+  font-size: 15px;
+  max-width: 240px;
+  margin-top: 20px;
+  margin-bottom: 11px;
+`
+
+export const DisconnectTitle = styled(Title)`
+  font-size: 14px;
+  max-width: 245px;
+  margin: 0 auto;
+  line-height: 18px;
+`
+
+export const DisconnectCopy = styled(Copy)`
+  color: #fff;
+  max-width: 220px;
+  line-height: 17px;
+  margin: 8px auto 15px auto;
+`
+
+export const DismissAction = styled<{}, 'span'>('span')`
+  display: block;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  margin-top: 20px;
+  font-weight: bold;
+`
