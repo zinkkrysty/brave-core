@@ -53,7 +53,7 @@ std::unique_ptr<std::vector<uint8_t>> MnemonicToSeed(
     const std::string& passphrase);
 
 bool EncodeString(const std::string& input, std::string* output);
-bool EncodeStringArray(uint256_t data_offset,
+bool EncodeStringArray(size_t data_offset,
                        const std::vector<std::string>& input,
                        std::string* output);
 

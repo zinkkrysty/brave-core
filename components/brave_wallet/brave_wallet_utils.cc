@@ -215,7 +215,7 @@ bool EncodeString(const std::string& input, std::string* output) {
   return true;
 }
 
-bool EncodeStringArray(uint256_t data_offset,
+bool EncodeStringArray(size_t data_offset,
                        const std::vector<std::string>& input,
                        std::string* output) {
   // Write number of elements & add 32 to data_offset
@@ -225,10 +225,10 @@ bool EncodeStringArray(uint256_t data_offset,
   LOG(ERROR) << *output;
   if (!success)
     return false;
-  data_offset += static_cast<uint256_t>(32);
+  data_offset += 32;
 
   // offset to 1st = input.size() * 32
-  data_offset += static_cast<uint256_t>(input.size() * 32);  // offset to first element
+  data_offset += input.size() * 32;  // offset to first element
   LOG(ERROR) << "offset to first element: " << data_offset;
   std::string encoded_offset;
   success = PadHexEncodedParameter(Uint256ValueToHex(data_offset), &encoded_offset);
@@ -241,8 +241,11 @@ bool EncodeStringArray(uint256_t data_offset,
   //    32 * ceil(strlen(i-1th)/32)
   for (size_t i = 1; i < input.size(); i++) {
     std::string encoded_offset;
-    size_t rows = std::ceil(input[i - 1].size() / 32);
-    data_offset += static_cast<uint256_t>(32) + static_cast<uint256_t>(rows * 32); //  + static_cast<uint256_t>(std::ceil(input[i - 1].size() / 32));
+    // each row is 32 bytes, first row is the count of characters of ith-1
+    // element
+    size_t rows = std::ceil(input[i - 1].size() / 32.0);
+    LOG(ERROR) << i << "-1th has " << rows << " rows";
+    data_offset += (rows + 1) * 32;
     LOG(ERROR) << "offset to " << i << "th element: " << data_offset;
     success = PadHexEncodedParameter(Uint256ValueToHex(data_offset), &encoded_offset);
     if (!success)
