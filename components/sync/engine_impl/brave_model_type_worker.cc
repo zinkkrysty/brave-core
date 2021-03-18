@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/sync/engine/model_type_processor.h"
 
 namespace syncer {
@@ -73,8 +73,8 @@ bool BraveModelTypeWorker::IsResetProgressMarkerRequired(
           kMinimalTimeBetweenResetMarker) {
     // Reset progress marker due to 7th failure happening twice in a row
     // in less than 30mins
-    // P3A sample is 2
-    UMA_HISTOGRAM_EXACT_LINEAR("Brave.Sync.ProgressTokenEverReset", 2, 2);
+    // P3A sample is 1
+    base::UmaHistogramExactLinear("Brave.Sync.ProgressTokenEverReset", 1, 1);
     return false;
   }
 
@@ -102,8 +102,8 @@ bool BraveModelTypeWorker::IsResetProgressMarkerRequired(
 void BraveModelTypeWorker::ResetProgressMarker() {
   VLOG(1) << "Reset progress marker for type " << ModelTypeToString(type_);
   // Normal reset of progress marker due to 7th failure
-  // P3A sample is 1
-  UMA_HISTOGRAM_EXACT_LINEAR("Brave.Sync.ProgressTokenEverReset", 1, 2);
+  // P3A sample is 0
+  base::UmaHistogramExactLinear("Brave.Sync.ProgressTokenEverReset", 0, 1);
   last_reset_marker_time_ = base::Time::Now();
   model_type_state_.mutable_progress_marker()->clear_token();
 }
