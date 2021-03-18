@@ -52,6 +52,11 @@ std::unique_ptr<std::vector<uint8_t>> MnemonicToSeed(
     const std::string& mnemonic,
     const std::string& passphrase);
 
+bool EncodeString(const std::string& input, std::string* output);
+bool EncodeStringArray(uint256_t data_offset,
+                       const std::vector<std::string>& input,
+                       std::string* output);
+
 }  // namespace brave_wallet
 
 #endif  // BRAVE_COMPONENTS_BRAVE_WALLET_BRAVE_WALLET_UTILS_H_

@@ -6,6 +6,7 @@
 #include "brave/components/brave_wallet/brave_wallet_utils.h"
 
 #include <algorithm>
+#include <cmath>
 #include <sstream>
 #include <utility>
 
@@ -189,4 +190,85 @@ std::unique_ptr<std::vector<uint8_t>> MnemonicToSeed(
   return rv == 1 ? std::move(seed) : nullptr;
 }
 
+bool EncodeString(const std::string& input, std::string* output) {
+  if (input.empty() || !base::IsStringUTF8(input))
+    return false;
+
+  std::ostringstream ss;
+  ss << "0x";
+
+  // Encode to UTF8 representation.
+  for (size_t i = 0; i < input.size(); i++) {
+    ss << base::StringPrintf("%02x", 0xFF & input[i]);
+  }
+
+  // Pad 0 to right.
+  size_t last_row_len = input.size() % 32;
+  if (last_row_len == 0) {
+    *output = ss.str();
+    return true;
+  }
+
+  size_t padding_len = (32 - last_row_len) * 2;
+  ss << base::StringPrintf("%s", std::string(padding_len, '0').c_str());
+  *output = ss.str();
+  return true;
+}
+
+bool EncodeStringArray(uint256_t data_offset,
+                       const std::vector<std::string>& input,
+                       std::string* output) {
+  // Write number of elements & add 32 to data_offset
+  bool success = PadHexEncodedParameter(
+      Uint256ValueToHex(static_cast<uint256_t>(input.size())),
+      output);
+  LOG(ERROR) << *output;
+  if (!success)
+    return false;
+  data_offset += static_cast<uint256_t>(32);
+
+  // offset to 1st = input.size() * 32
+  data_offset += static_cast<uint256_t>(input.size() * 32);  // offset to first element
+  LOG(ERROR) << "offset to first element: " << data_offset;
+  std::string encoded_offset;
+  success = PadHexEncodedParameter(Uint256ValueToHex(data_offset), &encoded_offset);
+  if (!success)
+    return false;
+  *output += encoded_offset.substr(2, encoded_offset.size() - 2);
+  LOG(ERROR) << encoded_offset.substr(2, encoded_offset.size() - 2);
+
+  // offset to ith = offset to i-1th + 32 (count of i-1th) +
+  //    32 * ceil(strlen(i-1th)/32)
+  for (size_t i = 1; i < input.size(); i++) {
+    std::string encoded_offset;
+    size_t rows = std::ceil(input[i - 1].size() / 32);
+    data_offset += static_cast<uint256_t>(32) + static_cast<uint256_t>(rows * 32); //  + static_cast<uint256_t>(std::ceil(input[i - 1].size() / 32));
+    LOG(ERROR) << "offset to " << i << "th element: " << data_offset;
+    success = PadHexEncodedParameter(Uint256ValueToHex(data_offset), &encoded_offset);
+    if (!success)
+      return false;
+    *output += encoded_offset.substr(2, encoded_offset.size() - 2);
+    LOG(ERROR) << encoded_offset.substr(2, encoded_offset.size() - 2);
+  }
+
+  for (size_t i = 0; i < input.size(); i++) {
+    // count of ith string element
+    std::string count;
+    success = PadHexEncodedParameter(Uint256ValueToHex(input[i].size()), &count);
+    if (!success)
+      return false;
+    *output += count.substr(2, count.size() - 2);
+    LOG(ERROR) << count.substr(2, count.size() - 2);
+
+    // encode ith string element
+    std::string encoded_element;
+    success = EncodeString(input[i], &encoded_element);
+    if (!success)
+      return false;
+    *output += encoded_element.substr(2, encoded_element.size() - 2);
+    LOG(ERROR) << encoded_element.substr(2, encoded_element.size() - 2);
+  }
+
+  return true;
+}
 }  // namespace brave_wallet

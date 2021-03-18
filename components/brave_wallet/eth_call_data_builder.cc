@@ -19,7 +19,13 @@ bool BalanceOf(const std::string& address, std::string* data) {
   }
   return brave_wallet::ConcatHexStrings(function_hash, params, data);
 }
-
+/*
+bool GetMany(std::string* data) {
+  const std::string function_hash =
+      GetFunctionHash("getMany(string[],uint256)");
+  std::string 
+}
+*/
 }  // namespace erc20
 
 }  // namespace brave_wallet
