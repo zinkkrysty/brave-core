@@ -38,7 +38,7 @@ EligibleAds::~EligibleAds() = default;
 CreativeAdNotificationList EligibleAds::Get(
     const CreativeAdNotificationList& ads,
     const CreativeAdInfo& last_delivered_ad,
-    const AdEventList& ad_events) {
+    const AdEventList& ad_events, const std::vector<std::string>& history) {
   CreativeAdNotificationList eligible_ads = ads;
   if (eligible_ads.empty()) {
     return eligible_ads;
@@ -51,7 +51,8 @@ CreativeAdNotificationList EligibleAds::Get(
   eligible_ads = FrequencyCap(
       eligible_ads,
       ShouldCapLastDeliveredAd(ads) ? last_delivered_ad : CreativeAdInfo(),
-      ad_events);
+      ad_events,
+      history);
 
   return eligible_ads;
 }
@@ -95,10 +96,12 @@ CreativeAdNotificationList EligibleAds::RemoveSeenAdsAndRoundRobinIfNeeded(
 CreativeAdNotificationList EligibleAds::FrequencyCap(
     const CreativeAdNotificationList& ads,
     const CreativeAdInfo& last_delivered_ad,
-    const AdEventList& ad_events) const {
+    const AdEventList& ad_events,
+    const std::vector<std::string>& history) const {
   CreativeAdNotificationList eligible_ads = ads;
 
-  FrequencyCapping frequency_capping(subdivision_targeting_, ad_events);
+  FrequencyCapping frequency_capping(subdivision_targeting_, ad_events,
+      history);
   const auto iter = std::remove_if(
       eligible_ads.begin(), eligible_ads.end(),
       [&frequency_capping, &last_delivered_ad](CreativeAdInfo& ad) {

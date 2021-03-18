@@ -6,6 +6,9 @@
 #ifndef BRAVE_VENDOR_BAT_NATIVE_ADS_SRC_BAT_ADS_INTERNAL_ELIGIBLE_ADS_AD_NOTIFICATIONS_ELIGIBLE_AD_NOTIFICATIONS_H_
 #define BRAVE_VENDOR_BAT_NATIVE_ADS_SRC_BAT_ADS_INTERNAL_ELIGIBLE_ADS_AD_NOTIFICATIONS_ELIGIBLE_AD_NOTIFICATIONS_H_
 
+#include <vector>
+#include <string>
+
 #include "bat/ads/internal/ad_events/ad_event_info.h"
 #include "bat/ads/internal/bundle/creative_ad_notification_info.h"
 
@@ -28,7 +31,8 @@ class EligibleAds {
 
   CreativeAdNotificationList Get(const CreativeAdNotificationList& ads,
                                  const CreativeAdInfo& last_delivered_ad,
-                                 const AdEventList& ad_events);
+                                 const AdEventList& ad_events,
+                                 const std::vector<std::string>& history);
 
  private:
   ad_targeting::geographic::SubdivisionTargeting* subdivision_targeting_;
@@ -42,7 +46,8 @@ class EligibleAds {
   CreativeAdNotificationList FrequencyCap(
       const CreativeAdNotificationList& ads,
       const CreativeAdInfo& last_delivered_ad,
-      const AdEventList& ad_events) const;
+      const AdEventList& ad_events,
+      const std::vector<std::string>& history) const;
 };
 
 }  // namespace ad_notifications
