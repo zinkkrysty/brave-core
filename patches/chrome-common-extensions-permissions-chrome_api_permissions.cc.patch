@@ -1,0 +1,12 @@
+diff --git a/chrome/common/extensions/permissions/chrome_api_permissions.cc b/chrome/common/extensions/permissions/chrome_api_permissions.cc
+index 41bac70c79032b090615bead72e806b7864c6c74..b392bded8082d8aa59638142fd25f1666cc04923 100644
+--- a/chrome/common/extensions/permissions/chrome_api_permissions.cc
++++ b/chrome/common/extensions/permissions/chrome_api_permissions.cc
+@@ -237,6 +237,7 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
+      APIPermissionInfo::kFlagCannotBeOptional |
+          APIPermissionInfo::kFlagInternal,
+      &CreateAPIPermission<SettingsOverrideAPIPermission>},
++    BRAVE_PERMISSIONS_TO_REGISTER
+ };
+ 
+ }  // namespace

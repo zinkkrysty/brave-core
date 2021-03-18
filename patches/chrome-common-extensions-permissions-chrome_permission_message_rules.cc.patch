@@ -1,0 +1,12 @@
+diff --git a/chrome/common/extensions/permissions/chrome_permission_message_rules.cc b/chrome/common/extensions/permissions/chrome_permission_message_rules.cc
+index fd17b1aab8bd7f49436aad858a497868897e38ff..41f0b063baae81ef0577876aa26d803327dcc27f 100644
+--- a/chrome/common/extensions/permissions/chrome_permission_message_rules.cc
++++ b/chrome/common/extensions/permissions/chrome_permission_message_rules.cc
+@@ -684,6 +684,7 @@ ChromePermissionMessageRule::GetAllRules() {
+       {IDS_EXTENSION_PROMPT_WARNING_TRANSIENT_BACKGROUND,
+        {APIPermission::kTransientBackground},
+        {}},
++      BRAVE_RULES_ARR
+   };
+ 
+   return std::vector<ChromePermissionMessageRule>(
